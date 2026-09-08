@@ -14,7 +14,7 @@
 
 import {
   init, cursor, target, crosshair, splash, waves, retroGrid, dotGrid, confetti,
-  REVEAL_EFFECTS, BUTTON_STYLES, CARD_LOOKS,
+  REVEAL_EFFECTS, BUTTON_STYLES, CARD_LOOKS, toast,
 } from "../src/index.js";
 
 /* ── The two big grids ─────────────────────────────────────────────────── */
@@ -74,6 +74,43 @@ waves("#field-waves", { lines: 12, amplitude: 16, wavelength: 220, color: "rgba(
 retroGrid("#field-retro", { cell: 34, speed: 9000 });
 dotGrid("#field-dots", { gap: 20, color: "rgba(255,255,255,0.16)" });
 
+/* ── The demos that need a caller ─────────────────────────────────────── */
+
+// island, toast and badgeCount all hand back a method rather than deciding for
+// you when something has happened, so the page supplies the moment.
+const islandPill = document.querySelector("[data-rm-island]");
+const islandStates = [
+  ["<b>Uploading</b> · 40%", 2600],
+  ["<b>Saved</b> to drafts", 2400],
+  ["<b>Now playing</b> · Motion", 3000],
+];
+let islandAt = 0;
+document.querySelector("#island-demo")?.addEventListener("click", () => {
+  const [html, keep] = islandStates[islandAt % islandStates.length];
+  islandAt++;
+  islandPill?.rmShow?.(html, keep);
+});
+
+const push = toast();
+const notices = [
+  ["Copied to your clipboard", "good"],
+  ["That did not send — try again", "bad"],
+  ["Three files queued", "plain"],
+];
+let noticeAt = 0;
+document.querySelector("#toast-demo")?.addEventListener("click", () => {
+  const [message, kind] = notices[noticeAt % notices.length];
+  noticeAt++;
+  push(message, { kind });
+});
+
+const badge = document.querySelector("#badge-demo");
+let unread = 3;
+setInterval(() => {
+  unread = (unread % 9) + 1;
+  badge?.rmSet?.(unread);
+}, 3400);
+
 /* ── The form demos ─────────────────────────────────────────────────────── */
 
 // Both of these hand back a method rather than deciding for you what counts as
@@ -132,15 +169,15 @@ for (const picker of pickers) {
 
 /* ── Copy to clipboard ─────────────────────────────────────────────────── */
 
-const toast = document.querySelector(".toast");
+const copyNotice = document.querySelector(".toast");
 let toastTimer = 0;
 
 function say(message) {
-  if (!toast) return;
-  toast.textContent = message;
-  toast.hidden = false;
+  if (!copyNotice) return;
+  copyNotice.textContent = message;
+  copyNotice.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { toast.hidden = true; }, 1800);
+  toastTimer = setTimeout(() => { copyNotice.hidden = true; }, 1800);
 }
 
 // One listener for the page rather than one per button, which is the same

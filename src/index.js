@@ -43,6 +43,13 @@ export {
   coverflow, thumbs, autoplay, wheel, peek, ticker, slideshow,
 } from "./components/carousels.js";
 export {
+  island, sheet, segmented, frosted, springModal, actionSheet, toast, contextMenu,
+} from "./components/ui.js";
+export {
+  skeleton, spinner, SPINNER_KINDS, progressBar, dotsLoader, pulseDot, badgeCount, emptyState,
+} from "./components/feedback.js";
+export { sparkline, bars, donut, gauge, stat, stars } from "./components/data.js";
+export {
   floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
   stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
 } from "./components/forms.js";
@@ -77,6 +84,13 @@ import { command, sidebar, rail, bottomNav, mega } from "./components/navbars.js
 import {
   coverflow, thumbs, autoplay, wheel, peek, ticker, slideshow,
 } from "./components/carousels.js";
+import {
+  island, sheet, segmented, frosted, springModal, actionSheet, contextMenu,
+} from "./components/ui.js";
+import {
+  skeleton, spinner, progressBar, dotsLoader, pulseDot, badgeCount, emptyState,
+} from "./components/feedback.js";
+import { sparkline, bars, donut, gauge, stat, stars } from "./components/data.js";
 import {
   floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
   stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
@@ -196,6 +210,26 @@ export function init(options = {}) {
     peek("[data-rm-peek]", options.peek),
     ticker("[data-rm-ticker]", options.ticker),
     slideshow("[data-rm-slideshow]", options.slideshow),
+    island("[data-rm-island]", options.island),
+    sheet("[data-rm-sheet]", options.sheet),
+    segmented("[data-rm-segmented]", options.segmented),
+    frosted("[data-rm-frosted]", options.frosted),
+    springModal("[data-rm-modal]", options.springModal),
+    actionSheet("[data-rm-actions]", options.actionSheet),
+    contextMenu("[data-rm-context]", options.contextMenu),
+    skeleton("[data-rm-skeleton]", options.skeleton),
+    spinner("[data-rm-spinner]", options.spinner),
+    progressBar("[data-rm-progress-bar]", options.progressBar),
+    dotsLoader("[data-rm-dots-loader]", options.dotsLoader),
+    pulseDot("[data-rm-status]", options.pulseDot),
+    badgeCount("[data-rm-badge]", options.badgeCount),
+    emptyState("[data-rm-empty]", options.emptyState),
+    sparkline("[data-rm-sparkline]", options.sparkline),
+    bars("[data-rm-bars]", options.bars),
+    donut("[data-rm-donut]", options.donut),
+    gauge("[data-rm-gauge]", options.gauge),
+    stat("[data-rm-stat]", options.stat),
+    stars("[data-rm-rating]", options.stars),
     floatLabel("[data-rm-float]", options.floatLabel),
     autoGrow("[data-rm-grow]", options.autoGrow),
     charCount("[data-rm-count-chars]", options.charCount),

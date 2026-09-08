@@ -67,6 +67,9 @@ const FORMS = "src/components/forms.js";
 const CARDKIT = "src/components/card-kit.js";
 const PAGEFX = "src/components/pagefx.js";
 const CAROUSELS = "src/components/carousels.js";
+const UI = "src/components/ui.js";
+const FEEDBACK = "src/components/feedback.js";
+const DATA = "src/components/data.js";
 const CHROME = "src/components/chrome.js";
 const DECOR = "src/components/decor.js";
 const TRANSITIONS = "src/components/transitions.js";
@@ -2198,6 +2201,330 @@ export const CATALOGUE = [
     example: "<div data-rm-slideshow><div data-rm-slide>…</div><div data-rm-slide>…</div></div>",
     usage: 'import { slideshow } from "@soyrageagency/rage-motion";\nslideshow();',
     options: [option("duration", "number", "520", "The cross-fade.")],
+  },
+
+  // ── Phone shapes ─────────────────────────────────────────────────────────
+  {
+    name: "island",
+    category: "chrome",
+    file: UI,
+    attribute: "data-rm-island",
+    summary: "A pill that swells to hold whatever is happening.",
+    notes:
+      "The trick everybody remembers is the shape change; the trick that makes " +
+      "it work is that the size is never hardcoded. The pill is measured " +
+      "against its own content each time, so a two-word status and a full row " +
+      "of controls both get a shape that fits — a fixed set of keyframes gives " +
+      "you one message that looks right. It is a live region, so the status is " +
+      "announced as well as shown.",
+    example: "<div data-rm-island><span data-rm-island-content>Ready</span></div>",
+    usage: 'import { island } from "@soyrageagency/rage-motion";\nisland();\n// pill.rmShow("<b>Uploading</b> 40%");',
+    options: [option("hold", "number", "3200", "How long a message stays before it closes.")],
+  },
+  {
+    name: "sheet",
+    category: "chrome",
+    file: UI,
+    attribute: "data-rm-sheet",
+    summary: "A panel you drag up from the bottom and flick away.",
+    notes:
+      "It follows the finger while you hold it, and on release decides from the " +
+      "distance AND the speed of the throw — a short fast flick dismisses, a " +
+      "slow drag that stopped halfway springs back. Distance alone is the " +
+      "version that refuses to close when you clearly meant it to. It is a real " +
+      "dialog: focus in and trapped, Escape closes, focus returns, page inert.",
+    example: '<button data-rm-sheet-open aria-controls="s">Open</button>\n<div id="s" data-rm-sheet hidden>…</div>',
+    usage: 'import { sheet } from "@soyrageagency/rage-motion";\nsheet();',
+    options: [option("dismissAt", "number", "0.4", "Share of its height before a drag dismisses."), option("flick", "number", "0.6", "Pixels per millisecond that count as a flick.")],
+  },
+  {
+    name: "segmented",
+    category: "chrome",
+    file: UI,
+    attribute: "data-rm-segmented",
+    summary: "A segmented control with an indicator that travels.",
+    notes:
+      "Real radio inputs underneath, so it is one stop in the tab order, the " +
+      "arrow keys move between options for free, and it submits with the form. " +
+      "The version built from buttons has to reimplement all three and usually " +
+      "reimplements none.",
+    example: '<div data-rm-segmented><label><input type="radio" name="v" checked> Grid</label></div>',
+    usage: 'import { segmented } from "@soyrageagency/rage-motion";\nsegmented();',
+    options: [option("duration", "number", "380", "The travel.")],
+  },
+  {
+    name: "frosted",
+    category: "chrome",
+    file: UI,
+    attribute: "data-rm-frosted",
+    summary: "A bar that frosts only once there is something behind it.",
+    notes:
+      "At the top of the page it is transparent; the moment content has " +
+      "scrolled under it, the blur arrives. Frosting a bar with nothing behind " +
+      "it is the commonest way this looks cheap — a grey stripe over a plain " +
+      "background for no reason. A sentinel above the bar decides, so there is " +
+      "no scroll handler.",
+    example: "<header data-rm-frosted>…</header>",
+    usage: 'import { frosted } from "@soyrageagency/rage-motion";\nfrosted();',
+    options: [option("after", "number", "12", "Pixels of scroll before it frosts.")],
+  },
+  {
+    name: "springModal",
+    category: "chrome",
+    file: UI,
+    attribute: "data-rm-modal",
+    summary: "A dialog that arrives on a spring and leaves the way it came.",
+    notes:
+      "Built on the real `<dialog>`, so the browser supplies the top layer, the " +
+      "backdrop, the focus trap, Escape and the return of focus — all four of " +
+      "which a hand-rolled modal has to write and most write wrong. This adds " +
+      "the movement and nothing else.",
+    example: '<dialog id="m" data-rm-modal>…</dialog>',
+    usage: 'import { springModal } from "@soyrageagency/rage-motion";\nspringModal();',
+    options: [option("duration", "number", "480", "The arrival.")],
+  },
+  {
+    name: "actionSheet",
+    category: "chrome",
+    file: UI,
+    attribute: "data-rm-actions",
+    summary: "A stack of choices from the bottom edge.",
+    notes:
+      "Arrow keys move between the options and Escape cancels, so it is a menu " +
+      "rather than a list of buttons that happens to sit at the bottom of the " +
+      "screen. Each choice arrives a beat after the one above it.",
+    example: '<div id="a" data-rm-actions hidden><button>Share</button><button>Delete</button></div>',
+    usage: 'import { actionSheet } from "@soyrageagency/rage-motion";\nactionSheet();',
+    options: [option("duration", "number", "380", "The rise.")],
+  },
+  {
+    name: "toast",
+    category: "chrome",
+    file: UI,
+    attribute: null,
+    summary: "A notice that stacks, waits, and can be dismissed.",
+    notes:
+      "Returns a `push()` rather than reading the DOM, because a toast is " +
+      "something your code decides to say. Hovering the stack pauses every " +
+      "timer in it — otherwise the one you are reading disappears while you " +
+      "read it. The region is `aria-live`, so a toast is heard as well as seen.",
+    example: "<!-- no markup: call push() from your own code -->",
+    usage:
+      'import { toast } from "@soyrageagency/rage-motion";\n' +
+      "const push = toast();\n" +
+      'push("Saved", { kind: "good" });',
+    options: [option("life", "number", "4200", "How long each notice waits."), option("max", "number", "4", "How many stack before the oldest goes.")],
+  },
+  {
+    name: "contextMenu",
+    category: "chrome",
+    file: UI,
+    attribute: "data-rm-context",
+    summary: "A menu on right-click that still opens with a keyboard.",
+    notes:
+      "The version everybody builds forgets that a context menu has a keyboard " +
+      "opening — the Menu key and Shift-F10 — and that holding Shift should " +
+      "give the browser's own menu back. Both are here, with arrow keys, Escape " +
+      "and a menu that flips rather than opening past the edge of the window.",
+    example: '<div data-rm-context aria-controls="m">…</div>\n<div id="m" data-rm-context-menu hidden>…</div>',
+    usage: 'import { contextMenu } from "@soyrageagency/rage-motion";\ncontextMenu();',
+    options: [],
+  },
+
+  // ── Feedback ─────────────────────────────────────────────────────────────
+  {
+    name: "skeleton",
+    category: "feedback",
+    file: FEEDBACK,
+    attribute: "data-rm-skeleton",
+    summary: "A placeholder that has the shape of what is coming.",
+    notes:
+      "The region carries `aria-busy`, so the wait is announced rather than " +
+      "being a silent grey rectangle. A skeleton that is the wrong height is a " +
+      "layout shift you built on purpose, so the last line is short the way a " +
+      "real paragraph ends. Call `holder.rmReady()` when the content lands.",
+    example: '<div data-rm-skeleton data-rm-rows="3">…</div>',
+    usage: 'import { skeleton } from "@soyrageagency/rage-motion";\nskeleton();',
+    options: [option("lines", "number", "3", "Clamped to 12.")],
+  },
+  {
+    name: "spinner",
+    category: "feedback",
+    file: FEEDBACK,
+    attribute: "data-rm-spinner",
+    summary: "Six spinners, one component.",
+    notes:
+      "All six are CSS, so they cost nothing per frame, and all six are " +
+      "`role=\"status\"` with a label — a spinner is the only thing on screen " +
+      "when it appears, and if it says nothing then nothing is being said. " +
+      "Under reduced motion they stop turning and stay visible, because the " +
+      "message is \"still working\", not \"here is a wheel\". Kinds: ring, arc, " +
+      "dual, bars, orbit, pulse. SPINNER_KINDS exports the list.",
+    example: '<span data-rm-spinner="arc"></span>',
+    usage: 'import { spinner, SPINNER_KINDS } from "@soyrageagency/rage-motion";\nspinner();',
+    options: [option("kind", "one of SPINNER_KINDS", '"ring"', "The shape."), option("size", "number", "24", "Pixels.")],
+  },
+  {
+    name: "progressBar",
+    category: "feedback",
+    file: FEEDBACK,
+    attribute: "data-rm-progress-bar",
+    summary: "A determinate bar that is announced.",
+    notes:
+      "A real `role=\"progressbar\"` with `aria-valuenow`, so the number reaches " +
+      "anything that reads the page — the version made of two divs tells a " +
+      "screen reader nothing however smoothly it animates. Call `bar.rmSet(72)`.",
+    example: '<div data-rm-progress-bar data-rm-value="40"></div>',
+    usage: 'import { progressBar } from "@soyrageagency/rage-motion";\nprogressBar();',
+    options: [option("value", "number", "0", "Starting percentage.")],
+  },
+  {
+    name: "dotsLoader",
+    category: "feedback",
+    file: FEEDBACK,
+    attribute: "data-rm-dots-loader",
+    summary: "Three dots, for when a spinner is too much.",
+    notes:
+      "For something small — a message sending, a field checking itself. Each " +
+      "dot is on the same animation at a different delay, which is one rule " +
+      "rather than three.",
+    example: "<span data-rm-dots-loader></span>",
+    usage: 'import { dotsLoader } from "@soyrageagency/rage-motion";\ndotsLoader();',
+    options: [option("count", "number", "3", "How many dots.")],
+  },
+  {
+    name: "pulseDot",
+    category: "feedback",
+    file: FEEDBACK,
+    attribute: "data-rm-status",
+    summary: "A status light that says what it means.",
+    notes:
+      "The colour is decoration; the text beside it is the message. A dot on " +
+      "its own is a colour, and a meaningful colour means nothing to anyone who " +
+      "cannot distinguish it. Only the genuinely live states pulse. States: " +
+      "live, busy, down, idle.",
+    example: '<span data-rm-status="live">All systems go</span>',
+    usage: 'import { pulseDot } from "@soyrageagency/rage-motion";\npulseDot();',
+    options: [option("state", "live | busy | down | idle", '"live"', "The default state.")],
+  },
+  {
+    name: "badgeCount",
+    category: "feedback",
+    file: FEEDBACK,
+    attribute: "data-rm-badge",
+    summary: "A count that flips when it changes.",
+    notes:
+      "The old number leaves upward and the new one arrives from below, so 2 to " +
+      "3 reads as a change rather than a redraw. A live region, so the new " +
+      "count is announced. Call `badge.rmSet(4)`.",
+    example: "<span data-rm-badge>3</span>",
+    usage: 'import { badgeCount } from "@soyrageagency/rage-motion";\nbadgeCount();',
+    options: [option("duration", "number", "320", "The flip.")],
+  },
+  {
+    name: "emptyState",
+    category: "feedback",
+    file: FEEDBACK,
+    attribute: "data-rm-empty",
+    summary: "The screen with nothing on it, arriving gracefully.",
+    notes:
+      "An empty state is the moment a product either explains itself or looks " +
+      "broken, so this arrives in sequence rather than appearing, and it " +
+      "insists on being a region — an illustration and a shrug is not an empty " +
+      "state.",
+    example: "<div data-rm-empty><h3>Nothing here yet</h3><p>…</p><a href=\"#\">Add one</a></div>",
+    usage: 'import { emptyState } from "@soyrageagency/rage-motion";\nemptyState();',
+    options: [option("duration", "number", "620", "Per part.")],
+  },
+
+  // ── Data ─────────────────────────────────────────────────────────────────
+  {
+    name: "sparkline",
+    category: "data",
+    file: DATA,
+    attribute: "data-rm-sparkline",
+    summary: "A trend line that draws itself.",
+    notes:
+      "The numbers come out of the markup, so the page still says what it says " +
+      "with JavaScript off and there is no second copy of the data to drift. " +
+      "The line is revealed with `stroke-dashoffset` at a constant weight — " +
+      "scaling a finished path squashes the stroke for the whole animation and " +
+      "only looks right on the last frame.",
+    example: '<div data-rm-sparkline data-rm-values="4,9,6,12,10,17"></div>',
+    usage: 'import { sparkline } from "@soyrageagency/rage-motion";\nsparkline();',
+    options: [option("fill", "boolean", "true", "Shade under the line."), option("duration", "number", "1100", "The draw.")],
+  },
+  {
+    name: "bars",
+    category: "data",
+    file: DATA,
+    attribute: "data-rm-bars",
+    summary: "A bar chart that grows from the axis.",
+    notes:
+      "Each bar is scaled from its own base rather than having its height " +
+      "animated, so the chart never reflows while it grows and the labels stay " +
+      "exactly where they were.",
+    example: '<ul data-rm-bars><li data-rm-value="42">Mon</li></ul>',
+    usage: 'import { bars } from "@soyrageagency/rage-motion";\nbars();',
+    options: [option("stagger", "number", "70", "Between bars.")],
+  },
+  {
+    name: "donut",
+    category: "data",
+    file: DATA,
+    attribute: "data-rm-donut",
+    summary: "A ring that fills to its share.",
+    notes:
+      "`stroke-dasharray` on a real circle, so the arc has a rounded cap and an " +
+      "exact length; the usual two-half-discs trick can do neither. The number " +
+      "stays in the markup at the centre, so the figure reads whether or not " +
+      "the ring ever draws.",
+    example: '<div data-rm-donut data-rm-value="68"><strong>68%</strong></div>',
+    usage: 'import { donut } from "@soyrageagency/rage-motion";\ndonut();',
+    options: [option("size", "number", "96", "Diameter."), option("width", "number", "8", "Ring weight.")],
+  },
+  {
+    name: "gauge",
+    category: "data",
+    file: DATA,
+    attribute: "data-rm-gauge",
+    summary: "A dial with a needle that swings and settles.",
+    notes:
+      "It goes a little past the mark and comes back, because an instrument " +
+      "needle has mass — one that glides linearly to its value reads as a " +
+      "progress bar bent into an arc.",
+    example: '<div data-rm-gauge data-rm-value="72"><strong>72</strong></div>',
+    usage: 'import { gauge } from "@soyrageagency/rage-motion";\ngauge();',
+    options: [option("sweep", "number", "240", "Degrees of dial."), option("size", "number", "120", "Diameter.")],
+  },
+  {
+    name: "stat",
+    category: "data",
+    file: DATA,
+    attribute: "data-rm-stat",
+    summary: "A figure with its own delta and trend.",
+    notes:
+      "The arrow and the colour both come from the sign of the change written " +
+      "in the markup, so the card cannot end up green with a downward arrow — " +
+      "which is what happens when the two are set independently.",
+    example: '<div data-rm-stat data-rm-delta="-4.2"><strong>1,204</strong><span>Visitors</span></div>',
+    usage: 'import { stat } from "@soyrageagency/rage-motion";\nstat();',
+    options: [],
+  },
+  {
+    name: "stars",
+    category: "data",
+    file: DATA,
+    attribute: "data-rm-rating",
+    summary: "A rating that is also a real radio group.",
+    notes:
+      "Radios underneath, so it is one stop in the tab order, the arrows move " +
+      "between values, it submits with the form, and a screen reader announces " +
+      "\"3 of 5\" rather than reading five identical stars. The hover preview is " +
+      "CSS on top of that, not instead of it.",
+    example: "<fieldset data-rm-rating><legend>Rating</legend></fieldset>",
+    usage: 'import { stars } from "@soyrageagency/rage-motion";\nstars();',
+    options: [option("count", "number", "5", "Clamped to 10.")],
   },
 
   // ── Pages ────────────────────────────────────────────────────────────────

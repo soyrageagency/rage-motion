@@ -43,7 +43,7 @@ test("every exported component is in the catalogue", () => {
   // Not components: `transitionTo` is a helper documented with
   // `pageTransition`, and the two SHOUTING exports are the lists of named
   // variants that `reveal` and `buttonKit` document in their own entries.
-  const helpers = new Set(["transitionTo", "REVEAL_EFFECTS", "BUTTON_STYLES", "CARD_LOOKS"]);
+  const helpers = new Set(["transitionTo", "REVEAL_EFFECTS", "BUTTON_STYLES", "CARD_LOOKS", "SPINNER_KINDS"]);
   const missing = exported.filter((name) => !helpers.has(name) && !findComponent(name));
   assert.deepEqual(missing, [], `not served over MCP: ${missing.join(", ")}`);
 });
@@ -90,4 +90,25 @@ test("the stylesheet has a rule for every class the components add", () => {
   for (const className of ["rm-type", "rm-lines", "rm-compare", "rm-panel", "rm-orbit", "rm-ripple"]) {
     assert.ok(css.includes(`.${className}`), `${className} has no rule in the stylesheet`);
   }
+});
+
+test("the README names every component that exists", () => {
+  // The README is the only page most people read, so a component missing from
+  // it has effectively not shipped. Backticks, so `bars` does not match the
+  // word "bars" in a sentence.
+  const readme = readFileSync(resolve(root, "README.md"), "utf8");
+  const missing = CATALOGUE.map((c) => c.name).filter((name) => !readme.includes(`\`${name}\``));
+  assert.deepEqual(missing, [], `not in the README: ${missing.join(", ")}`);
+});
+
+test("the counts the README claims are the counts that exist", () => {
+  const readme = readFileSync(resolve(root, "README.md"), "utf8");
+  assert.ok(
+    readme.includes(`${CATALOGUE.length} animation components`),
+    `the README headline does not say ${CATALOGUE.length}`,
+  );
+  assert.ok(
+    readme.includes(`## The ${CATALOGUE.length} components`),
+    `the component section does not say ${CATALOGUE.length}`,
+  );
 });

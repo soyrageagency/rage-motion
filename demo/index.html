@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — 134 web animation components, zero dependencies</title>
-<meta name="description" content="A catalogue of 134 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
+<title>rage-motion — 155 web animation components, zero dependencies</title>
+<meta name="description" content="A catalogue of 155 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="dark">
 
-<meta property="og:title" content="rage-motion — 134 web animation components, zero dependencies">
+<meta property="og:title" content="rage-motion — 155 web animation components, zero dependencies">
 <meta property="og:description" content="A catalogue of components with real technique behind them. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
@@ -23,7 +23,7 @@
 <body data-rm-scrollbar="accent">
 
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
-<header class="bar" data-rm-condense>
+<header class="bar" data-rm-condense data-rm-frosted>
   <a class="brand" href="#top">
     <svg viewBox="0 0 320 360" width="18" height="20" aria-hidden="true" focusable="false">
       <path fill="currentColor" fill-rule="evenodd" d="M70 40 L200 40 L238 78 L238 120 L150 170 L235 330 L150 235 L150 335 L105 335 Z M118 78 L195 78 L165 128 L118 128 Z"/>
@@ -53,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">134 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
+    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">155 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">134</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">155</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">29</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">32</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -151,6 +151,39 @@
           <li><b>successButton</b><code>data-rm-success</code></li>
           <li><b>otp</b><code>data-rm-otp</code></li>
           <li><b>padlock</b><code>data-rm-lock</code></li>
+        </ul>
+
+        <h3>Phone shapes</h3>
+        <ul>
+          <li><b>island</b><code>data-rm-island</code></li>
+          <li><b>sheet</b><code>data-rm-sheet</code></li>
+          <li><b>segmented</b><code>data-rm-segmented</code></li>
+          <li><b>frosted</b><code>data-rm-frosted</code></li>
+          <li><b>springModal</b><code>data-rm-modal</code></li>
+          <li><b>actionSheet</b><code>data-rm-actions</code></li>
+          <li><b>toast</b><code>js</code></li>
+          <li><b>contextMenu</b><code>data-rm-context</code></li>
+        </ul>
+
+        <h3>Feedback</h3>
+        <ul>
+          <li><b>skeleton</b><code>data-rm-skeleton</code></li>
+          <li><b>spinner</b><code>data-rm-spinner ×6</code></li>
+          <li><b>progressBar</b><code>data-rm-progress-bar</code></li>
+          <li><b>dotsLoader</b><code>data-rm-dots-loader</code></li>
+          <li><b>pulseDot</b><code>data-rm-status</code></li>
+          <li><b>badgeCount</b><code>data-rm-badge</code></li>
+          <li><b>emptyState</b><code>data-rm-empty</code></li>
+        </ul>
+
+        <h3>Data</h3>
+        <ul>
+          <li><b>sparkline</b><code>data-rm-sparkline</code></li>
+          <li><b>bars</b><code>data-rm-bars</code></li>
+          <li><b>donut</b><code>data-rm-donut</code></li>
+          <li><b>gauge</b><code>data-rm-gauge</code></li>
+          <li><b>stat</b><code>data-rm-stat</code></li>
+          <li><b>stars</b><code>data-rm-rating</code></li>
         </ul>
 
         <h3>Chrome</h3>
@@ -1195,6 +1228,161 @@
     </article>
   </div>
 
+  <!-- Phone shapes -->
+  <div class="shell rail"><span class="rail-name">Phone shapes</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">island <span class="cell-hint">press to change it</span></p>
+      <div class="cell-body island-body">
+        <div class="island" data-rm-island><span data-rm-island-content>Ready</span></div>
+        <button class="ghost small" id="island-demo">Send a status</button>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-island&gt;&lt;span data-rm-island-content&gt;Ready&lt;/span&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">sheet <span class="cell-hint">drag the grip down</span></p>
+      <div class="cell-body">
+        <button class="ghost" data-rm-sheet-open aria-controls="demo-sheet">Open the sheet</button>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-sheet hidden&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">segmented <span class="cell-hint">arrow keys</span></p>
+      <div class="cell-body">
+        <div class="segmented" data-rm-segmented aria-label="View">
+          <label><input type="radio" name="view" checked> Grid</label>
+          <label><input type="radio" name="view"> List</label>
+          <label><input type="radio" name="view"> Map</label>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-segmented&gt;&lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;v&quot;&gt; Grid&lt;/label&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">springModal · actionSheet</p>
+      <div class="cell-body chrome-body">
+        <button class="ghost" data-rm-modal-open aria-controls="demo-modal">Open a modal</button>
+        <button class="ghost" data-rm-actions-open aria-controls="demo-actions">Action sheet</button>
+      </div>
+      <button class="cell-copy" data-copy="&lt;dialog data-rm-modal&gt;…&lt;/dialog&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">toast <span class="cell-hint">hover the stack to hold it</span></p>
+      <div class="cell-body">
+        <button class="ghost" id="toast-demo">Say something</button>
+      </div>
+      <button class="cell-copy" data-copy="const push = toast(); push(&quot;Saved&quot;);">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">contextMenu <span class="cell-hint">right-click · menu key</span></p>
+      <div class="cell-body">
+        <div class="context-zone" data-rm-context aria-controls="demo-context" tabindex="0">Right-click in here</div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-context aria-controls=&quot;m&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+  </div>
+
+  <!-- Feedback -->
+  <div class="shell rail"><span class="rail-name">Feedback</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">spinner <span class="cell-hint">six shapes</span></p>
+      <div class="cell-body spinner-body">
+        <span data-rm-spinner="ring"></span><span data-rm-spinner="arc"></span>
+        <span data-rm-spinner="dual"></span><span data-rm-spinner="bars"></span>
+        <span data-rm-spinner="orbit"></span><span data-rm-spinner="pulse"></span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;span data-rm-spinner=&quot;arc&quot;&gt;&lt;/span&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">skeleton</p>
+      <div class="cell-body skeleton-body">
+        <div class="skeleton-holder" data-rm-skeleton data-rm-rows="4"></div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-skeleton data-rm-rows=&quot;3&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">progressBar · dotsLoader</p>
+      <div class="cell-body form-body">
+        <div class="bar-holder" data-rm-progress-bar data-rm-value="64" aria-label="Upload"></div>
+        <span data-rm-dots-loader></span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-progress-bar data-rm-value=&quot;40&quot;&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">pulseDot · badgeCount</p>
+      <div class="cell-body form-body">
+        <span class="status-line" data-rm-status="live">All systems go</span>
+        <span class="status-line" data-rm-status="busy">Rebuilding</span>
+        <span class="badge-holder">Inbox <span class="badge-pill" id="badge-demo" data-rm-badge>3</span></span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;span data-rm-status=&quot;live&quot;&gt;All systems go&lt;/span&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">emptyState</p>
+      <div class="cell-body empty-body">
+        <div class="empty-demo" data-rm-empty aria-label="Nothing here yet">
+          <h4>Nothing here yet</h4>
+          <p class="note">An empty state is the moment a product either explains itself or looks broken.</p>
+          <a class="ghost small" href="#gallery">Add the first one</a>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-empty&gt;&lt;h3&gt;Nothing here yet&lt;/h3&gt;&lt;/div&gt;">copy</button>
+    </article>
+  </div>
+
+  <!-- Data -->
+  <div class="shell rail"><span class="rail-name">Numbers, drawn</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">sparkline <span class="cell-hint">drawn, not scaled</span></p>
+      <div class="cell-body">
+        <div class="spark-holder" data-rm-sparkline data-rm-values="4,9,6,12,10,17,14,21,19,26"></div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-sparkline data-rm-values=&quot;4,9,6,12&quot;&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">bars</p>
+      <div class="cell-body">
+        <ul class="bars-holder" data-rm-bars>
+          <li data-rm-value="34"><span>M</span></li>
+          <li data-rm-value="58"><span>T</span></li>
+          <li data-rm-value="41"><span>W</span></li>
+          <li data-rm-value="72"><span>T</span></li>
+          <li data-rm-value="65"><span>F</span></li>
+        </ul>
+      </div>
+      <button class="cell-copy" data-copy="&lt;ul data-rm-bars&gt;&lt;li data-rm-value=&quot;42&quot;&gt;Mon&lt;/li&gt;&lt;/ul&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">donut · gauge</p>
+      <div class="cell-body chart-body">
+        <div class="donut-holder" data-rm-donut data-rm-value="68" data-rm-size="86"><strong>68%</strong></div>
+        <div class="donut-holder" data-rm-gauge data-rm-value="72" data-rm-size="100"><strong>72</strong></div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-donut data-rm-value=&quot;68&quot;&gt;&lt;strong&gt;68%&lt;/strong&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">stat · stars</p>
+      <div class="cell-body form-body">
+        <div class="stat-card" data-rm-stat data-rm-delta="-4.2"><strong>1,204</strong><span>Visitors</span></div>
+        <fieldset class="stars-holder" data-rm-rating data-rm-count="5"><legend class="visually-hidden">Rating</legend></fieldset>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-stat data-rm-delta=&quot;-4.2&quot;&gt;&lt;strong&gt;1,204&lt;/strong&gt;&lt;/div&gt;">copy</button>
+    </article>
+  </div>
+
   <!-- Navigation -->
   <div class="shell rail"><span class="rail-name">Navigation</span></div>
   <div class="shell cells">
@@ -1512,6 +1700,35 @@ init();</code></pre>
   </nav>
   <p class="note">Focus is trapped in here. Escape closes it and hands focus back to the button.</p>
 </aside>
+
+<div id="demo-sheet" class="sheet" data-rm-sheet hidden>
+  <div class="sheet-inner">
+    <h3>Drag me down</h3>
+    <p class="note">The sheet follows your pointer while you hold the grip, and on release it decides from the distance and the speed of the throw. A short fast flick dismisses; a slow drag that stopped halfway springs back.</p>
+    <button class="ghost" data-rm-sheet-open aria-controls="demo-sheet">Close</button>
+  </div>
+</div>
+
+<dialog id="demo-modal" class="modal" data-rm-modal>
+  <div class="modal-inner">
+    <h3>On a real dialog</h3>
+    <p class="note">The browser supplies the top layer, the backdrop, the focus trap, Escape and the return of focus. This adds the spring and nothing else.</p>
+    <button class="ghost" data-rm-modal-close>Close</button>
+  </div>
+</dialog>
+
+<div id="demo-actions" class="actions" data-rm-actions hidden>
+  <button class="action">Share</button>
+  <button class="action">Duplicate</button>
+  <button class="action is-danger">Delete</button>
+  <button class="action is-cancel">Cancel</button>
+</div>
+
+<div id="demo-context" class="menu-panel" data-rm-context-menu hidden>
+  <button>Copy markup</button>
+  <button>Open in a new tab</button>
+  <button>Report an issue</button>
+</div>
 
 <div class="toast" role="status" aria-live="polite" hidden></div>
 

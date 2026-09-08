@@ -26,6 +26,8 @@ import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
+import { CATALOGUE } from "../mcp/catalogue.js";
+
 const PORT = 4399;
 // `--dist` checks the built output instead of the working tree, so what gets
 // published is verified rather than assumed.
@@ -265,7 +267,13 @@ async function run(browser, { reducedMotion }) {
   const counted = await page.evaluate(
     () => document.querySelector("[data-rm-odometer]")?.getAttribute("aria-label") ?? "",
   );
-  check(`${label}: the counter still announces its value`, counted === "134", counted);
+  // Tied to the catalogue rather than to a literal, so the headline figure
+  // cannot quietly drift away from the number of components that exist.
+  check(
+    `${label}: the counter still announces the real component count`,
+    counted === String(CATALOGUE.length),
+    `${counted} vs ${CATALOGUE.length}`,
+  );
 
   // The rotating words are decoration; the list of them is the content.
   const morphLabel = await page.evaluate(

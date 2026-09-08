@@ -1226,3 +1226,106 @@ code { font-size: 0.9em; }
 }
 .autoplay-holder .peek-demo span { flex: 0 0 60%; scroll-snap-align: center; }
 .rm-autoplay-control { color: var(--dim); border-color: var(--line); }
+
+/* ── Phone shape cells ───────────────────────────────────────────────── */
+
+.island-body { display: grid; gap: 14px; place-items: center; }
+.island { background: #000; border: 1px solid var(--line); color: var(--text); font-size: 13px; padding: 0 4px; }
+.island b { color: var(--accent); font-weight: 600; }
+.small { padding: 7px 14px; font-size: 12.5px; }
+
+.segmented { padding: 4px; border-radius: var(--rm-radius-pill); border: 1px solid var(--line); background: #0e0e0e; }
+.segmented label { padding: 8px 16px; border-radius: var(--rm-radius-pill); font-size: 13.5px; color: var(--dim); }
+.segmented label.is-current { color: var(--text); }
+
+.context-zone {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 110px;
+  border-radius: 10px;
+  border: 1px dashed var(--line);
+  font-family: var(--rm-mono);
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+.sheet { background: var(--panel); border-top: 1px solid var(--line); }
+.sheet-inner { padding: 8px 24px 32px; display: grid; gap: 12px; max-width: 620px; margin-inline: auto; }
+.sheet-inner h3, .modal-inner h3 { margin: 0; font-family: var(--rm-display); font-size: 24px; letter-spacing: -0.02em; }
+
+.modal-inner {
+  width: min(460px, calc(100vw - 32px));
+  padding: 26px;
+  display: grid;
+  gap: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.actions .action {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  backdrop-filter: blur(12px);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.actions .is-danger { color: var(--rm-terracotta); }
+.actions .is-cancel { margin-top: 6px; font-weight: 600; }
+
+.rm-toast { border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font-size: 14px; }
+.rm-toast.is-good { border-color: color-mix(in srgb, #2f9e63 50%, var(--line)); }
+.rm-toast.is-bad { border-color: color-mix(in srgb, #d98a70 50%, var(--line)); }
+
+/* ── Feedback cells ──────────────────────────────────────────────────── */
+
+.spinner-body { display: flex; flex-wrap: wrap; gap: 22px; align-content: center; justify-content: center; color: var(--accent); }
+.skeleton-body { align-items: stretch; padding: 16px; }
+.skeleton-holder { width: 100%; color: var(--text); }
+.bar-holder { width: min(240px, 100%); }
+.status-line { font-size: 14px; color: var(--dim); }
+.badge-holder { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--dim); }
+.badge-pill {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  font-family: var(--rm-mono);
+  font-size: 11px;
+  text-align: center;
+}
+.empty-body { align-items: center; }
+.empty-demo { display: grid; gap: 10px; justify-items: center; text-align: center; }
+.empty-demo h4 { margin: 0; font-family: var(--rm-display); font-size: 22px; letter-spacing: -0.02em; }
+.empty-demo .note { max-width: 42ch; }
+
+/* ── Data cells ──────────────────────────────────────────────────────── */
+
+.spark-holder { width: 100%; height: 90px; color: var(--accent); }
+.bars-holder {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  height: 130px;
+  width: 100%;
+}
+.bars-holder li { display: grid; gap: 6px; justify-items: center; flex: 1; height: 100%; align-content: end; }
+.bars-holder .rm-bars-fill { width: 100%; height: 100px; }
+.bars-holder span { font-family: var(--rm-mono); font-size: 10px; color: #5f5b54; }
+.chart-body { display: flex; gap: 18px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.donut-holder strong { font-family: var(--rm-display); font-size: 20px; letter-spacing: -0.02em; }
+.stat-card { display: grid; gap: 2px; justify-items: center; }
+.stat-card strong { font-family: var(--rm-display); font-size: 30px; letter-spacing: -0.03em; }
+.stat-card span { font-size: 13px; color: var(--dim); }
+.stars-holder { color: var(--text); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
