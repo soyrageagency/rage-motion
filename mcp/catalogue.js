@@ -2572,7 +2572,7 @@ export const CATALOGUE = [
     summary: "A strip with sprocket holes and real inertia.",
     notes:
       "Native scrolling underneath, so it keeps momentum, snapping, the trackpad, the scrollbar and every affordance the platform provides, with a drag added on top for the mouse. The sprocket holes are one repeating gradient rather than two hundred elements.",
-    example: "<div data-rm-filmstrip><img>…</div>",
+    example: "<div data-rm-filmstrip><img src=\"/plate-01.jpg\" alt=\"Plate one\">…</div>",
     usage: "import { filmstrip } from \"@soyrageagency/rage-motion\";\nfilmstrip();",
     options: [
       option("label", "string", "\"Film strip\"", "The region's accessible name."),
@@ -2630,7 +2630,7 @@ export const CATALOGUE = [
     summary: "A tile that grows to fill the grid, and comes back.",
     notes:
       "A FLIP in both directions: the tile is promoted, the layout settles at the new size, and only then is it animated from where it was. Nothing animates a width, so the grid never reflows mid-flight and the picture never squashes. Escape closes it and focus goes back to the tile that opened.",
-    example: "<div data-rm-grid-zoom><button><img></button></div>",
+    example: "<div data-rm-grid-zoom><button><img src=\"/plate-01.jpg\" alt=\"Plate one\"></button></div>",
     usage: "import { gridZoom } from \"@soyrageagency/rage-motion\";\ngridZoom();",
     options: [
       option("duration", "number", "480", "How long the growth takes."),
@@ -2644,7 +2644,7 @@ export const CATALOGUE = [
     summary: "A slideshow that is really a tablist.",
     notes:
       "The frames cross-fade on opacity and the dots are real tabs — arrow keys, Home and End, aria-selected, one tab stop for the set. A slideshow whose controls are anonymous divs is a slideshow a keyboard cannot operate, which is most of them. It advances only while it is on screen.",
-    example: "<div data-rm-crossfade><img><img></div>",
+    example: "<div data-rm-crossfade><img src=\"/plate-01.jpg\" alt=\"Plate one\"><img src=\"/plate-01.jpg\" alt=\"Plate one\"></div>",
     usage: "import { crossfade } from \"@soyrageagency/rage-motion\";\ncrossfade();",
     options: [
       option("interval", "number", "4200", "Time on each frame, in ms."),
@@ -2659,7 +2659,7 @@ export const CATALOGUE = [
     summary: "Tiles drifting at their own rates as you scroll.",
     notes:
       "One scroll read for the whole grid and one transform per tile, with the rates assigned by column so the drift reads as depth rather than as noise. It runs only while the grid is on screen.",
-    example: "<div data-rm-parallax-grid><img>…</div>",
+    example: "<div data-rm-parallax-grid><img src=\"/plate-01.jpg\" alt=\"Plate one\">…</div>",
     usage: "import { parallaxGrid } from \"@soyrageagency/rage-motion\";\nparallaxGrid();",
     options: [
       option("travel", "number", "40", "Most pixels of drift."),
@@ -2689,7 +2689,7 @@ export const CATALOGUE = [
     summary: "A picture uncovered by a shape as you scroll.",
     notes:
       "clip-path on the image itself, so the picture is never moved, scaled or duplicated — what changes is how much of it you are allowed to see. circle, wipe, bars and corner are the same one property with different values.",
-    example: "<figure data-rm-mask-reveal=\"circle\"><img></figure>",
+    example: "<figure data-rm-mask-reveal=\"circle\"><img src=\"/plate-01.jpg\" alt=\"Plate one\"></figure>",
     usage: "import { maskReveal } from \"@soyrageagency/rage-motion\";\nmaskReveal();",
     options: [
       option("shape", "string", "\"circle\"", "circle · wipe · bars · corner."),
@@ -2718,7 +2718,7 @@ export const CATALOGUE = [
     summary: "A row where whatever is centred is largest.",
     notes:
       "Scale from the distance to the middle of the frame, read once a frame for the whole row. Native scrolling underneath, so the momentum, the snapping and the scrollbar are the platform's rather than an imitation of them.",
-    example: "<div data-rm-zoom-strip><img>…</div>",
+    example: "<div data-rm-zoom-strip><img src=\"/plate-01.jpg\" alt=\"Plate one\">…</div>",
     usage: "import { zoomStrip } from \"@soyrageagency/rage-motion\";\nzoomStrip();",
     options: [
       option("grow", "number", "0.22", "How much bigger the centred item gets."),
@@ -2732,7 +2732,7 @@ export const CATALOGUE = [
     summary: "Items on a spiral that turns with the page.",
     notes:
       "Each item is placed by angle and radius from its index, so the shape is arithmetic rather than a hundred hand-set positions and adding an item extends the spiral for free. The items counter-rotate, so they stay upright while the spiral turns.",
-    example: "<div data-rm-spiral><img>…</div>",
+    example: "<div data-rm-spiral><img src=\"/plate-01.jpg\" alt=\"Plate one\">…</div>",
     usage: "import { spiralGallery } from \"@soyrageagency/rage-motion\";\nspiralGallery();",
     options: [
       option("turns", "number", "1.6", "How many times round."),
@@ -2748,7 +2748,7 @@ export const CATALOGUE = [
     summary: "A wall you drag around, with weight.",
     notes:
       "Two axes of drag on one transform, and the throw keeps its velocity and eases out rather than stopping dead under your finger. The arrow keys move it too, because a wall that can only be dragged is a wall a keyboard cannot see.",
-    example: "<div data-rm-image-wall><div><img>…</div></div>",
+    example: "<div data-rm-image-wall><div><img src=\"/plate-01.jpg\" alt=\"Plate one\">…</div></div>",
     usage: "import { imageWall } from \"@soyrageagency/rage-motion\";\nimageWall();",
     options: [
       option("friction", "number", "0.92", "How quickly a throw slows."),
@@ -2808,7 +2808,7 @@ export const CATALOGUE = [
     summary: "Pictures along a curve, moving with the scroll.",
     notes:
       "offset-path puts each item on a real path and offset-distance moves it along, so the curve is one declaration and the items follow it exactly, corners included. The version with hand-computed positions has to be redone every time the shape changes.",
-    example: "<div data-rm-ribbon><img>…</div>",
+    example: "<div data-rm-ribbon><img src=\"/plate-01.jpg\" alt=\"Plate one\">…</div>",
     usage: "import { ribbon } from \"@soyrageagency/rage-motion\";\nribbon();",
     options: [
       option("travel", "number", "55", "How far along the path the scroll slides them."),
@@ -2823,7 +2823,7 @@ export const CATALOGUE = [
     summary: "A sheet of frames, one of which opens.",
     notes:
       "The sheet stays exactly where it is and the chosen frame is drawn over it from its own position — a FLIP, so the sheet never reflows and the frame appears to grow out of where it was rather than fading in on top. It is a dialog while open: focus goes in, the rest is inert, Escape closes it and focus comes back.",
-    example: "<div data-rm-contact-sheet><button><img></button></div>",
+    example: "<div data-rm-contact-sheet><button><img src=\"/plate-01.jpg\" alt=\"Plate one\"></button></div>",
     usage: "import { contactSheet } from \"@soyrageagency/rage-motion\";\ncontactSheet();",
     options: [
       option("duration", "number", "460", "The growth."),
