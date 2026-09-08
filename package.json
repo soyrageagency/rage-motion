@@ -59,8 +59,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test \"src/**/*.test.js\"",
-    "test:mcp": "node --test mcp/*.test.js",
+    "test": "node scripts/test.mjs src",
+    "test:mcp": "node scripts/test.mjs mcp",
     "demo": "node scripts/serve.mjs",
     "check": "node scripts/check.mjs",
     "build:demo": "node scripts/build-demo.mjs",
