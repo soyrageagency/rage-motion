@@ -2080,6 +2080,7 @@ export function chatBubble(target = "[data-rm-chat-bubble]", options = {}) {
     // back to the top of the document by pressing "New message".
     const hadTabIndex = thread.getAttribute("tabindex");
     thread.setAttribute("tabindex", "-1");
+    const pushed = new Set();
 
     const dress = (bubble) => {
       bubble.classList.add("rm-chat-bubble-item");
@@ -2115,13 +2116,24 @@ export function chatBubble(target = "[data-rm-chat-bubble]", options = {}) {
     };
 
     const onScroll = () => { if (pinned()) jump.hidden = true; };
-    const onJump = () => { toEnd(); thread.lastElementChild?.focus?.(); };
+    // Focus moves first and hiding comes second. Doing it the other way round
+    // hides the element that currently has focus, and the browser has nowhere to
+    // put it but `<body>`. The newest bubble is given `tabindex="-1"` when this
+    // component appends it, so it can be landed on; a bubble that came from the
+    // author's markup has none, and the thread takes the focus instead.
+    const onJump = () => {
+      const last = thread.lastElementChild;
+      (last?.hasAttribute("tabindex") ? last : thread).focus();
+      toEnd();
+    };
     thread.addEventListener("scroll", onScroll);
     jump.addEventListener("click", onJump);
 
     thread.rmPush = (text, { from = "them", author = "" } = {}) => {
       const wasPinned = pinned();
       const bubble = document.createElement("li");
+      bubble.tabIndex = -1;
+      pushed.add(bubble);
       bubble.dataset.rmFrom = from;
       if (author) bubble.dataset.rmAuthor = author;
       const line = document.createElement("p");
@@ -2151,10 +2163,16 @@ export function chatBubble(target = "[data-rm-chat-bubble]", options = {}) {
       delete thread.rmPush;
       jump.remove();
       thread.querySelectorAll(".rm-chat-bubble-author").forEach((who) => who.remove());
-      [...thread.children].forEach((bubble) =>
-        bubble.classList.remove("rm-chat-bubble-item", "is-you", "is-them"));
+      [...thread.children].forEach((bubble) => {
+        bubble.classList.remove("rm-chat-bubble-item", "is-you", "is-them");
+        // Only the ones this component made; an author's own bubble may have
+        // carried a tabindex of its own.
+        if (pushed.has(bubble)) bubble.removeAttribute("tabindex");
+      });
       thread.classList.remove("rm-chat-bubble");
       ["role", "aria-live", "aria-relevant"].forEach((name) => thread.removeAttribute(name));
+      if (hadTabIndex === null) thread.removeAttribute("tabindex");
+      else thread.setAttribute("tabindex", hadTabIndex);
       if (hadLabel === null) thread.removeAttribute("aria-label");
       else thread.setAttribute("aria-label", hadLabel);
     });

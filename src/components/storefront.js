@@ -414,9 +414,19 @@ export function lookbook(target = "[data-rm-lookbook]", options = {}) {
       open = -1;
     };
 
+    // The single home of the roving tab stop. Both routes in — arrow keys and
+    // a pointer press — go through here, because a rail where clicking the
+    // third hotspot leaves `tabindex="0"` on the first sends somebody who tabs
+    // away and back to the wrong end of the picture.
+    const mark = (index) => {
+      at = (index + spots.length) % spots.length;
+      spots.forEach((spot, i) => { spot.tabIndex = i === at ? 0 : -1; });
+    };
+
     const show = (index) => {
       const card = cards[index];
       if (!card) return;
+      mark(index);
       if (open === index) { shut(true); return; }
       shut(false);
       open = index;
@@ -434,15 +444,14 @@ export function lookbook(target = "[data-rm-lookbook]", options = {}) {
     };
 
     const roam = (index) => {
-      at = (index + spots.length) % spots.length;
-      spots.forEach((spot, i) => { spot.tabIndex = i === at ? 0 : -1; });
+      mark(index);
       spots[at].focus();
     };
 
     const onClick = (event) => show(spots.indexOf(event.currentTarget));
     const onKey = (event) => {
       const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
-      if (step) { event.preventDefault(); roam(spots.indexOf(event.currentTarget) + step); return; }
+      if (step) { event.preventDefault(); roam(at + step); return; }
       if (event.key === "Home") { event.preventDefault(); roam(0); return; }
       if (event.key === "End") { event.preventDefault(); roam(spots.length - 1); return; }
       if (event.key === "Escape" && open >= 0) { event.preventDefault(); shut(true); }
@@ -544,6 +553,9 @@ export function categoryTiles(target = "[data-rm-category-tiles]", options = {})
     const speed = dataNumber(group, "rmDuration", duration);
     const emptied = [];
     const named = [];
+    // Only the tiles this component marked. An author who wrote
+    // `aria-current="page"` themselves keeps it through a teardown.
+    const marked = [];
 
     tiles.forEach((tile) => {
       tile.classList.add("rm-category-tiles-tile");
@@ -562,8 +574,10 @@ export function categoryTiles(target = "[data-rm-category-tiles]", options = {})
         image?.classList.add("rm-category-tiles-image");
       }
       try {
-        if (new URL(tile.href, location.href).pathname === location.pathname) {
+        if (new URL(tile.href, location.href).pathname === location.pathname
+          && !tile.hasAttribute("aria-current")) {
           tile.setAttribute("aria-current", "page");
+          marked.push(tile);
         }
       } catch {
         // A malformed href is the author's business, not a reason to throw.
@@ -591,10 +605,10 @@ export function categoryTiles(target = "[data-rm-category-tiles]", options = {})
     cleanups.push(() => {
       emptied.forEach(([image, alt]) => { image.alt = alt; });
       named.forEach((tile) => tile.removeAttribute("aria-labelledby"));
+      marked.forEach((tile) => tile.removeAttribute("aria-current"));
       tiles.forEach((tile) => {
         tile.style.opacity = "";
         tile.style.transform = "";
-        tile.removeAttribute("aria-current");
         tile.querySelector("img")?.classList.remove("rm-category-tiles-image");
         tile.classList.remove("rm-category-tiles-tile");
       });
@@ -785,6 +799,13 @@ export function bundleBuilder(target = "[data-rm-bundle-builder]", options = {})
 
     const out = document.createElement("output");
     out.className = "rm-bundle-builder-total";
+    // `<output>` carries an implicit `role="status"`, which is a polite live
+    // region in its own right — so without this the browser would read the
+    // whole total on every single tick, and the debounced region beside it
+    // would then say the same sentence again a moment later. Politeness is
+    // taken from the nearest element that declares it, so this has to be set
+    // on the output itself. The figure is drawn here and spoken over there.
+    out.setAttribute("aria-live", "off");
     const figure = document.createElement("strong");
     figure.className = "rm-bundle-builder-figure";
     figure.setAttribute("aria-hidden", "true");
@@ -1098,7 +1119,8 @@ export function stockNotify(target = "[data-rm-stock-notify]", options = {}) {
     form.replaceChildren(body, done, live);
 
     const hadDescribedBy = field.getAttribute("aria-describedby");
-    if (!field.getAttribute("autocomplete")) field.setAttribute("autocomplete", "email");
+    const hadAutocomplete = field.getAttribute("autocomplete");
+    if (!hadAutocomplete) field.setAttribute("autocomplete", "email");
 
     const fail = (message) => {
       problem.textContent = message;
@@ -1145,6 +1167,7 @@ export function stockNotify(target = "[data-rm-stock-notify]", options = {}) {
       form.removeEventListener("submit", onSubmit);
       field.removeEventListener("input", onInput);
       clear();
+      if (hadAutocomplete === null) field.removeAttribute("autocomplete");
       form.noValidate = hadNoValidate;
       form.replaceChildren(...body.childNodes);
       problem.remove();
@@ -1194,6 +1217,7 @@ export function productVideo(target = "[data-rm-product-video]", options = {}) {
     const was = {
       muted: video.muted, loop: video.loop, playsInline: video.playsInline, controls: video.controls,
     };
+    const hadPreload = video.getAttribute("preload");
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
@@ -1243,6 +1267,8 @@ export function productVideo(target = "[data-rm-product-video]", options = {}) {
       video.loop = was.loop;
       video.playsInline = was.playsInline;
       video.controls = was.controls;
+      if (hadPreload === null) video.removeAttribute("preload");
+      else video.setAttribute("preload", hadPreload);
       video.classList.remove("rm-product-video-media");
       frame.classList.remove("rm-product-video", "is-playing");
     });
@@ -1419,10 +1445,19 @@ export function badgeStack(target = "[data-rm-badge-stack]", options = {}) {
       const right = rank[dataString(b, "rmTone", "info")] ?? 3;
       return left - right;
     });
+    // What the tone actually added, badge by badge. Stripping `is-sale` and
+    // friends by pattern on teardown cannot tell our class from one the author
+    // shipped, so a card written as `<li class="badge is-new" data-rm-tone="low">`
+    // would lose its own styling hook the moment the component was unmounted.
+    const toned = new Map();
     sorted.forEach((badge) => {
       badge.classList.add("rm-badge-stack-item");
       badge.setAttribute("role", "listitem");
-      badge.classList.add(`is-${dataString(badge, "rmTone", "info")}`);
+      const tone = `is-${dataString(badge, "rmTone", "info")}`;
+      if (!badge.classList.contains(tone)) {
+        badge.classList.add(tone);
+        toned.set(badge, tone);
+      }
       stack.appendChild(badge);
     });
 
@@ -1443,8 +1478,14 @@ export function badgeStack(target = "[data-rm-badge-stack]", options = {}) {
       const boxes = sorted.map((badge) => [badge, badge.hidden ? null : badge.getBoundingClientRect()]);
       folded = on;
       extra.forEach((badge) => { badge.hidden = on; });
-      more.hidden = !on || extra.length === 0;
+      // The button stays put in both states. Hiding the row that holds it on
+      // expand is the classic disclosure bug: focus falls to `<body>`, the
+      // control carrying `aria-expanded="true"` is the one now display:none,
+      // and the labels can never be folded back again.
+      more.hidden = extra.length === 0;
       button.setAttribute("aria-expanded", String(!on));
+      button.textContent = on ? `${extra.length} more` : "Show fewer";
+      button.setAttribute("aria-label", on ? `Show ${extra.length} more labels` : "Show fewer labels");
       if (!animated) return;
       boxes.forEach(([badge, was]) => { if (!badge.hidden && was) flip(badge, was, speed); });
       if (prefersReducedMotion()) return;
@@ -1458,7 +1499,10 @@ export function badgeStack(target = "[data-rm-badge-stack]", options = {}) {
     };
     fold(folded, false);
 
-    const onMore = () => { fold(false, true); extra[0]?.focus?.(); };
+    // A disclosure toggles. Focus stays on the button that was pressed, because
+    // the badges it reveals are plain `<li>` text with no tab stop of their own
+    // and `focus()` on a non-focusable element quietly does nothing at all.
+    const onMore = () => fold(!folded, true);
     button.addEventListener("click", onMore);
 
     // Once, as it arrives. Popping from the centre means the card behind never
@@ -1479,11 +1523,10 @@ export function badgeStack(target = "[data-rm-badge-stack]", options = {}) {
       sorted.forEach((badge) => {
         badge.hidden = false;
         badge.removeAttribute("role");
-        badge.className = badge.className
-          .replace(/\brm-badge-stack-item\b/g, "")
-          .replace(/\bis-(low|sale|offer|new|info)\b/g, "")
-          .trim();
-        if (!badge.className) badge.removeAttribute("class");
+        badge.classList.remove("rm-badge-stack-item");
+        const tone = toned.get(badge);
+        if (tone) badge.classList.remove(tone);
+        if (!badge.className.trim()) badge.removeAttribute("class");
       });
       order.forEach((badge) => stack.appendChild(badge));
       stack.classList.remove("rm-badge-stack");
@@ -1543,8 +1586,12 @@ export function trustRow(target = "[data-rm-trust-row]", options = {}) {
       item.querySelectorAll("svg, img").forEach((mark) => {
         if (mark.hasAttribute("aria-hidden")) return;
         mark.setAttribute("aria-hidden", "true");
-        if (mark.tagName === "IMG" && !mark.hasAttribute("alt")) mark.alt = "";
-        muted.push(mark);
+        // An empty alt was written here, so it has to be taken away again on
+        // teardown; leaving one behind changes how the author's own image is
+        // treated for as long as the page lives.
+        const emptied = mark.tagName === "IMG" && !mark.hasAttribute("alt");
+        if (emptied) mark.alt = "";
+        muted.push([mark, emptied]);
       });
       if (!prefersReducedMotion()) {
         item.style.opacity = "0";
@@ -1565,7 +1612,10 @@ export function trustRow(target = "[data-rm-trust-row]", options = {}) {
     }, { threshold: 0.25, once: true }));
 
     cleanups.push(() => {
-      muted.forEach((mark) => mark.removeAttribute("aria-hidden"));
+      muted.forEach(([mark, emptied]) => {
+        mark.removeAttribute("aria-hidden");
+        if (emptied) mark.removeAttribute("alt");
+      });
       items.forEach((item) => {
         item.style.opacity = "";
         item.style.transform = "";
@@ -1665,18 +1715,24 @@ export function shippingEstimate(target = "[data-rm-shipping-estimate]", options
         ? `Order within ${hours ? `${hours} hour${hours === 1 ? "" : "s"} ` : ""}${minutes % 60} minutes and it should arrive between `
         : "Ordered now, it should arrive between ";
 
+      const from = stamp(first);
+      const to = stamp(last);
       sentence.replaceChildren(
         document.createTextNode(lead),
-        stamp(first),
+        from,
         document.createTextNode(" and "),
-        stamp(last),
+        to,
         document.createTextNode("."),
       );
 
-      // Only when the words actually changed: this runs every minute, and a
-      // live region that repeats itself sixty times an hour is a live region
-      // nobody leaves switched on.
-      const next = `${sentence.textContent} ${caveat.textContent}`;
+      // Only the part that changes meaning is compared. The visible line
+      // carries a minutes-to-cut-off counter, so comparing the whole sentence
+      // would differ on every single tick and the region would read all thirty
+      // words back once a minute for as long as the paragraph was on screen —
+      // which is the failure this guard exists to prevent. The dates are what
+      // a shopper needs to hear again, and they only move when the dispatch day
+      // rolls over or the cut-off passes.
+      const next = `Arriving between ${from.textContent} and ${to.textContent}. ${caveat.textContent}`;
       if (next === spoken) return;
       spoken = next;
       live.textContent = next;
@@ -1745,6 +1801,7 @@ export function recentlyBought(target = "[data-rm-recently-bought]", options = {
     row.setAttribute("aria-label", dataString(row, "rmLabel", hadLabel ?? label));
     list.classList.add("rm-recently-bought-list");
     // Never a live region. The visitor came for a product, not for a ticker.
+    const hadListLive = list.getAttribute("aria-live");
     list.setAttribute("aria-live", "off");
     items.forEach((item) => item.classList.add("rm-recently-bought-item"));
 
@@ -1820,7 +1877,8 @@ export function recentlyBought(target = "[data-rm-recently-bought]", options = {
         item.hidden = false;
         item.classList.remove("rm-recently-bought-item");
       });
-      list.removeAttribute("aria-live");
+      if (hadListLive === null) list.removeAttribute("aria-live");
+      else list.setAttribute("aria-live", hadListLive);
       list.classList.remove("rm-recently-bought-list");
       row.classList.remove("rm-recently-bought", "is-held");
       row.removeAttribute("role");
@@ -1873,6 +1931,9 @@ export function crossSell(target = "[data-rm-cross-sell]", options = {}) {
     const name = dataString(holder, "rmLabel", holder.querySelector("h1, h2, h3")?.textContent.trim() || label);
     // A scrollable box needs a tab stop of its own, or its overflow is
     // unreachable without a pointer.
+    const hadTabIndex = list.getAttribute("tabindex");
+    const hadListRole = list.getAttribute("role");
+    const hadListLabel = list.getAttribute("aria-label");
     list.tabIndex = 0;
     list.setAttribute("role", "group");
     list.setAttribute("aria-label", name);
@@ -1954,9 +2015,15 @@ export function crossSell(target = "[data-rm-cross-sell]", options = {}) {
       nav.remove();
       live.remove();
       items.forEach((item) => item.classList.remove("rm-cross-sell-item"));
-      list.removeAttribute("tabindex");
-      list.removeAttribute("role");
-      list.removeAttribute("aria-label");
+      // Restore, never blindly remove: the author may well have written their
+      // own name on this list, and wiping it on teardown leaves the rail worse
+      // off than if the component had never run.
+      if (hadTabIndex === null) list.removeAttribute("tabindex");
+      else list.setAttribute("tabindex", hadTabIndex);
+      if (hadListRole === null) list.removeAttribute("role");
+      else list.setAttribute("role", hadListRole);
+      if (hadListLabel === null) list.removeAttribute("aria-label");
+      else list.setAttribute("aria-label", hadListLabel);
       list.classList.remove("rm-cross-sell-rail");
       holder.classList.remove("rm-cross-sell");
     });
@@ -2020,10 +2087,17 @@ export function upsellRow(target = "[data-rm-upsell-row]", options = {}) {
       difference.textContent = gap > 0 ? `${money(gap, unit, where).drawn} more` : "Included";
       label?.appendChild(difference);
       marks.push(difference);
-      if (dataString(input, "rmPick", "false") === "true") {
+      // The flag's words come from the marked tier, or from the row's own
+      // `data-rm-pick-text`. They emphatically do not come from the row's
+      // `data-rm-label`: everywhere else in this library that attribute names
+      // the group, so an author writing `data-rm-label="Choose your finish"` on
+      // the fieldset — the obvious thing to write — would find the whole
+      // question printed on one tier as a recommendation.
+      const pick = dataString(input, "rmPick", "");
+      if (pick && pick !== "false") {
         const flag = document.createElement("span");
         flag.className = "rm-upsell-row-pick";
-        flag.textContent = dataString(row, "rmLabel", pickText);
+        flag.textContent = pick === "true" ? dataString(row, "rmPickText", pickText) : pick;
         label?.appendChild(flag);
         marks.push(flag);
       }
@@ -2139,13 +2213,14 @@ export function giftCard(target = "[data-rm-gift-card]", options = {}) {
     const counter = document.createElement("p");
     counter.className = "rm-gift-card-counter";
     counter.setAttribute("aria-hidden", "true");
-    const hint = document.createElement("p");
-    hint.className = "rm-storefront-said";
-    hint.id = uid("rm-gift-card-hint");
     const limit = message ? Number(message.getAttribute("maxlength")) || 0 : 0;
-    hint.textContent = limit
+    // The preview itself is `aria-hidden`, so this is the only place the effect
+    // of typing is described at all — read, never drawn, because sighted
+    // visitors can simply watch the card fill in.
+    const hint = said(limit
       ? `Up to ${limit} characters. The message is shown on the card preview.`
-      : "The message is shown on the card preview.";
+      : "The message is shown on the card preview.");
+    hint.id = uid("rm-gift-card-hint");
     const hadDescribedBy = message?.getAttribute("aria-describedby") ?? null;
     if (message) message.setAttribute("aria-describedby", [hadDescribedBy, hint.id].filter(Boolean).join(" "));
 
@@ -2392,6 +2467,7 @@ export function referralBox(target = "[data-rm-referral-box]", options = {}) {
 
     box.classList.add("rm-referral-box");
     field.classList.add("rm-referral-box-field");
+    const wasReadOnly = field.readOnly;
     field.readOnly = true;
     const name = dataString(box, "rmLabel", label);
     const done = dataString(box, "rmDone", doneText);
@@ -2442,6 +2518,7 @@ export function referralBox(target = "[data-rm-referral-box]", options = {}) {
       button.remove();
       live.remove();
       field.classList.remove("rm-referral-box-field");
+      field.readOnly = wasReadOnly;
       box.classList.remove("rm-referral-box", "is-copied");
     });
   }
