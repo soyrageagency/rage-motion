@@ -99,6 +99,18 @@ export function watch(target, enter, options = {}) {
         if (entry.isIntersecting) {
           enter(entry.target);
           if (once) observer.unobserve(entry.target);
+        } else if (once && entry.boundingClientRect.bottom <= 0) {
+          // Already above the viewport, and never seen intersecting. That
+          // happens on a jump to an anchor, on a restored scroll position, and
+          // on a device slow enough that a fast flick skips frames — the
+          // observer only samples at rendering opportunities, so an element
+          // can pass right through between two of them.
+          //
+          // There is nothing left to animate it into, and leaving it at
+          // opacity 0 would mean content that is blank when the visitor
+          // scrolls back up. Show it.
+          enter(entry.target);
+          observer.unobserve(entry.target);
         } else if (leave) {
           leave(entry.target);
         }

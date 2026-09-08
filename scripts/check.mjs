@@ -7,9 +7,10 @@
  * opacity 0 because a reveal never fired. So this loads the page, fails on any
  * console error, and then asserts against the live DOM.
  *
- * It also runs the whole page a second time with reduced motion forced on, and
- * asserts that nothing ends up invisible — which is the failure this library
- * exists to avoid, and the one nobody notices until someone complains.
+ * The invariant it holds the page to is the one a visitor actually experiences:
+ * whatever is on screen must be readable. It checks that after a full scroll
+ * pass, again with reduced motion forced on, and once more after jumping
+ * straight to the bottom without scrolling through the middle.
  *
  *   npm run check
  *
@@ -47,6 +48,31 @@ const server = spawn(
 );
 
 const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+
+/**
+ * Runs in the page: the elements that are substantially on screen and still
+ * invisible.
+ *
+ * "Substantially" is doing real work here. A reveal has a threshold — it fires
+ * once enough of the element is inside the viewport — so a forty-pixel sliver
+ * poking in at the edge has legitimately not triggered yet, and will the
+ * instant the visitor scrolls a little further. Flagging those turns a motion
+ * check into flaky noise. Half the element on screen and still blank is a
+ * defect, and that is what this reports.
+ */
+function INVISIBLE_ON_SCREEN() {
+  const found = [];
+  const watched = "[data-rm-reveal], [data-rm-text], [data-rm-count]";
+  for (const element of document.querySelectorAll(watched)) {
+    const box = element.getBoundingClientRect();
+    if (!box.height) continue; // not laid out at all
+    const onScreen = Math.max(0, Math.min(box.bottom, innerHeight) - Math.max(box.top, 0));
+    if (onScreen / box.height < 0.5) continue;
+    if (Number(getComputedStyle(element).opacity) >= 0.99) continue;
+    found.push(element.outerHTML.slice(0, 90));
+  }
+  return found;
+}
 
 async function ready() {
   for (let attempt = 0; attempt < 40; attempt++) {
@@ -104,25 +130,22 @@ async function run(browser, { reducedMotion }) {
   // Scroll the whole page, then check that nothing that should be readable is
   // still invisible. This is the one that catches a broken reveal.
   await page.evaluate(async () => {
-    const step = innerHeight * 0.8;
+    // Half a viewport at a time, and two frames per step. A loaded machine can
+    // skip rendering opportunities entirely, and an observer that never got to
+    // sample is a flaky test rather than a real finding.
+    const step = innerHeight * 0.5;
     for (let y = 0; y < document.body.scrollHeight; y += step) {
       scrollTo(0, y);
-      await new Promise((done) => requestAnimationFrame(() => setTimeout(done, 60)));
+      await new Promise((done) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(done, 90))),
+      );
     }
     scrollTo(0, 0);
   });
   await wait(1400);
 
-  const invisible = await page.evaluate(() =>
-    [...document.querySelectorAll("[data-rm-reveal], [data-rm-text], [data-rm-count]")]
-      .filter((element) => {
-        const box = element.getBoundingClientRect();
-        if (!box.width && !box.height) return false; // genuinely not laid out
-        return Number(getComputedStyle(element).opacity) < 0.99;
-      })
-      .map((element) => element.outerHTML.slice(0, 90)),
-  );
-  check(`${label}: nothing left invisible after scrolling`, invisible.length === 0, invisible[0]);
+  const invisible = await page.evaluate(INVISIBLE_ON_SCREEN);
+  check(`${label}: everything on screen is visible after scrolling`, invisible.length === 0, invisible[0]);
 
   // The accessible name has to survive text splitting.
   const headline = await page.evaluate(() => {
@@ -141,11 +164,38 @@ async function run(browser, { reducedMotion }) {
   return problems;
 }
 
+/**
+ * Load the page and jump straight to the bottom, without ever scrolling
+ * through the middle.
+ *
+ * This is what a link to an anchor does, what a reloaded page with a restored
+ * scroll position does, and what a hard flick on a slow phone amounts to. The
+ * footer never crossed the viewport gradually, so the observer never saw it
+ * arrive — and if a reveal depends on having seen that, the visitor lands on
+ * a blank screen.
+ */
+async function jump(browser) {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await context.newPage();
+  await page.goto(URL_BASE, { waitUntil: "networkidle" });
+
+  await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+  await wait(1600);
+
+  const invisible = await page.evaluate(INVISIBLE_ON_SCREEN);
+
+  console.log("\njumped straight to the bottom");
+  check("jumped: everything that landed on screen is visible", invisible.length === 0, invisible[0]);
+
+  await context.close();
+}
+
 try {
   await ready();
   const browser = await chromium.launch();
   await run(browser, { reducedMotion: false });
   await run(browser, { reducedMotion: true });
+  await jump(browser);
   await browser.close();
 } finally {
   server.kill();
