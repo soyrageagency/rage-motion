@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Abstract plate 3">
+  <rect width="400" height="500" fill="#1c2b1e"/>
+  <circle cx="243" cy="188" r="88" fill="none" stroke="#f4d738" stroke-width="2.2" opacity="0.85"/>
+  <path d="M0 368 L247 197 L400 342 L400 500 L0 500 Z" fill="#f1eee9" opacity="0.16"/>
+  <rect x="40" y="431" width="10" height="29" rx="5" fill="#f4d738" opacity="0.82"/>
+  <rect x="62" y="403" width="10" height="50" rx="5" fill="#f1eee9" opacity="0.61"/>
+  <rect x="84" y="436" width="10" height="32" rx="5" fill="#f4d738" opacity="0.81"/>
+  <rect x="106" y="434" width="10" height="25" rx="5" fill="#f1eee9" opacity="0.82"/>
+  <rect x="128" y="438" width="10" height="71" rx="5" fill="#f4d738" opacity="0.91"/>
+  <text x="340" y="466" text-anchor="end" font-family="ui-monospace, monospace" font-size="20" letter-spacing="3" fill="#f4d738" opacity="0.9">03</text>
+</svg>

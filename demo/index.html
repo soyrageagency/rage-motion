@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — award-grade motion, zero dependencies</title>
-<meta name="description" content="64 web animation components with real technique: variable-font pressure, word morphing, draggable carousels, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, and installs into Claude or Cursor over MCP.">
-<meta name="color-scheme" content="light dark">
+<title>rage-motion — 64 web animation components, zero dependencies</title>
+<meta name="description" content="A catalogue of 64 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
+<meta name="color-scheme" content="dark">
 
-<meta property="og:title" content="rage-motion — award-grade motion, zero dependencies">
-<meta property="og:description" content="64 animation components with real technique. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
+<meta property="og:title" content="rage-motion — 64 web animation components, zero dependencies">
+<meta property="og:description" content="A catalogue of components with real technique behind them. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
 <meta property="og:image" content="https://soyrageagency.github.io/rage-motion/assets/social.png">
@@ -22,455 +22,778 @@
 </head>
 <body>
 
-<div data-rm-progress></div>
+<div data-rm-progress data-rm-color="#2aa7e4"></div>
 
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
-<header class="nav" data-rm-condense>
-  <a class="nav-brand" href="#top">
-    <span class="dot" aria-hidden="true"></span>
+<header class="bar" data-rm-condense>
+  <a class="brand" href="#top">
+    <svg viewBox="0 0 320 360" width="18" height="20" aria-hidden="true" focusable="false">
+      <path fill="currentColor" fill-rule="evenodd" d="M70 40 L200 40 L238 78 L238 120 L150 170 L235 330 L150 235 L150 335 L105 335 Z M118 78 L195 78 L165 128 L118 128 Z"/>
+      <path fill="#2aa7e4" d="M205 95 L315 78 L210 118 Z"/>
+    </svg>
     rage-motion
   </a>
 
-  <nav class="nav-links" data-rm-pill aria-label="Sections">
-    <a href="#components">Components</a>
-    <a href="#craft">Craft</a>
-    <a href="#mcp">For your AI</a>
-    <a href="https://github.com/soyrageagency/rage-motion">GitHub</a>
+  <nav class="bar-nav" data-rm-pill data-rm-color="rgba(255,255,255,0.08)" aria-label="Sections">
+    <a href="#index" aria-current="page">Index</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#scroll">Scroll</a>
+    <a href="#mcp">MCP</a>
   </nav>
 
-  <a class="nav-cta" href="https://soyrage.es/" data-rm-magnetic data-rm-fill data-rm-color="#2aa7e4">SoyRage</a>
+  <div class="bar-end">
+    <button class="ghost only-narrow" data-rm-overlay-open aria-controls="menu">Menu</button>
+    <a class="ghost" href="https://github.com/soyrageagency/rage-motion">GitHub</a>
+    <a class="solid" href="https://soyrage.es/" data-rm-magnetic data-rm-fill data-rm-color="#2aa7e4">SoyRage</a>
+  </div>
 </header>
 
 <main id="top">
 
 <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
-<section class="hero" id="hero">
-  <div class="hero-inner">
-    <p class="eyebrow" data-rm-reveal="fade">
-      <span data-rm-decrypt>64 components · 0 dependencies</span>
-    </p>
-
-    <h1 class="display" data-rm-pressure data-rm-radius="300">Award-grade motion</h1>
-
-    <p class="lede" data-rm-reveal="up" data-rm-delay="200">
-      Carries no runtime. Never shifts your layout. Does not forget the people
-      who asked for less of it.
-      <br>
-      Take one file, or install the package — and
-      <strong>teach it to your AI</strong>.
-    </p>
-
-    <div class="hero-cta" data-rm-reveal="up" data-rm-delay="320">
-      <button class="btn btn-primary" data-copy="npm i @soyrageagency/rage-motion" data-rm-magnetic data-rm-spark data-rm-shimmer>
-        <code>npm i @soyrageagency/rage-motion</code>
-        <span class="btn-hint">copy</span>
-      </button>
-      <a class="btn btn-ghost" href="#components" data-rm-magnetic data-rm-fill data-rm-color="#0e0e0e">See all 64 ↓</a>
-    </div>
-
-    <p class="hero-note" data-rm-reveal="fade" data-rm-delay="460">
-      Built for <span data-rm-morph="portfolios|studio sites|product pages|launches"></span>
-    </p>
-  </div>
-
+<section class="hero">
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
-</section>
 
-<!-- ── Craft ────────────────────────────────────────────────────────────── -->
-<section class="section" id="craft">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Why this exists</p>
+  <div class="shell hero-inner">
+    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">64 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
 
-    <p class="statement" data-rm-highlight>
-      Most web animation is broken in the same three ways. An opacity of zero
-      in the stylesheet, so the day a script fails the page arrives blank
-      instead of merely still. A scroll listener per element, so four effects
-      become four forced layouts a frame. And a reduced-motion rule that hides
-      the very thing it was meant to reveal. None of that is here — not as a
-      setting, as the architecture.
+    <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
+
+    <p class="hero-lede">
+      Not a folder of fades. Variable-font axes that bend to the pointer, words
+      that morph letter by letter, carousels built on the browser's own
+      scrolling, menus that actually trap focus.
     </p>
 
-    <div class="facts">
-      <div data-rm-reveal="up">
-        <strong data-rm-odometer>64</strong>
-        <span>components, each in its own file</span>
+    <div class="hero-row">
+      <button class="solid big" data-copy="npm i @soyrageagency/rage-motion" data-rm-magnetic data-rm-spark data-rm-shimmer>
+        <code>npm i @soyrageagency/rage-motion</code>
+        <span class="mono-hint">copy</span>
+      </button>
+      <a class="ghost big" href="#gallery" data-rm-magnetic>Browse the catalogue ↓</a>
+    </div>
+
+    <dl class="hero-facts">
+      <div><dt data-rm-odometer data-rm-loop="7000">64</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">17</dt><dd>modules, all copyable</dd></div>
+      <div><dt>MIT</dt><dd>take it and ship it</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ── Index ────────────────────────────────────────────────────────────── -->
+<section class="section" id="index">
+  <div class="shell">
+    <header class="head">
+      <p class="mono-label accent">01 — Index</p>
+      <h2 class="h2">Everything, on one screen.</h2>
+      <p class="lede">
+        Every component and the attribute that drives it. Most of the kit needs
+        no JavaScript at the call site at all.
+      </p>
+    </header>
+
+    <div class="index-grid">
+      <div class="index-family">
+        <h3>Text</h3>
+        <ul>
+          <li><b>textReveal</b><code>data-rm-text</code></li>
+          <li><b>decrypt</b><code>data-rm-decrypt</code></li>
+          <li><b>glitch</b><code>data-rm-glitch</code></li>
+          <li><b>shiny</b><code>data-rm-shiny</code></li>
+          <li><b>countUp</b><code>data-rm-count</code></li>
+          <li><b>typewriter</b><code>data-rm-type</code></li>
+          <li><b>waveText</b><code>data-rm-wave</code></li>
+          <li><b>split</b><code>—</code></li>
+        </ul>
       </div>
-      <div data-rm-reveal="up" data-rm-delay="80">
-        <strong data-rm-odometer>0</strong>
-        <span>dependencies, today and permanently</span>
+
+      <div class="index-family">
+        <h3>Typography</h3>
+        <ul>
+          <li><b>pressure</b><code>data-rm-pressure</code></li>
+          <li><b>morph</b><code>data-rm-morph</code></li>
+          <li><b>curve</b><code>data-rm-curve</code></li>
+          <li><b>odometer</b><code>data-rm-odometer</code></li>
+          <li><b>highlight</b><code>data-rm-highlight</code></li>
+        </ul>
+
+        <h3>Buttons</h3>
+        <ul>
+          <li><b>fill</b><code>data-rm-fill</code></li>
+          <li><b>shimmer</b><code>data-rm-shimmer</code></li>
+          <li><b>spark</b><code>data-rm-spark</code></li>
+          <li><b>swap</b><code>data-rm-swap</code></li>
+          <li><b>ripple</b><code>data-rm-ripple</code></li>
+        </ul>
       </div>
-      <div data-rm-reveal="up" data-rm-delay="160">
-        <strong data-rm-odometer>1</strong>
-        <span>scroll read per frame, shared by every effect</span>
+
+      <div class="index-family">
+        <h3>Surfaces</h3>
+        <ul>
+          <li><b>spotlight</b><code>data-rm-spotlight</code></li>
+          <li><b>tilt</b><code>data-rm-tilt</code></li>
+          <li><b>border</b><code>data-rm-border</code></li>
+          <li><b>glare</b><code>data-rm-glare</code></li>
+          <li><b>trail</b><code>data-rm-trail</code></li>
+          <li><b>electric</b><code>data-rm-electric</code></li>
+          <li><b>beam</b><code>data-rm-beam</code></li>
+          <li><b>blurEdge</b><code>data-rm-blur-edge</code></li>
+        </ul>
+
+        <h3>Fields</h3>
+        <ul>
+          <li><b>waves</b><code>js</code></li>
+          <li><b>retroGrid</b><code>js</code></li>
+          <li><b>dotGrid</b><code>js</code></li>
+          <li><b>grain</b><code>js</code></li>
+        </ul>
       </div>
-      <div data-rm-reveal="up" data-rm-delay="240">
-        <strong data-rm-odometer>100</strong>
-        <span>per cent honour reduced motion without hiding content</span>
+
+      <div class="index-family">
+        <h3>Gallery</h3>
+        <ul>
+          <li><b>carousel</b><code>data-rm-carousel</code></li>
+          <li><b>ring</b><code>data-rm-ring</code></li>
+          <li><b>deck</b><code>data-rm-deck</code></li>
+          <li><b>dock</b><code>data-rm-dock</code></li>
+          <li><b>panels</b><code>data-rm-panels</code></li>
+          <li><b>compare</b><code>data-rm-compare</code></li>
+          <li><b>scratch</b><code>data-rm-scratch</code></li>
+          <li><b>imageTrail</b><code>data-rm-image-trail</code></li>
+          <li><b>orbit</b><code>data-rm-orbit</code></li>
+          <li><b>magnetLines</b><code>data-rm-lines</code></li>
+        </ul>
+      </div>
+
+      <div class="index-family">
+        <h3>Media</h3>
+        <ul>
+          <li><b>imageReveal</b><code>data-rm-image-reveal</code></li>
+          <li><b>pixelate</b><code>data-rm-pixel</code></li>
+          <li><b>hoverPreview</b><code>data-rm-preview</code></li>
+          <li><b>marquee</b><code>data-rm-marquee</code></li>
+        </ul>
+
+        <h3>Cursors</h3>
+        <ul>
+          <li><b>cursor</b><code>js</code></li>
+          <li><b>target</b><code>js</code></li>
+          <li><b>crosshair</b><code>js</code></li>
+          <li><b>splash</b><code>js</code></li>
+          <li><b>magnetic</b><code>data-rm-magnetic</code></li>
+        </ul>
+      </div>
+
+      <div class="index-family">
+        <h3>Scroll</h3>
+        <ul>
+          <li><b>reveal</b><code>data-rm-reveal</code></li>
+          <li><b>parallax</b><code>data-rm-parallax</code></li>
+          <li><b>progress</b><code>data-rm-progress</code></li>
+          <li><b>horizontal</b><code>data-rm-horizontal</code></li>
+          <li><b>stack</b><code>data-rm-stack</code></li>
+          <li><b>scrub</b><code>data-rm-scrub</code></li>
+          <li><b>skew</b><code>data-rm-skew</code></li>
+          <li><b>tracing</b><code>data-rm-tracing</code></li>
+          <li><b>flatten</b><code>data-rm-flatten</code></li>
+          <li><b>sticky</b><code>data-rm-sticky</code></li>
+        </ul>
+
+        <h3>Navigation</h3>
+        <ul>
+          <li><b>pill</b><code>data-rm-pill</code></li>
+          <li><b>gooey</b><code>data-rm-gooey</code></li>
+          <li><b>condense</b><code>data-rm-condense</code></li>
+          <li><b>overlay</b><code>data-rm-overlay</code></li>
+          <li><b>tabs</b><code>data-rm-tabs</code></li>
+          <li><b>pageTransition</b><code>js</code></li>
+        </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Components ───────────────────────────────────────────────────────── -->
-<section class="section" id="components">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">The collection</p>
-    <h2 class="h2 big" data-rm-text="words" data-rm-effect="rise">Everything here is running</h2>
-    <p class="body wide" data-rm-reveal="up">
-      Not screenshots. Every panel below is the shipped component on this page,
-      with the markup you copy. Hover, click, drag, use the keyboard.
-    </p>
-
-    <div class="grid">
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>morph</h3><code>data-rm-morph</code></header>
-        <div class="stage">
-          <p class="stage-display"><span data-rm-morph="Motion|Notion|Nation"></span></p>
-        </div>
-        <p>Shared letters travel to their new place; the rest blur away. A real match plus a FLIP, not a cross-fade.</p>
-        <button class="copy" data-copy='<span data-rm-morph="Motion|Notion|Nation"></span>'>copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>pressure</h3><code>data-rm-pressure</code></header>
-        <div class="stage">
-          <p class="stage-display" data-rm-pressure data-rm-radius="180">Pressure</p>
-        </div>
-        <p>Real variable-font axes bend toward the pointer — <code>wght</code> and <code>wdth</code>, not a fake scale.</p>
-        <button class="copy" data-copy='<h1 data-rm-pressure>Pressure</h1>'>copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>odometer</h3><code>data-rm-odometer</code></header>
-        <div class="stage">
-          <p class="stage-display"><span data-rm-odometer>128,400</span></p>
-        </div>
-        <p>Digit columns roll, the right-hand ones later, so the number settles from the left like a real counter.</p>
-        <button class="copy" data-copy="<strong data-rm-odometer>128,400</strong>">copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>curve</h3><code>data-rm-curve</code></header>
-        <div class="stage stage-curve">
-          <span data-rm-curve="62" data-rm-spin="14000">SOYRAGE · AWARD-GRADE MOTION · </span>
-        </div>
-        <p>A real <code>textPath</code>, so spacing follows the arc instead of letters being rotated one by one.</p>
-        <button class="copy" data-copy='<span data-rm-curve="120" data-rm-spin="18000">Text · </span>'>copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>electric</h3><code>data-rm-electric</code></header>
-        <div class="stage stage-dark">
-          <span class="badge" data-rm-electric>feTurbulence</span>
-        </div>
-        <p>An SVG displacement filter, so the edge ripples like current instead of wobbling like a scaled outline.</p>
-        <button class="copy" data-copy="<article data-rm-electric>…</article>">copy markup</button>
-      </article>
-
-      <article class="demo-card demo-card-trail" data-rm-reveal="up" data-rm-trail data-rm-size="90">
-        <header><h3>trail</h3><code>data-rm-trail</code></header>
-        <div class="stage stage-dark"><span class="badge">offset-path</span></div>
-        <p>The light follows the element's real rounded rectangle at an even speed — a spun conic gradient cannot.</p>
-        <button class="copy" data-copy="<article data-rm-trail>…</article>">copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>waveText</h3><code>data-rm-wave</code></header>
-        <div class="stage">
-          <p class="stage-display" data-rm-wave data-rm-lift="22">Hover me</p>
-        </div>
-        <p>A cosine falloff over a radius, so neighbours move too. That is what makes it a wave.</p>
-        <button class="copy" data-copy="<h2 data-rm-wave>Hover me</h2>">copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>decrypt</h3><code>data-rm-decrypt</code></header>
-        <div class="stage">
-          <p class="stage-mono" data-rm-decrypt>SOYRAGE AGENCY</p>
-        </div>
-        <p>Reserves the final width, so the line never reflows while it settles.</p>
-        <button class="copy" data-copy="<span data-rm-decrypt>SOYRAGE</span>">copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-tilt="9">
-        <header><h3>tilt</h3><code>data-rm-tilt</code></header>
-        <div class="stage stage-dark"><span class="badge">10° max</span></div>
-        <p>Capped at ten degrees. Past twelve it reads as a gimmick and the text stops being readable.</p>
-        <button class="copy" data-copy='<article data-rm-tilt="8">…</article>'>copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-border>
-        <header><h3>border</h3><code>data-rm-border</code></header>
-        <div class="stage stage-dark"><span class="badge">@property</span></div>
-        <p>The angle is registered as a real angle type, so the conic gradient sweeps instead of stepping.</p>
-        <button class="copy" data-copy="<article data-rm-border>…</article>">copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>magnetLines</h3><code>data-rm-lines</code></header>
-        <div class="stage stage-lines" data-rm-lines data-rm-columns="11" data-rm-rows="5"></div>
-        <p>They turn the short way round — otherwise the field spins backwards whenever you cross behind it.</p>
-        <button class="copy" data-copy='<div data-rm-lines data-rm-columns="16"></div>'>copy markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
-        <header><h3>orbit</h3><code>data-rm-orbit</code></header>
-        <div class="stage stage-orbit">
-          <div data-rm-orbit data-rm-radius="60" data-rm-duration="16000">
-            <span class="pill">JS</span><span class="pill">CSS</span>
-            <span class="pill">SVG</span><span class="pill">MCP</span>
-          </div>
-        </div>
-        <p>The ring turns and each item counter-turns, so nothing does somersaults on the way round.</p>
-        <button class="copy" data-copy='<div data-rm-orbit data-rm-radius="140">…</div>'>copy markup</button>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<!-- ── Carousels ────────────────────────────────────────────────────────── -->
-<section class="section section-tight" id="carousels">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Carousels</p>
-    <h2 class="h2" data-rm-reveal="up">Drag them. Then try the arrow keys.</h2>
-    <p class="body wide" data-rm-reveal="up">
-      The carousel is the component most likely to be bad on any given site,
-      and it is bad the same way every time: no drag, no keyboard, a hijacked
-      wheel, nothing announced. This one is the browser's own scrolling with
-      momentum added on top, so everything that already worked still does.
-    </p>
+<!-- ── Gallery ──────────────────────────────────────────────────────────── -->
+<section class="section" id="gallery">
+  <div class="shell">
+    <header class="head">
+      <p class="mono-label accent">02 — Live</p>
+      <h2 class="h2">Every cell is the shipped component, looping.</h2>
+      <p class="lede">
+        Nothing here is a recording. Hover, press, drag. The ones that normally
+        play once are set to repeat so you can actually see them.
+      </p>
+    </header>
   </div>
 
-  <div class="carousel-holder" data-rm-reveal="up">
-    <div data-rm-carousel data-rm-label="Component families">
-      <article class="slide slide-a"><span>Type</span><p>pressure · morph · curve · odometer</p></article>
-      <article class="slide slide-b"><span>Surface</span><p>beam · trail · glare · electric · blurEdge</p></article>
-      <article class="slide slide-c"><span>Fields</span><p>waves · retroGrid · dotGrid · grain</p></article>
-      <article class="slide slide-d"><span>Gallery</span><p>carousel · ring · deck · dock · scratch</p></article>
-      <article class="slide slide-e"><span>Navigation</span><p>pill · gooey · condense · overlay · tabs</p></article>
-      <article class="slide slide-f"><span>Buttons</span><p>fill · shimmer · spark · swap</p></article>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="pair">
-      <div class="pair-item" data-rm-reveal="up">
-        <h3 class="h3">ring</h3>
-        <div class="ring-holder" data-rm-ring data-rm-radius="210" data-rm-label="Number ring">
-          <span class="face face-1">01</span><span class="face face-2">02</span>
-          <span class="face face-3">03</span><span class="face face-4">04</span>
-          <span class="face face-5">05</span><span class="face face-6">06</span>
-        </div>
-        <p class="body">A cylinder you spin, with momentum. Arrow keys step one face.</p>
+  <!-- Text -->
+  <div class="shell rail"><span class="rail-name">Text</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">textReveal</p>
+      <div class="cell-body">
+        <p class="type-lg" data-rm-text="chars" data-rm-effect="rise" data-rm-loop="4600">Character by character</p>
       </div>
+      <button class="cell-copy" data-copy='<h1 data-rm-text="chars" data-rm-effect="rise">…</h1>'>copy</button>
+    </article>
 
-      <div class="pair-item" data-rm-reveal="up" data-rm-delay="120">
-        <h3 class="h3">deck</h3>
-        <div class="deck-holder" data-rm-deck>
-          <article class="card card-1"><b>Front</b><span>flies out, lands at the back</span></article>
-          <article class="card card-2"><b>Second</b><span>steps forward</span></article>
-          <article class="card card-3"><b>Third</b><span>waits its turn</span></article>
+    <article class="cell">
+      <p class="cell-name">decrypt</p>
+      <div class="cell-body">
+        <p class="type-mono-lg" data-rm-decrypt data-rm-loop="4200">SOYRAGE AGENCY</p>
+      </div>
+      <button class="cell-copy" data-copy="<span data-rm-decrypt>SOYRAGE</span>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">glitch</p>
+      <div class="cell-body">
+        <p class="type-xl" data-rm-glitch="auto" data-rm-interval="2400">404</p>
+      </div>
+      <button class="cell-copy" data-copy='<h2 data-rm-glitch="auto">404</h2>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">shiny</p>
+      <div class="cell-body">
+        <p class="type-lg" data-rm-shiny data-rm-base="#5b5b57" data-rm-highlight="#f1eee9">Available for work</p>
+      </div>
+      <button class="cell-copy" data-copy="<span data-rm-shiny>Available for work</span>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">countUp</p>
+      <div class="cell-body">
+        <p class="type-xl"><span data-rm-count data-rm-loop="4800">1,250</span></p>
+      </div>
+      <button class="cell-copy" data-copy="<strong data-rm-count>1,250</strong>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">typewriter</p>
+      <div class="cell-body">
+        <p class="type-lg"><span data-rm-type="Design|Development|Motion|Brand"></span></p>
+      </div>
+      <button class="cell-copy" data-copy='<span data-rm-type="One|Two|Three"></span>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">waveText <span class="cell-hint">hover</span></p>
+      <div class="cell-body">
+        <p class="type-lg" data-rm-wave data-rm-lift="20">Run the pointer over</p>
+      </div>
+      <button class="cell-copy" data-copy="<h2 data-rm-wave>Run the pointer over</h2>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">morph</p>
+      <div class="cell-body">
+        <p class="type-xl"><span data-rm-morph="Motion|Notion|Nation"></span></p>
+      </div>
+      <button class="cell-copy" data-copy='<span data-rm-morph="Motion|Notion|Nation"></span>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">pressure <span class="cell-hint">hover</span></p>
+      <div class="cell-body">
+        <p class="type-xl" data-rm-pressure data-rm-radius="190">Pressure</p>
+      </div>
+      <button class="cell-copy" data-copy="<h1 data-rm-pressure>Pressure</h1>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">odometer</p>
+      <div class="cell-body">
+        <p class="type-xl"><span data-rm-odometer data-rm-loop="5200">128,400</span></p>
+      </div>
+      <button class="cell-copy" data-copy="<strong data-rm-odometer>128,400</strong>">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">curve</p>
+      <div class="cell-body cell-body-tall">
+        <span class="curve" data-rm-curve="78" data-rm-spin="16000">AWARD-GRADE MOTION · SOYRAGE AGENCY · </span>
+      </div>
+      <button class="cell-copy" data-copy='<span data-rm-curve="120" data-rm-spin="18000">Text · </span>'>copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">marquee</p>
+      <div class="cell-body cell-body-flush">
+        <div class="ticker" data-rm-marquee data-rm-speed="42" data-rm-gap="14">
+          <span>transform</span><span>·</span><span>opacity</span><span>·</span>
+          <span>no layout shift</span><span>·</span>
         </div>
-        <p class="body">Order is a custom property, not a re-sorted DOM — so focus stays put and nothing reloads.</p>
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-marquee data-rm-speed="80">…</div>'>copy</button>
+    </article>
+  </div>
+
+  <!-- Surfaces -->
+  <div class="shell rail"><span class="rail-name">Surfaces</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">spotlight <span class="cell-hint">hover</span></p>
+      <div class="cell-body plate" data-rm-spotlight data-rm-size="300"><span class="chip">radial-gradient</span></div>
+      <button class="cell-copy" data-copy="<article data-rm-spotlight>…</article>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">tilt <span class="cell-hint">hover</span></p>
+      <div class="cell-body plate" data-rm-tilt="10"><span class="chip">10° max</span></div>
+      <button class="cell-copy" data-copy='<article data-rm-tilt="8">…</article>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">border</p>
+      <div class="cell-body plate" data-rm-border data-rm-duration="4200"><span class="chip">@property</span></div>
+      <button class="cell-copy" data-copy="<article data-rm-border>…</article>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">glare <span class="cell-hint">hover</span></p>
+      <div class="cell-body plate" data-rm-glare><span class="chip">pointer-tracked sheen</span></div>
+      <button class="cell-copy" data-copy="<article data-rm-glare>…</article>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">trail</p>
+      <div class="cell-body plate" data-rm-trail data-rm-size="80"><span class="chip">offset-path</span></div>
+      <button class="cell-copy" data-copy="<article data-rm-trail>…</article>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">electric</p>
+      <div class="cell-body plate" data-rm-electric><span class="chip">feDisplacementMap</span></div>
+      <button class="cell-copy" data-copy="<article data-rm-electric>…</article>">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">beam</p>
+      <div class="cell-body beam-body" data-rm-beam data-rm-from="#beam-a" data-rm-to="#beam-b">
+        <span class="node" id="beam-a">source</span>
+        <span class="node" id="beam-b">target</span>
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-beam data-rm-from="#a" data-rm-to="#b"></div>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">blurEdge</p>
+      <div class="cell-body blur-body">
+        <div class="blur-scroll">
+          <p>Focus falls off gradually, the way a lens does it — stacked layers, each blurred harder and masked to a narrower band.</p>
+          <p>One backdrop-filter with a mask blurs everything equally and reads as a smear.</p>
+        </div>
+        <div class="blur-cap" data-rm-blur-edge="bottom" data-rm-layers="6"></div>
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-blur-edge="bottom"></div>'>copy</button>
+    </article>
+  </div>
+
+  <!-- Fields -->
+  <div class="shell rail"><span class="rail-name">Fields</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">waves <span class="cell-hint">hover</span></p>
+      <div class="cell-body field" id="field-waves"></div>
+      <button class="cell-copy" data-copy='waves(".hero", { lines: 22 })'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">retroGrid</p>
+      <div class="cell-body field" id="field-retro"></div>
+      <button class="cell-copy" data-copy='retroGrid(".hero")'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">dotGrid <span class="cell-hint">hover</span></p>
+      <div class="cell-body field" id="field-dots"></div>
+      <button class="cell-copy" data-copy='dotGrid(".panel")'>copy</button>
+    </article>
+  </div>
+
+  <!-- Buttons -->
+  <div class="shell rail"><span class="rail-name">Buttons &amp; cursors</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">fill · shimmer · spark · swap · ripple · magnetic</p>
+      <div class="cell-body button-body">
+        <button class="ghost" data-rm-fill data-rm-color="#2aa7e4">Directional fill</button>
+        <button class="solid" data-rm-shimmer>Shimmer</button>
+        <button class="ghost" data-rm-spark data-rm-color="#f4d738">Spark</button>
+        <button class="ghost" data-rm-swap="Downloading…">Download</button>
+        <button class="ghost" data-rm-ripple>Ripple</button>
+        <button class="ghost" data-rm-magnetic>Magnetic</button>
+      </div>
+      <button class="cell-copy" data-copy="<button data-rm-fill>Directional fill</button>">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">cursor · target · crosshair · splash</p>
+      <div class="cell-body cursor-body">
+        <p class="cursor-note">A custom cursor is a page-level decision, so <code>init()</code> leaves it alone. Switch this page's:</p>
+        <div class="cursor-picker" role="group" aria-label="Cursor style">
+          <button data-cursor="none" aria-pressed="false">system</button>
+          <button data-cursor="cursor" aria-pressed="false">cursor</button>
+          <button data-cursor="target" aria-pressed="true">target</button>
+          <button data-cursor="crosshair" aria-pressed="false">crosshair</button>
+          <button data-cursor="splash" aria-pressed="false">splash</button>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy='import { target } from "@soyrageagency/rage-motion"; target();'>copy</button>
+    </article>
+  </div>
+
+  <!-- Galleries -->
+  <div class="shell rail"><span class="rail-name">Galleries</span></div>
+
+  <div class="carousel-strip">
+    <div class="shell"><p class="cell-name strip-name">carousel <span class="cell-hint">drag · arrow keys</span></p></div>
+    <div class="carousel-pad">
+      <div data-rm-carousel data-rm-label="Component families">
+        <article class="slide"><span class="slide-n">01</span><h4>Type</h4><p>pressure · morph · curve · odometer · highlight</p></article>
+        <article class="slide"><span class="slide-n">02</span><h4>Surfaces</h4><p>beam · trail · glare · electric · blurEdge</p></article>
+        <article class="slide"><span class="slide-n">03</span><h4>Fields</h4><p>waves · retroGrid · dotGrid · grain</p></article>
+        <article class="slide"><span class="slide-n">04</span><h4>Gallery</h4><p>carousel · ring · deck · dock · scratch · imageTrail</p></article>
+        <article class="slide"><span class="slide-n">05</span><h4>Navigation</h4><p>pill · gooey · condense · overlay · tabs</p></article>
+        <article class="slide"><span class="slide-n">06</span><h4>Buttons</h4><p>fill · shimmer · spark · swap · ripple</p></article>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ── Navigation ───────────────────────────────────────────────────────── -->
-<section class="section" id="navigation">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Navigation</p>
-    <h2 class="h2" data-rm-reveal="up">Where a nice animation most often breaks the site.</h2>
-    <p class="body wide" data-rm-reveal="up">
-      So the rules are strict here: nothing replaces a link, nothing swallows a
-      click, the current page keeps its <code>aria-current</code>, and the
-      full-screen menu traps focus, closes on Escape and hands focus back.
-    </p>
+  <div class="shell cells">
+    <article class="cell cell-tall">
+      <p class="cell-name">ring <span class="cell-hint">drag · arrow keys</span></p>
+      <div class="cell-body ring-body" data-rm-ring data-rm-radius="200" data-rm-label="Plate ring">
+        <img src="./assets/tiles/01.svg" alt="Plate one">
+        <img src="./assets/tiles/02.svg" alt="Plate two">
+        <img src="./assets/tiles/03.svg" alt="Plate three">
+        <img src="./assets/tiles/04.svg" alt="Plate four">
+        <img src="./assets/tiles/05.svg" alt="Plate five">
+        <img src="./assets/tiles/06.svg" alt="Plate six">
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-ring data-rm-radius="380">…</div>'>copy</button>
+    </article>
 
-    <div class="nav-demos">
-      <div class="nav-demo" data-rm-reveal="up">
-        <p class="tag">pill</p>
-        <nav class="sample-nav" data-rm-pill aria-label="Example">
-          <a href="#navigation" aria-current="page">Work</a>
-          <a href="#navigation">Studio</a>
-          <a href="#navigation">Journal</a>
-          <a href="#navigation">Contact</a>
+    <article class="cell cell-tall">
+      <p class="cell-name">deck</p>
+      <div class="cell-body deck-body" data-rm-deck>
+        <article class="deck-card"><b>Front</b><span>flies out, lands at the back</span></article>
+        <article class="deck-card"><b>Second</b><span>steps forward</span></article>
+        <article class="deck-card"><b>Third</b><span>waits its turn</span></article>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-deck><article>…</article></div>">copy</button>
+    </article>
+
+    <article class="cell cell-tall">
+      <p class="cell-name">panels <span class="cell-hint">hover · tab</span></p>
+      <div class="cell-body panels-body" data-rm-panels data-rm-grow="4">
+        <a class="panel" data-rm-panel href="#gallery"><img src="./assets/tiles/02.svg" alt="Panel two"></a>
+        <a class="panel" data-rm-panel href="#gallery"><img src="./assets/tiles/04.svg" alt="Panel four"></a>
+        <a class="panel" data-rm-panel href="#gallery"><img src="./assets/tiles/06.svg" alt="Panel six"></a>
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-panels><a data-rm-panel href="#">…</a></div>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">orbit</p>
+      <div class="cell-body orbit-body">
+        <div data-rm-orbit data-rm-radius="66" data-rm-duration="17000">
+          <span class="bead">JS</span><span class="bead">CSS</span>
+          <span class="bead">SVG</span><span class="bead">MCP</span>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-orbit data-rm-radius="140">…</div>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">magnetLines <span class="cell-hint">hover</span></p>
+      <div class="cell-body lines-body" data-rm-lines data-rm-columns="13" data-rm-rows="7"></div>
+      <button class="cell-copy" data-copy='<div data-rm-lines data-rm-columns="16"></div>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">dock <span class="cell-hint">hover</span></p>
+      <div class="cell-body dock-body">
+        <nav data-rm-dock aria-label="Dock example">
+          <a href="#gallery"><span>01</span></a>
+          <a href="#gallery"><span>02</span></a>
+          <a href="#gallery"><span>03</span></a>
+          <a href="#gallery"><span>04</span></a>
+          <a href="#gallery"><span>05</span></a>
         </nav>
-        <p class="tag-note">One indicator that travels between items of different widths.</p>
       </div>
+      <button class="cell-copy" data-copy='<nav data-rm-dock><a href="#">…</a></nav>'>copy</button>
+    </article>
 
-      <div class="nav-demo" data-rm-reveal="up" data-rm-delay="90">
-        <p class="tag">gooey</p>
-        <nav class="sample-nav is-gooey" data-rm-gooey aria-label="Example, liquid">
-          <a href="#navigation" aria-current="page">Home</a>
-          <a href="#navigation">Cases</a>
-          <a href="#navigation">About</a>
-        </nav>
-        <p class="tag-note">Two blobs at different speeds, fused by an SVG filter. The stretch is a consequence, not a keyframe.</p>
+    <article class="cell">
+      <p class="cell-name">imageReveal</p>
+      <div class="cell-body flush">
+        <figure data-rm-image-reveal="left" data-rm-loop="4400" data-rm-color="#0b0b0b">
+          <img src="./assets/tiles/03.svg" alt="A plate uncovered by a sliding curtain">
+        </figure>
       </div>
+      <button class="cell-copy" data-copy='<figure data-rm-image-reveal="left"><img src="…" alt=""></figure>'>copy</button>
+    </article>
 
-      <div class="nav-demo" data-rm-reveal="up" data-rm-delay="180">
-        <p class="tag">dock</p>
-        <nav class="sample-dock" data-rm-dock aria-label="Example, dock">
-          <a href="#navigation">◐</a><a href="#navigation">◑</a><a href="#navigation">◒</a>
-          <a href="#navigation">◓</a><a href="#navigation">◔</a>
-        </nav>
-        <p class="tag-note">Magnification falls off over a distance, so it is elastic rather than a row of hover states.</p>
+    <article class="cell">
+      <p class="cell-name">pixelate <span class="cell-hint">hover</span></p>
+      <div class="cell-body flush">
+        <div class="pixel-holder" data-rm-pixel data-rm-columns="14" data-rm-color="#0b0b0b">
+          <img src="./assets/tiles/05.svg" alt="A plate dissolving into pixels">
+        </div>
       </div>
+      <button class="cell-copy" data-copy='<div data-rm-pixel data-rm-columns="16">…</div>'>copy</button>
+    </article>
 
-      <div class="nav-demo" data-rm-reveal="up" data-rm-delay="270">
-        <p class="tag">overlay</p>
-        <button class="btn btn-ghost" data-rm-overlay-open aria-controls="demo-menu" data-rm-magnetic>Open menu</button>
-        <p class="tag-note">Grows from the button you pressed. Escape closes it, focus is trapped, the page behind is inert.</p>
+    <article class="cell">
+      <p class="cell-name">scratch <span class="cell-hint">drag</span></p>
+      <div class="cell-body flush">
+        <div class="scratch-holder" data-rm-scratch data-rm-color="#1b1b1b" data-rm-hint="Reveal it">
+          <img src="./assets/tiles/06.svg" alt="A plate hidden under a scratch panel">
+        </div>
       </div>
-    </div>
+      <button class="cell-copy" data-copy="<div data-rm-scratch><img src='…' alt=''></div>">copy</button>
+    </article>
 
-    <div class="tabs-demo" data-rm-tabs data-rm-reveal="up">
-      <div class="tab-list">
-        <button class="tab" data-rm-tab>Direction</button>
-        <button class="tab" data-rm-tab>Keyboard</button>
-        <button class="tab" data-rm-tab>Honest</button>
+    <article class="cell cell-wide cell-tall">
+      <p class="cell-name">hoverPreview <span class="cell-hint">hover the rows</span></p>
+      <div class="cell-body preview-body">
+        <ul class="preview-list" data-rm-preview>
+          <li data-rm-preview-src="./assets/tiles/01.svg"><a href="#gallery">Aurora Studio</a><span>2026</span></li>
+          <li data-rm-preview-src="./assets/tiles/02.svg"><a href="#gallery">Northwind</a><span>2026</span></li>
+          <li data-rm-preview-src="./assets/tiles/03.svg"><a href="#gallery">Cassette</a><span>2025</span></li>
+          <li data-rm-preview-src="./assets/tiles/04.svg"><a href="#gallery">Field Notes</a><span>2025</span></li>
+        </ul>
       </div>
-      <div class="tab-panel" data-rm-tab-panel>
-        <p>Move right along the tabs and the panel arrives from the right; move back and it comes from the left. One comparison, and the difference between tabs that feel spatial and tabs that blink.</p>
+      <button class="cell-copy" data-copy='<ul data-rm-preview><li data-rm-preview-src="/a.jpg"><a href="#">…</a></li></ul>'>copy</button>
+    </article>
+
+    <article class="cell cell-wide cell-tall">
+      <p class="cell-name">imageTrail <span class="cell-hint">sweep the pointer</span></p>
+      <div class="cell-body trail-body" data-rm-image-trail data-rm-width="150"
+           data-rm-images="./assets/tiles/01.svg,./assets/tiles/02.svg,./assets/tiles/03.svg,./assets/tiles/04.svg,./assets/tiles/05.svg,./assets/tiles/06.svg">
+        <span class="trail-hint">move across</span>
       </div>
-      <div class="tab-panel" data-rm-tab-panel>
-        <p>A real tablist: arrow keys, Home and End, roving <code>tabindex</code>, and panels genuinely hidden when inactive rather than moved off screen.</p>
-      </div>
-      <div class="tab-panel" data-rm-tab-panel>
-        <p>Under reduced motion the slide is dropped and the switch is instant. The content is the point; the direction was the flourish.</p>
-      </div>
-    </div>
+      <button class="cell-copy" data-copy='<section data-rm-image-trail data-rm-images="/a.jpg,/b.jpg">…</section>'>copy</button>
+    </article>
   </div>
-</section>
 
-<!-- ── Buttons ──────────────────────────────────────────────────────────── -->
-<section class="section section-tight" id="buttons">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Buttons</p>
-    <h2 class="h2" data-rm-reveal="up">Decorated, never replaced.</h2>
-    <p class="body wide" data-rm-reveal="up">
-      Every one of these is a real <code>&lt;button&gt;</code> or
-      <code>&lt;a&gt;</code>. None adds a click handler or swallows an event,
-      so keyboard activation, form submission and middle-clicking a link all
-      behave exactly as before.
-    </p>
+  <!-- Navigation -->
+  <div class="shell rail"><span class="rail-name">Navigation</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">pill <span class="cell-hint">hover · tab</span></p>
+      <div class="cell-body nav-body">
+        <nav class="mini-nav" data-rm-pill data-rm-color="rgba(255,255,255,0.09)" aria-label="Pill example">
+          <a href="#gallery" aria-current="page">Work</a>
+          <a href="#gallery">Studio</a>
+          <a href="#gallery">Journal</a>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy='<nav data-rm-pill><a href="/" aria-current="page">Work</a></nav>'>copy</button>
+    </article>
 
-    <div class="button-row" data-rm-reveal="up">
-      <button class="btn btn-outline" data-rm-fill data-rm-color="#2aa7e4">Directional fill</button>
-      <button class="btn btn-primary" data-rm-shimmer>Shimmer</button>
-      <button class="btn btn-outline" data-rm-spark data-rm-color="#d28c65">Spark on press</button>
-      <button class="btn btn-outline" data-rm-swap="Downloading…">Download</button>
-      <button class="btn btn-outline" data-rm-ripple>Ripple</button>
-      <button class="btn btn-outline" data-rm-magnetic>Magnetic</button>
-    </div>
-    <p class="hint">The fill knows which edge you came in through. Leave from the other side and watch it retreat that way.</p>
+    <article class="cell">
+      <p class="cell-name">gooey <span class="cell-hint">hover · tab</span></p>
+      <div class="cell-body nav-body">
+        <nav class="mini-nav is-gooey" data-rm-gooey aria-label="Gooey example">
+          <a href="#gallery" aria-current="page">Home</a>
+          <a href="#gallery">Cases</a>
+          <a href="#gallery">About</a>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy='<nav data-rm-gooey><a href="/" aria-current="page">Home</a></nav>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">overlay <span class="cell-hint">keyboard safe</span></p>
+      <div class="cell-body nav-body">
+        <button class="ghost" data-rm-overlay-open aria-controls="menu" data-rm-magnetic>Open full-screen menu</button>
+      </div>
+      <button class="cell-copy" data-copy='<button data-rm-overlay-open aria-controls="menu">Menu</button>'>copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">tabs <span class="cell-hint">arrow keys</span></p>
+      <div class="cell-body tabs-body" data-rm-tabs>
+        <div class="tab-list">
+          <button class="tab" data-rm-tab>Direction</button>
+          <button class="tab" data-rm-tab>Keyboard</button>
+          <button class="tab" data-rm-tab>Reduced</button>
+        </div>
+        <div class="tab-panel" data-rm-tab-panel><p>Move right and the panel arrives from the right; move back and it comes from the left. One comparison, and the difference between tabs that feel spatial and tabs that blink.</p></div>
+        <div class="tab-panel" data-rm-tab-panel><p>A real tablist: arrow keys, Home and End, roving <code>tabindex</code>, and panels genuinely hidden when inactive rather than parked off screen.</p></div>
+        <div class="tab-panel" data-rm-tab-panel><p>Under reduced motion the slide is dropped and the switch is instant. The content was the point; the direction was the flourish.</p></div>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-tabs><button data-rm-tab>One</button><div data-rm-tab-panel>…</div></div>">copy</button>
+    </article>
   </div>
 </section>
 
 <!-- ── Scroll ───────────────────────────────────────────────────────────── -->
 <section class="section" id="scroll">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Scroll</p>
-    <h2 class="h2" data-rm-reveal="up">Tied to position, never to a timer.</h2>
-
-    <article class="tracing-demo" data-rm-tracing>
-      <p class="body">
-        A line drawn down the article as you read it — a real path revealed
-        with <code>stroke-dashoffset</code>, which is why it can curve and why
-        the glowing head sits exactly on it.
+  <div class="shell">
+    <header class="head">
+      <p class="mono-label accent">03 — Scroll</p>
+      <h2 class="h2">Tied to position, never to a timer.</h2>
+      <p class="lede">
+        Which means every one of these runs backwards too. An animation that
+        only plays forwards feels broken the instant somebody scrolls the other
+        way — and most of them do.
       </p>
-      <p class="body">
-        Because it is bound to reading position rather than played once,
-        scrolling back up un-draws it. An animation that only runs forwards
-        feels broken the instant somebody scrolls the other way, and that is
-        most of them.
+    </header>
+
+    <article class="tracing" data-rm-tracing>
+      <p class="cell-name">tracing</p>
+      <p class="prose">
+        A line drawn down the article as you read it: a real path revealed with
+        <code>stroke-dashoffset</code>, which is why it can curve and why the
+        glowing head sits exactly on it.
+      </p>
+      <p class="prose">
+        <span data-rm-highlight>And here is <b>highlight</b> — the paragraph fills word by word as it
+        crosses the viewport. The unlit state is a muted colour, never an
+        opacity of zero, because prose you cannot read until you have scrolled
+        far enough is a reading tax.</span>
       </p>
     </article>
 
-    <div class="flatten-holder" data-rm-reveal="up">
+    <div class="scroll-pair">
+      <div class="parallax-frame">
+        <p class="cell-name">parallax</p>
+        <div class="parallax-stack">
+          <img data-rm-parallax="0.14" src="./assets/tiles/02.svg" alt="Back plate">
+          <img data-rm-parallax="-0.09" src="./assets/tiles/05.svg" alt="Front plate">
+        </div>
+      </div>
+
+      <div class="scrub-frame">
+        <p class="cell-name">scrub</p>
+        <div class="scrub-demo" data-rm-scrub>
+          <div class="scrub-bar"><i></i></div>
+          <p class="prose small">
+            <code>--rm-progress</code> runs 0 → 1 as this block crosses the
+            viewport, and the stylesheet decides what that means. Anything
+            expressible in CSS becomes scroll-driven without another component.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flatten-frame">
+      <p class="cell-name">flatten</p>
       <div data-rm-flatten>
         <img src="./assets/after.svg" alt="A panel lying flat as it scrolls into view" loading="lazy">
       </div>
     </div>
-    <p class="hint centred">flatten — the panel lies down as it arrives, and tilts back if you scroll away.</p>
+
+    <div class="stack-frame">
+      <p class="cell-name">stack</p>
+      <div data-rm-stack>
+        <article class="stack-card" data-rm-card><b>01</b><p>Cards pile up and shrink as you pass them. The sticking is CSS <code>position: sticky</code>; only scale and brightness are computed.</p></article>
+        <article class="stack-card" data-rm-card><b>02</b><p>Each card sticks a little lower than the last, so the pile stays visible at the top rather than hiding behind the front one.</p></article>
+        <article class="stack-card" data-rm-card><b>03</b><p>Under reduced motion the whole effect is dropped and they are simply three cards, in order.</p></article>
+      </div>
+    </div>
+
+    <section class="sticky-frame" data-rm-sticky>
+      <p class="cell-name">sticky</p>
+      <div class="sticky-grid">
+        <div class="sticky-media" data-rm-sticky-media>
+          <img data-rm-sticky-frame src="./assets/tiles/01.svg" alt="Plate for the first panel">
+          <img data-rm-sticky-frame src="./assets/tiles/03.svg" alt="Plate for the second panel">
+          <img data-rm-sticky-frame src="./assets/tiles/05.svg" alt="Plate for the third panel">
+        </div>
+        <div class="sticky-panels">
+          <div data-rm-sticky-panel><h3>One pinned visual</h3><p>The pin is CSS. The only JavaScript decides which panel is in the reading position and swaps the image to match.</p></div>
+          <div data-rm-sticky-panel><h3>Text stays text</h3><p>The panels are ordinary stacked content, so on a narrow screen you drop the sticky rule in a media query and it degrades to a normal article.</p></div>
+          <div data-rm-sticky-panel><h3>No second code path</h3><p>No JavaScript branch for mobile, no separate template. The same markup, one rule lighter.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="horizontal-frame" data-rm-horizontal>
+      <div class="horizontal-track" data-rm-track>
+        <div class="h-card"><p class="cell-name">horizontal</p><p class="prose small">Vertical scroll distance is mapped to horizontal travel by giving the wrapper height.</p></div>
+        <div class="h-card"><p class="prose small">It never hijacks the wheel, so the trackpad, the keyboard and the scrollbar all keep working.</p></div>
+        <div class="h-card"><p class="prose small">Which is exactly what the transform-and-wheel-listener version breaks, every time.</p></div>
+        <div class="h-card"><p class="prose small">And under reduced motion it becomes a plain horizontally scrollable strip.</p></div>
+      </div>
+    </section>
   </div>
 </section>
 
 <!-- ── Compare ──────────────────────────────────────────────────────────── -->
-<section class="section section-tight">
-  <div class="wrap">
-    <div class="split">
-      <div data-rm-reveal="up">
-        <p class="kicker">compare</p>
-        <h2 class="h2">Before and after, with the keyboard too.</h2>
-        <p class="body">
-          Almost every before/after slider on the web is pointer-only, which
-          leaves it unusable on a keyboard and invisible to a screen reader.
-          This is a real <code>role="slider"</code>: arrows, Home, End, and an
-          announced value. Dragging is the enhancement, not the only door.
-        </p>
-        <button class="copy" data-copy='<div data-rm-compare>
+<section class="section" id="compare">
+  <div class="shell split">
+    <div>
+      <p class="mono-label accent">04 — compare</p>
+      <h2 class="h2">Before and after, with the keyboard too.</h2>
+      <p class="lede">
+        Almost every before/after slider on the web is pointer-only, which
+        leaves it unusable on a keyboard and invisible to a screen reader. This
+        is a real <code>role="slider"</code>: arrows, Home, End and an announced
+        value. Dragging is the enhancement, not the only door.
+      </p>
+      <button class="cell-copy inline" data-copy='<div data-rm-compare>
   <img data-rm-before src="before.jpg" alt="Before">
   <img data-rm-after src="after.jpg" alt="After">
 </div>'>copy markup</button>
+    </div>
+    <div>
+      <div class="compare-frame" data-rm-compare data-rm-label="Compare before and after">
+        <img data-rm-before src="./assets/before.svg" alt="Without motion">
+        <img data-rm-after src="./assets/after.svg" alt="With rage-motion">
       </div>
-      <div class="compare-holder" data-rm-reveal="up" data-rm-delay="120">
-        <div data-rm-compare data-rm-label="Compare before and after">
-          <img data-rm-before src="./assets/before.svg" alt="Without motion">
-          <img data-rm-after src="./assets/after.svg" alt="With rage-motion">
-        </div>
-        <p class="hint">Drag it, or focus the handle and use ← →</p>
-      </div>
+      <p class="hint">Drag it, or focus the handle and use ← →</p>
     </div>
   </div>
 </section>
 
 <!-- ── MCP ──────────────────────────────────────────────────────────────── -->
-<section class="section section-dark" id="mcp">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">The part nobody else ships</p>
-    <h2 class="h2 big" data-rm-text="words" data-rm-effect="rise">
-      Teach these components to your AI
-    </h2>
-    <p class="body wide" data-rm-reveal="up">
-      Ask any assistant for a scroll reveal and it writes the same snippet it
-      has written ten thousand times. It is not careless — it has no idea what
-      is already in your project, so it writes the most average thing that
-      could possibly work.
-    </p>
+<section class="section section-accent" id="mcp">
+  <div class="shell">
+    <header class="head">
+      <p class="mono-label accent">05 — MCP</p>
+      <h2 class="h2">Teach these components to your AI.</h2>
+      <p class="lede">
+        Ask any assistant for a scroll reveal and it writes the same snippet it
+        has written ten thousand times. It is not careless — it has no idea what
+        is already in your project, so it writes the most average thing that
+        could possibly work.
+      </p>
+    </header>
 
-    <div class="mcp-grid">
-      <div class="mcp-before" data-rm-reveal="up">
-        <p class="tag tag-bad">Without MCP</p>
+    <div class="mcp-pair">
+      <div class="mcp-card is-bad">
+        <p class="mono-label">Without MCP</p>
 <pre><code>window.addEventListener("scroll", () =&gt; {
   document.querySelectorAll(".fade").forEach((el) =&gt; {
     if (el.getBoundingClientRect().top &lt; innerHeight)
       el.classList.add("show");
   });
 });</code></pre>
-        <p class="tag-note">A layout read per element per event. And a <code>.fade { opacity: 0 }</code> waiting for the day the script does not load.</p>
+        <p class="note">A layout read per element per event. And a <code>.fade { opacity: 0 }</code> waiting for the day the script does not load.</p>
       </div>
 
-      <div class="mcp-after" data-rm-reveal="up" data-rm-delay="120">
-        <p class="tag tag-good">With MCP</p>
+      <div class="mcp-card is-good">
+        <p class="mono-label accent">With MCP</p>
 <pre><code>&lt;div data-rm-reveal="up" data-rm-delay="120"&gt;…&lt;/div&gt;</code></pre>
-        <p class="tag-note">It looks before it writes, finds the component you already have, and tells you why it chose it — because the reasoning travels with the component.</p>
+        <p class="note">It looks before it writes, finds the component you already have, and tells you why it chose it — because the reasoning travels with the component.</p>
       </div>
     </div>
 
-    <div class="install" data-rm-reveal="up">
-      <h3>Ten seconds to install</h3>
+    <div class="install">
       <div class="install-row">
         <span>Claude Code</span>
-        <button class="copy mono" data-copy="claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp">claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp</button>
+        <button class="cell-copy wide" data-copy="claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp">claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp</button>
       </div>
       <div class="install-row">
         <span>Cursor · Claude Desktop</span>
-        <button class="copy mono" data-copy='{"mcpServers":{"rage-motion":{"command":"npx","args":["-y","@soyrageagency/rage-motion-mcp"]}}}'>{"mcpServers": {"rage-motion": {"command": "npx", …}}}</button>
+        <button class="cell-copy wide" data-copy='{"mcpServers":{"rage-motion":{"command":"npx","args":["-y","@soyrageagency/rage-motion-mcp"]}}}'>{"mcpServers": {"rage-motion": {"command": "npx", …}}}</button>
       </div>
       <p class="hint">No key, no account, no network. The server only reads files from the installed package.</p>
     </div>
@@ -479,21 +802,25 @@
 
 <!-- ── Start ────────────────────────────────────────────────────────────── -->
 <section class="section" id="start">
-  <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Start</p>
-    <div class="start">
-      <div class="start-card" data-rm-reveal="up" data-rm-glare>
+  <div class="shell">
+    <header class="head">
+      <p class="mono-label accent">06 — Start</p>
+      <h2 class="h2">Three ways in.</h2>
+    </header>
+
+    <div class="start-grid">
+      <div class="start-card" data-rm-glare>
         <h3>One file</h3>
         <p>Every component depends only on <code>core/motion.js</code>. Take the two and go — that is how most people will use this, and it is designed for exactly that.</p>
       </div>
-      <div class="start-card" data-rm-reveal="up" data-rm-delay="90" data-rm-glare>
+      <div class="start-card" data-rm-glare>
         <h3>The package</h3>
 <pre><code>npm i @soyrageagency/rage-motion</code></pre>
 <pre><code>import { init } from "@soyrageagency/rage-motion";
 import "@soyrageagency/rage-motion/css";
 init();</code></pre>
       </div>
-      <div class="start-card" data-rm-reveal="up" data-rm-delay="180" data-rm-glare>
+      <div class="start-card" data-rm-glare>
         <h3>No build</h3>
 <pre><code>&lt;link rel="stylesheet" href="…/rage-motion.css"&gt;
 &lt;script type="module"&gt;
@@ -509,15 +836,15 @@ init();</code></pre>
 
 <!-- ── Footer ───────────────────────────────────────────────────────────── -->
 <footer class="footer">
-  <div class="wrap footer-inner">
+  <div class="shell footer-inner">
     <div>
       <p class="footer-brand">rage-motion</p>
-      <p class="footer-note">
+      <p class="note">
         Built by <a href="https://soyrage.es/">SoyRage Agency</a> — design,
-        development and motion. MIT: take it, change it, sell it.
+        development and motion. MIT: take it, change it, ship it.
       </p>
     </div>
-    <nav class="footer-links">
+    <nav class="footer-links" aria-label="Elsewhere">
       <a href="https://github.com/soyrageagency/rage-motion">GitHub</a>
       <a href="https://www.npmjs.com/package/@soyrageagency/rage-motion">npm</a>
       <a href="https://github.com/soyrageagency/rage-motion/blob/main/ROADMAP.md">Roadmap</a>
@@ -526,16 +853,16 @@ init();</code></pre>
   </div>
 </footer>
 
-<!-- The overlay menu sits last in the body so it can make its siblings inert. -->
-<div id="demo-menu" class="overlay-menu" data-rm-overlay hidden>
+<!-- Last in the body, so it can mark its siblings inert while it is open. -->
+<div id="menu" class="menu" data-rm-overlay hidden>
   <nav aria-label="Full screen menu">
-    <a href="#components">Components</a>
-    <a href="#carousels">Carousels</a>
-    <a href="#navigation">Navigation</a>
-    <a href="#buttons">Buttons</a>
-    <a href="#mcp">For your AI</a>
+    <a href="#index">Index</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#scroll">Scroll</a>
+    <a href="#mcp">MCP</a>
+    <a href="#start">Start</a>
   </nav>
-  <p class="overlay-hint">Escape closes · focus is trapped in here</p>
+  <p class="menu-hint">Escape closes · focus is trapped in here</p>
 </div>
 
 <div class="toast" role="status" aria-live="polite" hidden></div>

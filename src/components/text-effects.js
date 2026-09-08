@@ -19,7 +19,10 @@
 
 /* eslint-env browser */
 
-import { dataNumber, dataString, onFrame, prefersReducedMotion, resolveElements, watch } from "../core/motion.js";
+import {
+  dataNumber, dataString, loopWhileVisible, onFrame,
+  prefersReducedMotion, resolveElements,
+} from "../core/motion.js";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+=/\\<>[]{}";
 
@@ -77,7 +80,7 @@ export function decrypt(target = "[data-rm-decrypt]", options = {}) {
       cleanups.push(stopFrame);
     };
 
-    cleanups.push(watch(element, run, { threshold, once }));
+    cleanups.push(loopWhileVisible(element, run, dataNumber(element, "rmLoop", 0)));
   }
 
   return () => cleanups.forEach((stop) => stop?.());
@@ -220,7 +223,7 @@ export function countUp(target = "[data-rm-count]", options = {}) {
     };
 
     if (!prefersReducedMotion()) element.textContent = format(0);
-    cleanups.push(watch(element, run, { threshold, once }));
+    cleanups.push(loopWhileVisible(element, run, dataNumber(element, "rmLoop", 0)));
   }
 
   return () => cleanups.forEach((stop) => stop?.());

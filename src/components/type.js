@@ -20,8 +20,8 @@
 /* eslint-env browser */
 
 import {
-  clamp, dataNumber, dataString, EASE, lerp, onFrame,
-  prefersReducedMotion, resolveElements, watch,
+  clamp, dataNumber, dataString, EASE, lerp, loopWhileVisible, onFrame,
+  prefersReducedMotion, resolveElements,
 } from "../core/motion.js";
 import { split } from "../core/split.js";
 
@@ -397,7 +397,7 @@ export function odometer(target = "[data-rm-odometer]", options = {}) {
       });
     };
 
-    cleanups.push(watch(element, settle, { threshold, once: true }));
+    cleanups.push(loopWhileVisible(element, settle, dataNumber(element, "rmLoop", 0)));
     cleanups.push(() => {
       element.classList.remove("rm-odometer");
       element.textContent = source;

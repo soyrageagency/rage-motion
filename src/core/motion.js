@@ -161,6 +161,36 @@ export function whileVisible(element, start) {
   };
 }
 
+/**
+ * Play something once when an element arrives, and again on an interval while
+ * it stays on screen.
+ *
+ * A one-shot effect is right on a real page: a headline should assemble itself
+ * as you reach it and then stay put. But it makes a component gallery useless
+ * — you arrive, the effect has already finished, and there is nothing to see.
+ * `data-rm-loop="4000"` opts an element into repeating, and nothing repeats
+ * without it.
+ *
+ * The interval only runs while the element is visible and the tab is in front,
+ * so a page of these is not re-animating in a background tab.
+ *
+ * @param {Element} element
+ * @param {() => void} play
+ * @param {number} interval milliseconds between replays; 0 means play once
+ * @returns {() => void}
+ */
+export function loopWhileVisible(element, play, interval) {
+  if (!interval || interval <= 0 || prefersReducedMotion()) {
+    return watch(element, play, { threshold: 0.35, once: true });
+  }
+
+  return whileVisible(element, () => {
+    play();
+    const timer = setInterval(play, interval);
+    return () => clearInterval(timer);
+  });
+}
+
 /** Accept a selector, an element, a NodeList or an array. */
 export function resolveElements(target) {
   if (!target) return [];

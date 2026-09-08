@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Maqueta de una web sin animación: gris, plana y sin jerarquía">
-  <title>Sin animación</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="A flat, grey page mock with no hierarchy">
+  <title>Without motion</title>
   <rect width="800" height="600" fill="#e6e4e0"/>
 
   <!-- barra -->
@@ -27,5 +27,5 @@
   <rect x="322" y="470" width="156" height="8" rx="4" fill="#cdc9c2"/>
   <rect x="556" y="470" width="156" height="8" rx="4" fill="#cdc9c2"/>
 
-  <text x="64" y="96" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="15" letter-spacing="2" fill="#8d8981">ANTES</text>
+  <text x="64" y="96" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="15" letter-spacing="2" fill="#8d8981">BEFORE</text>
 </svg>

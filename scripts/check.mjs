@@ -116,6 +116,15 @@ async function run(browser, { reducedMotion }) {
     split: document.querySelectorAll(".rm-split").length,
     glare: document.querySelectorAll(".rm-glare").length,
     morph: document.querySelectorAll(".rm-morph-stage").length,
+    fields: document.querySelectorAll(".rm-waves, .rm-dots, .rm-retro").length,
+    ringImages: document.querySelectorAll(".rm-ring-item").length,
+    preview: document.querySelectorAll(".rm-preview").length,
+    scratch: document.querySelectorAll(".rm-scratch-layer").length,
+    pixel: document.querySelectorAll(".rm-pixel-grid").length,
+    stack: document.querySelectorAll(".rm-stack-card").length,
+    sticky: document.querySelectorAll(".rm-sticky-frame").length,
+    trailLight: document.querySelectorAll(".rm-trail-light").length,
+    beamSvg: document.querySelectorAll(".rm-beam > svg").length,
     odometer: document.querySelectorAll(".rm-odometer-column").length,
     highlight: document.querySelectorAll(".rm-highlight-word").length,
     lines: document.querySelectorAll(".rm-lines i").length,
@@ -136,11 +145,18 @@ async function run(browser, { reducedMotion }) {
   }));
 
   check(`${label}: text was split`, started.split > 0, JSON.stringify(started));
-  check(`${label}: glare surfaces initialised`, started.glare >= 6, String(started.glare));
-  check(`${label}: morph mounted`, started.morph === 2, String(started.morph));
+  check(`${label}: glare surfaces initialised`, started.glare >= 4, String(started.glare));
+  check(`${label}: morph mounted`, started.morph === 1, String(started.morph));
+  check(`${label}: the four generative fields are drawing`, started.fields === 4, String(started.fields));
+  check(`${label}: hover preview mounted`, started.preview === 1, String(started.preview));
+  check(`${label}: scratch panel painted`, started.scratch === 1, String(started.scratch));
+  check(`${label}: pixel grid built`, started.pixel === 1, String(started.pixel));
+  check(`${label}: stack cards mounted`, started.stack === 3, String(started.stack));
+  check(`${label}: sticky frames mounted`, started.sticky === 3, String(started.sticky));
+  check(`${label}: beam drew its curve`, started.beamSvg === 1, String(started.beamSvg));
   check(`${label}: odometer built its digit columns`, started.odometer >= 8, String(started.odometer));
   check(`${label}: highlight split its paragraph`, started.highlight > 20, String(started.highlight));
-  check(`${label}: line field built`, started.lines === 55, String(started.lines));
+  check(`${label}: line field built`, started.lines === 91, String(started.lines));
   check(`${label}: orbit placed its items`, started.orbit === 4, String(started.orbit));
   check(`${label}: carousel took its slides`, started.carousel === 6, String(started.carousel));
   check(`${label}: ring placed its faces`, started.ringItems === 6, String(started.ringItems));
@@ -151,9 +167,9 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: tabs are a real tablist`, started.tabs === 3, String(started.tabs));
   check(`${label}: compare is a real slider`, started.compare === 1, String(started.compare));
   check(`${label}: progress bar mounted`, started.progress === 1, String(started.progress));
-  check(`${label}: the hero field is drawing`, started.waves === 1, String(started.waves));
+  check(`${label}: the wave fields are drawing`, started.waves === 2, String(started.waves));
   check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));
-  check(`${label}: directional fills mounted`, started.fill >= 3, String(started.fill));
+  check(`${label}: directional fills mounted`, started.fill >= 2, String(started.fill));
   check(`${label}: swap has both faces`, started.swap === 2, String(started.swap));
 
   // Scroll the whole page, then check nothing readable is left invisible.
@@ -177,17 +193,17 @@ async function run(browser, { reducedMotion }) {
 
   // The accessible name has to survive text splitting.
   const headline = await page.evaluate(() => {
-    const h2 = document.querySelector("h2[data-rm-text]");
-    return { label: h2?.getAttribute("aria-label") ?? "", text: h2?.textContent?.trim() ?? "" };
+    const el = document.querySelector("[data-rm-text]");
+    return { label: el?.getAttribute("aria-label") ?? "", text: el?.textContent?.trim() ?? "" };
   });
   check(
     `${label}: split headline keeps its accessible name`,
-    headline.label === "Everything here is running",
+    headline.label === "Character by character",
     headline.label,
   );
   check(
     `${label}: split headline keeps its text for copy-paste`,
-    headline.text.replace(/\s+/g, " ") === "Everything here is running",
+    headline.text.replace(/\s+/g, " ") === "Character by character",
     headline.text,
   );
 
@@ -204,7 +220,7 @@ async function run(browser, { reducedMotion }) {
   );
   check(
     `${label}: morph announces every word, not just the visible one`,
-    morphLabel.includes("portfolios") && morphLabel.includes("launches"),
+    morphLabel.includes("Motion") && morphLabel.includes("Nation"),
     morphLabel,
   );
 
@@ -226,7 +242,7 @@ async function menu(browser) {
 
   console.log("\noverlay menu");
 
-  const trigger = page.locator("[data-rm-overlay-open]");
+  const trigger = page.locator("[data-rm-overlay-open]").last();
   await trigger.scrollIntoViewIfNeeded();
   check("menu: starts closed and says so", (await trigger.getAttribute("aria-expanded")) === "false");
 
@@ -239,6 +255,8 @@ async function menu(browser) {
       hidden: panel.hidden,
       focusInside: panel.contains(document.activeElement),
       expanded: document.querySelector("[data-rm-overlay-open]").getAttribute("aria-expanded"),
+      everyTriggerAgrees: [...document.querySelectorAll("[data-rm-overlay-open]")]
+        .every((b) => b.getAttribute("aria-expanded") === "true"),
       siblingsInert: [...document.body.children]
         .filter((el) => el !== panel && !el.contains(document.querySelector("[data-rm-overlay-open]")))
         .every((el) => el.inert || el === panel),
@@ -248,6 +266,7 @@ async function menu(browser) {
   check("menu: moves focus inside", opened.focusInside === true);
   check("menu: reports itself expanded", opened.expanded === "true");
   check("menu: makes the rest of the page inert", opened.siblingsInert === true);
+  check("menu: every trigger reports it open", opened.everyTriggerAgrees === true);
 
   await page.keyboard.press("Escape");
   await wait(700);
@@ -257,7 +276,7 @@ async function menu(browser) {
     const button = document.querySelector("[data-rm-overlay-open]");
     return {
       hidden: panel.hidden,
-      focusReturned: document.activeElement === button,
+      focusReturned: [...document.querySelectorAll("[data-rm-overlay-open]")].includes(document.activeElement),
       expanded: button.getAttribute("aria-expanded"),
       inertCleared: [...document.body.children].every((el) => !el.inert),
     };

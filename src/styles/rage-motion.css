@@ -503,6 +503,13 @@ html.rm-cursor-active * { cursor: none !important; }
   height: 1em;
   overflow: hidden;
   line-height: 1;
+  /*
+   * Fade the top and bottom of the window. A digit box is one em, but the ink
+   * of a display face is taller than that, so a hard edge slices the digits
+   * above and below mid-stroke while the wheel turns. Fading reads as depth
+   * rather than as clipping.
+   */
+  mask: linear-gradient(to bottom, transparent, #000 26%, #000 74%, transparent);
 }
 .rm-odometer-strip { display: block; will-change: transform; }
 .rm-odometer-strip span { display: block; height: 1em; line-height: 1; }
@@ -530,9 +537,10 @@ html.rm-cursor-active * { cursor: none !important; }
   top: 0;
   left: 0;
   width: var(--rm-trail-size, 60px);
-  height: 2px;
+  height: 3px;
   border-radius: var(--rm-radius-pill);
   background: linear-gradient(90deg, transparent, var(--rm-trail-color, #2aa7e4), transparent);
+  box-shadow: 0 0 12px 1px var(--rm-trail-color, #2aa7e4);
   offset-distance: 0%;
   offset-rotate: auto;
   animation: rm-trail-run var(--rm-trail-duration, 4s) linear infinite;

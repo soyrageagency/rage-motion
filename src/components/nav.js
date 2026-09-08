@@ -279,21 +279,26 @@ export function overlay(target = "[data-rm-overlay]", options = {}) {
   const cleanups = [];
 
   for (const panel of panels) {
-    const button = panel.id
-      ? document.querySelector(`${trigger}[aria-controls="${panel.id}"]`) ?? document.querySelector(trigger)
-      : document.querySelector(trigger);
-    if (!button) continue;
+    // More than one button may open the same menu — one in the header, one in
+    // the page — so every match is wired, and the one actually pressed decides
+    // where the panel grows from.
+    const buttons = panel.id
+      ? [...document.querySelectorAll(`${trigger}[aria-controls="${panel.id}"]`)]
+      : [...document.querySelectorAll(trigger)];
+    if (!buttons.length) continue;
+    const button = buttons[0];
 
     panel.classList.add("rm-overlay");
     panel.hidden = true;
-    button.setAttribute("aria-expanded", "false");
+    buttons.forEach((one) => one.setAttribute("aria-expanded", "false"));
 
     const links = [...panel.querySelectorAll(FOCUSABLE)];
     let open = false;
     let returnTo = null;
 
+    let from = button;
     const setOrigin = () => {
-      const box = button.getBoundingClientRect();
+      const box = from.getBoundingClientRect();
       panel.style.setProperty("--rm-overlay-x", `${box.left + box.width / 2}px`);
       panel.style.setProperty("--rm-overlay-y", `${box.top + box.height / 2}px`);
     };
@@ -322,10 +327,15 @@ export function overlay(target = "[data-rm-overlay]", options = {}) {
       panel.hidden = false;
       // Let the browser lay the panel out before the clip animates.
       requestAnimationFrame(() => panel.classList.add("is-open"));
-      button.setAttribute("aria-expanded", "true");
+      buttons.forEach((one) => one.setAttribute("aria-expanded", "true"));
       document.documentElement.classList.add("rm-overlay-locked");
+      // Everything except the panel, including whatever holds the trigger.
+      // The button is behind a full-screen overlay at this point, so leaving
+      // its branch reachable would let a screen reader wander behind the menu
+      // — which is the whole thing this is here to prevent. It is cleared
+      // before focus is handed back.
       for (const sibling of document.body.children) {
-        if (sibling !== panel && sibling !== button && !sibling.contains(button)) sibling.inert = true;
+        if (sibling !== panel) sibling.inert = true;
       }
       if (!prefersReducedMotion()) {
         links.forEach((link, index) => {
@@ -342,18 +352,23 @@ export function overlay(target = "[data-rm-overlay]", options = {}) {
       if (!open) return;
       open = false;
       panel.classList.remove("is-open");
-      button.setAttribute("aria-expanded", "false");
+      buttons.forEach((one) => one.setAttribute("aria-expanded", "false"));
       document.documentElement.classList.remove("rm-overlay-locked");
       for (const sibling of document.body.children) sibling.inert = false;
 
       const finish = () => { panel.hidden = true; };
       if (prefersReducedMotion()) finish();
       else setTimeout(finish, duration * 0.7);
-      returnTo instanceof HTMLElement ? returnTo.focus({ preventScroll: true }) : button.focus();
+      if (returnTo instanceof HTMLElement) returnTo.focus({ preventScroll: true });
+      else from.focus({ preventScroll: true });
     }
 
-    const toggle = () => (open ? close() : show());
-    button.addEventListener("click", toggle);
+    const toggle = (event) => {
+      from = event.currentTarget;
+      if (open) close();
+      else show();
+    };
+    buttons.forEach((one) => one.addEventListener("click", toggle));
     document.addEventListener("keydown", onKey);
     addEventListener("resize", setOrigin);
     // A link inside the menu should close it on the way out.
@@ -363,12 +378,12 @@ export function overlay(target = "[data-rm-overlay]", options = {}) {
 
     cleanups.push(() => {
       close();
-      button.removeEventListener("click", toggle);
+      buttons.forEach((one) => one.removeEventListener("click", toggle));
       document.removeEventListener("keydown", onKey);
       removeEventListener("resize", setOrigin);
       panel.classList.remove("rm-overlay", "is-open");
       panel.hidden = false;
-      button.removeAttribute("aria-expanded");
+      buttons.forEach((one) => one.removeAttribute("aria-expanded"));
     });
   }
 

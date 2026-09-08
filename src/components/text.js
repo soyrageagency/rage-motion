@@ -26,7 +26,10 @@
 
 /* eslint-env browser */
 
-import { animate, dataNumber, dataString, EASE, prefersReducedMotion, resolveElements, watch } from "../core/motion.js";
+import {
+  animate, dataNumber, dataString, EASE, loopWhileVisible,
+  prefersReducedMotion, resolveElements,
+} from "../core/motion.js";
 import { resplitOnResize, split } from "../core/split.js";
 
 /** The motion each piece performs. */
@@ -125,7 +128,9 @@ export function textReveal(target = "[data-rm-text]", options = {}) {
     };
 
     cleanups.push(
-      watch(element, () => play(pieces), { threshold, once }),
+      // A replay has to put the pieces back before it plays them again, or
+      // the second run animates from the finished state to the finished state.
+      loopWhileVisible(element, () => { hide(pieces); play(pieces); }, dataNumber(element, "rmLoop", 0)),
       // Line splitting depends on layout, so a width change invalidates it.
       resplitOnResize(element, splitBy, (next) => {
         pieces = next;

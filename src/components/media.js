@@ -15,8 +15,8 @@
 /* eslint-env browser */
 
 import {
-  clamp, dataNumber, dataString, EASE, lerp, onFrame,
-  prefersReducedMotion, resolveElements, watch,
+  clamp, dataNumber, dataString, EASE, lerp, loopWhileVisible, onFrame,
+  prefersReducedMotion, resolveElements,
 } from "../core/motion.js";
 
 /**
@@ -84,7 +84,7 @@ export function imageReveal(target = "[data-rm-image-reveal]", options = {}) {
       element.classList.add("rm-revealed");
     };
 
-    cleanups.push(watch(element, run, { threshold, once: true }));
+    cleanups.push(loopWhileVisible(element, run, dataNumber(element, "rmLoop", 0)));
   }
 
   return () => cleanups.forEach((stop) => stop());
@@ -257,17 +257,18 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
 
   for (const element of elements) {
     const original = element.innerHTML;
+    const space = dataNumber(element, "rmGap", gap);
     const pxPerSecond = dataNumber(element, "rmSpeed", speed);
     const dir = dataString(element, "rmDirection", direction) === "right" ? 1 : -1;
 
     element.classList.add("rm-marquee");
     const track = document.createElement("div");
     track.className = "rm-marquee-track";
-    track.style.gap = `${gap}px`;
+    track.style.gap = `${space}px`;
 
     const group = document.createElement("div");
     group.className = "rm-marquee-group";
-    group.style.gap = `${gap}px`;
+    group.style.gap = `${space}px`;
     group.innerHTML = original;
     track.appendChild(group);
     element.replaceChildren(track);
@@ -277,7 +278,7 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
       // Rebuild from one copy, then add copies until the track is at least
       // twice the viewport: enough that a reset is never visible.
       track.replaceChildren(group);
-      copyWidth = group.getBoundingClientRect().width + gap;
+      copyWidth = group.getBoundingClientRect().width + space;
       if (copyWidth <= 0) return;
       const needed = Math.ceil((innerWidth * 2) / copyWidth);
       for (let i = 0; i < needed; i++) {
