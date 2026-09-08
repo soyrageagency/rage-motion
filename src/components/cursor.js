@@ -241,3 +241,146 @@ export function magnetic(target = "[data-rm-magnetic]", options = {}) {
 
   return () => cleanups.forEach((stop) => stop());
 }
+
+/**
+ * A bracket that snaps around whatever you point at.
+ *
+ * Four corners that hold a small square while travelling, then spring open to
+ * frame a link or a button — the cursor a piece of software would have, rather
+ * than a decorative dot. It reads the target's own border radius so it frames
+ * a pill as a pill.
+ *
+ * The corners are one element with four children, so snapping is one transform
+ * and one size change rather than four independent animations racing.
+ */
+export function target(options = {}) {
+  if (!hasFinePointer()) return () => {};
+
+  const {
+    size = 22,
+    corner = 7,
+    thickness = 2,
+    padding = 8,
+    ease = 0.2,
+    color = "#2aa7e4",
+    targets = "a, button, [data-rm-cursor-hover], input[type='submit'], summary",
+  } = options;
+
+  const frame = document.createElement("div");
+  frame.className = "rm-target";
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.setProperty("--rm-target-color", color);
+  frame.style.setProperty("--rm-target-corner", `${corner}px`);
+  frame.style.setProperty("--rm-target-thickness", `${thickness}px`);
+  frame.innerHTML = "<i></i><i></i><i></i><i></i>";
+  document.body.appendChild(frame);
+
+  const box = { x: innerWidth / 2, y: innerHeight / 2, w: size, h: size };
+  const goal = { ...box };
+  let moved = false;
+
+  const onMove = (event) => {
+    if (!moved) {
+      moved = true;
+      frame.classList.add("is-visible");
+    }
+    const hit = event.target instanceof Element ? event.target.closest(targets) : null;
+
+    if (hit) {
+      const rect = hit.getBoundingClientRect();
+      goal.x = rect.left + rect.width / 2;
+      goal.y = rect.top + rect.height / 2;
+      goal.w = rect.width + padding * 2;
+      goal.h = rect.height + padding * 2;
+      // Match the shape it is framing, capped so a circle does not turn the
+      // brackets into arcs that read as a loading spinner.
+      const radius = parseFloat(getComputedStyle(hit).borderTopLeftRadius) || 0;
+      frame.style.setProperty("--rm-target-corner", `${Math.min(radius + padding, 22)}px`);
+      frame.classList.add("is-locked");
+    } else {
+      goal.x = event.clientX;
+      goal.y = event.clientY;
+      goal.w = size;
+      goal.h = size;
+      frame.style.setProperty("--rm-target-corner", `${corner}px`);
+      frame.classList.remove("is-locked");
+    }
+  };
+
+  const onLeave = () => frame.classList.remove("is-visible");
+  addEventListener("pointermove", onMove, { passive: true });
+  document.addEventListener("pointerleave", onLeave);
+
+  const follow = prefersReducedMotion() ? 1 : ease;
+  const stopFrame = onFrame(() => {
+    box.x = lerp(box.x, goal.x, follow);
+    box.y = lerp(box.y, goal.y, follow);
+    // The size settles faster than the position, so the frame arrives already
+    // the right shape instead of growing into it after it lands.
+    box.w = lerp(box.w, goal.w, Math.min(1, follow * 1.6));
+    box.h = lerp(box.h, goal.h, Math.min(1, follow * 1.6));
+    frame.style.width = `${box.w.toFixed(1)}px`;
+    frame.style.height = `${box.h.toFixed(1)}px`;
+    frame.style.transform = `translate3d(${(box.x - box.w / 2).toFixed(1)}px, ${(box.y - box.h / 2).toFixed(1)}px, 0)`;
+  });
+
+  return () => {
+    stopFrame();
+    removeEventListener("pointermove", onMove);
+    document.removeEventListener("pointerleave", onLeave);
+    frame.remove();
+  };
+}
+
+/**
+ * Full-width crosshairs that follow the pointer.
+ *
+ * Two hairlines spanning the viewport, with the coordinates printed at the
+ * intersection. Reads like a design tool, and costs two transforms a frame.
+ */
+export function crosshair(options = {}) {
+  if (!hasFinePointer() || prefersReducedMotion()) return () => {};
+
+  const { color = "rgba(42,167,228,0.45)", readout = true, ease = 0.22 } = options;
+
+  const layer = document.createElement("div");
+  layer.className = "rm-crosshair";
+  layer.setAttribute("aria-hidden", "true");
+  layer.style.setProperty("--rm-crosshair-color", color);
+  layer.innerHTML =
+    '<span class="rm-crosshair-x"></span><span class="rm-crosshair-y"></span>' +
+    (readout ? '<span class="rm-crosshair-readout"></span>' : "");
+  document.body.appendChild(layer);
+
+  const vertical = layer.querySelector(".rm-crosshair-x");
+  const horizontal = layer.querySelector(".rm-crosshair-y");
+  const label = layer.querySelector(".rm-crosshair-readout");
+
+  const pointer = { x: innerWidth / 2, y: innerHeight / 2 };
+  const at = { ...pointer };
+  let moved = false;
+
+  const onMove = (event) => {
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    if (!moved) { moved = true; layer.classList.add("is-visible"); }
+  };
+  addEventListener("pointermove", onMove, { passive: true });
+
+  const stopFrame = onFrame(() => {
+    at.x = lerp(at.x, pointer.x, ease);
+    at.y = lerp(at.y, pointer.y, ease);
+    vertical.style.transform = `translate3d(${at.x.toFixed(1)}px, 0, 0)`;
+    horizontal.style.transform = `translate3d(0, ${at.y.toFixed(1)}px, 0)`;
+    if (label) {
+      label.style.transform = `translate3d(${at.x.toFixed(1)}px, ${at.y.toFixed(1)}px, 0)`;
+      label.textContent = `${Math.round(at.x)} · ${Math.round(at.y)}`;
+    }
+  });
+
+  return () => {
+    stopFrame();
+    removeEventListener("pointermove", onMove);
+    layer.remove();
+  };
+}

@@ -5,20 +5,23 @@
  * library's `init()` from the markup attributes — if this file grew a special
  * case, the page would stop being an honest demonstration of what you get.
  *
+ * The only things called by hand are the ones `init()` deliberately leaves
+ * alone: page-level decisions a site has to make on purpose.
+ *
  * Crafted by SoyRage Agency — https://soyrage.es/
  */
 
-import { init, cursor, magnetLines } from "../src/index.js";
+import { init, target, waves } from "../src/index.js";
 
 init();
 
-// The custom cursor is excluded from init() on purpose — it is a page-wide
-// decision, not a default. This page makes it, for fine pointers only.
-if (matchMedia("(pointer: fine)").matches) cursor({ blend: "difference" });
+// A custom cursor is a page-level decision, so it is excluded from init().
+// This page makes it, for fine pointers only.
+target();
 
-// The line field in the hero sits outside the grid init() walks, and wants a
-// denser grid than the default.
-magnetLines(".hero-lines", { columns: 18, rows: 7, length: 26 });
+// The hero field takes an element rather than a selector set, because a
+// generative background belongs to one section, not to every match on a page.
+waves("#hero-field", { lines: 22, amplitude: 22, color: "rgba(42,167,228,0.28)" });
 
 /* ── Copy to clipboard ─────────────────────────────────────────────────── */
 
@@ -42,12 +45,12 @@ document.addEventListener("click", async (event) => {
   const text = trigger.dataset.copy;
   try {
     await navigator.clipboard.writeText(text);
-    say("Copiado");
+    say("Copied");
   } catch {
     // Clipboard access is refused in plenty of ordinary situations — an
-    // insecure origin, a browser setting, a page without focus. Select the
-    // text instead so there is still a way to take it.
-    say("Selecciónalo y cópialo: " + text);
+    // insecure origin, a browser setting, a page without focus. Say so rather
+    // than pretending it worked.
+    say("Clipboard blocked — select it and copy");
     return;
   }
 

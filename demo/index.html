@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — award-grade motion, sin dependencias</title>
-<meta name="description" content="33 componentes de animación para la web: scroll reveals, texto, cursor, transiciones de página. Cero dependencias, respeta prefers-reduced-motion, y se instala en Claude o Cursor por MCP.">
+<title>rage-motion — award-grade motion, zero dependencies</title>
+<meta name="description" content="64 web animation components with real technique: variable-font pressure, word morphing, draggable carousels, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, and installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="light dark">
 
-<meta property="og:title" content="rage-motion — award-grade motion, sin dependencias">
-<meta property="og:description" content="33 componentes de animación para la web. Cero dependencias. Y un servidor MCP para que tu IA use estos y no los suyos.">
+<meta property="og:title" content="rage-motion — award-grade motion, zero dependencies">
+<meta property="og:description" content="64 animation components with real technique. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
 <meta property="og:image" content="https://soyrageagency.github.io/rage-motion/assets/social.png">
@@ -16,7 +16,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../src/styles/rage-motion.css">
 <link rel="stylesheet" href="./demo.css">
 </head>
@@ -24,18 +24,21 @@
 
 <div data-rm-progress></div>
 
-<!-- ── Nav ──────────────────────────────────────────────────────────────── -->
-<header class="nav">
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="nav" data-rm-condense>
   <a class="nav-brand" href="#top">
     <span class="dot" aria-hidden="true"></span>
     rage-motion
   </a>
-  <nav class="nav-links">
-    <a href="#componentes">Componentes</a>
-    <a href="#mcp">Para tu IA</a>
+
+  <nav class="nav-links" data-rm-pill aria-label="Sections">
+    <a href="#components">Components</a>
+    <a href="#craft">Craft</a>
+    <a href="#mcp">For your AI</a>
     <a href="https://github.com/soyrageagency/rage-motion">GitHub</a>
-    <a class="nav-cta" href="https://soyrage.es/" data-rm-magnetic data-rm-ripple>SoyRage</a>
   </nav>
+
+  <a class="nav-cta" href="https://soyrage.es/" data-rm-magnetic data-rm-fill data-rm-color="#2aa7e4">SoyRage</a>
 </header>
 
 <main id="top">
@@ -44,210 +47,356 @@
 <section class="hero" id="hero">
   <div class="hero-inner">
     <p class="eyebrow" data-rm-reveal="fade">
-      <span data-rm-decrypt>33 componentes · 0 dependencias</span>
+      <span data-rm-decrypt>64 components · 0 dependencies</span>
     </p>
 
-    <h1 class="display" data-rm-text="chars" data-rm-effect="rise">
-      Movimiento de premio
-    </h1>
+    <h1 class="display" data-rm-pressure data-rm-radius="300">Award-grade motion</h1>
 
-    <p class="lede" data-rm-reveal="up" data-rm-delay="240">
-      Animación para la web que no arrastra un runtime, no rompe el layout y no
-      se olvida de quien pidió menos movimiento.
+    <p class="lede" data-rm-reveal="up" data-rm-delay="200">
+      Carries no runtime. Never shifts your layout. Does not forget the people
+      who asked for less of it.
       <br>
-      Cópiate un archivo o instálate el paquete —
-      <strong data-rm-shiny data-rm-base="#0e0e0e" data-rm-highlight="#2aa7e4">y enséñaselo a tu IA</strong>.
+      Take one file, or install the package — and
+      <strong>teach it to your AI</strong>.
     </p>
 
-    <div class="hero-cta" data-rm-reveal="up" data-rm-delay="360">
-      <button class="btn btn-primary" data-copy="npm i @soyrageagency/rage-motion" data-rm-magnetic data-rm-ripple>
+    <div class="hero-cta" data-rm-reveal="up" data-rm-delay="320">
+      <button class="btn btn-primary" data-copy="npm i @soyrageagency/rage-motion" data-rm-magnetic data-rm-spark data-rm-shimmer>
         <code>npm i @soyrageagency/rage-motion</code>
-        <span class="btn-hint">copiar</span>
+        <span class="btn-hint">copy</span>
       </button>
-      <a class="btn btn-ghost" href="#componentes" data-rm-magnetic>Ver los 33 ↓</a>
+      <a class="btn btn-ghost" href="#components" data-rm-magnetic data-rm-fill data-rm-color="#0e0e0e">See all 64 ↓</a>
     </div>
 
-    <p class="hero-note" data-rm-reveal="fade" data-rm-delay="520">
-      <span data-rm-type="scroll reveals|texto que se parte|cursor magnético|transiciones de página|marquesinas|antes y después"></span>
+    <p class="hero-note" data-rm-reveal="fade" data-rm-delay="460">
+      Built for <span data-rm-morph="portfolios|studio sites|product pages|launches"></span>
     </p>
   </div>
 
-  <div class="hero-lines" data-rm-lines data-rm-columns="18" data-rm-rows="7"></div>
+  <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 </section>
 
-<!-- ── Band ─────────────────────────────────────────────────────────────── -->
-<div class="band" data-rm-marquee data-rm-speed="70">
-  <span>Sin dependencias</span><span aria-hidden="true">✦</span>
-  <span>Respeta prefers-reduced-motion</span><span aria-hidden="true">✦</span>
-  <span>Solo transform y opacity</span><span aria-hidden="true">✦</span>
-  <span>MIT</span><span aria-hidden="true">✦</span>
-  <span>4 KB por componente</span><span aria-hidden="true">✦</span>
-  <span>Servidor MCP incluido</span><span aria-hidden="true">✦</span>
-</div>
-
-<!-- ── Por qué ──────────────────────────────────────────────────────────── -->
-<section class="section" id="porque">
+<!-- ── Craft ────────────────────────────────────────────────────────────── -->
+<section class="section" id="craft">
   <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Por qué existe</p>
-    <div class="two-col">
+    <p class="kicker" data-rm-reveal="up">Why this exists</p>
+
+    <p class="statement" data-rm-highlight>
+      Most web animation is broken in the same three ways. An opacity of zero
+      in the stylesheet, so the day a script fails the page arrives blank
+      instead of merely still. A scroll listener per element, so four effects
+      become four forced layouts a frame. And a reduced-motion rule that hides
+      the very thing it was meant to reveal. None of that is here — not as a
+      setting, as the architecture.
+    </p>
+
+    <div class="facts">
       <div data-rm-reveal="up">
-        <h2 class="h2">Casi toda la animación web está rota de la misma forma.</h2>
-        <p class="body">
-          Un <code>opacity: 0</code> en el CSS y un <em>listener</em> de scroll
-          por elemento. El día que el script no carga, la página no aparece
-          <em>quieta</em>: aparece <em>en blanco</em>. Y en un móvil de gama
-          media cada scroll son cuatro <em>layouts</em> forzados por fotograma.
-        </p>
-        <p class="body">
-          Aquí el estado inicial lo pone JavaScript, nunca el CSS. Si el script
-          falla, la página se ve — sin animar, pero se ve. Y todos los efectos de
-          scroll comparten una sola lectura por fotograma.
-        </p>
+        <strong data-rm-odometer>64</strong>
+        <span>components, each in its own file</span>
       </div>
-      <ul class="facts">
-        <li data-rm-reveal="up" data-rm-delay="60">
-          <strong data-rm-count>0</strong>
-          <span>dependencias, hoy y siempre</span>
-        </li>
-        <li data-rm-reveal="up" data-rm-delay="140">
-          <strong data-rm-count>33</strong>
-          <span>componentes, cada uno en su archivo</span>
-        </li>
-        <li data-rm-reveal="up" data-rm-delay="220">
-          <strong data-rm-count>1</strong>
-          <span>lectura de scroll por fotograma, la compartan los que la compartan</span>
-        </li>
-        <li data-rm-reveal="up" data-rm-delay="300">
-          <strong data-rm-count>100%</strong>
-          <span>honra <code>prefers-reduced-motion</code> sin esconder contenido</span>
-        </li>
-      </ul>
+      <div data-rm-reveal="up" data-rm-delay="80">
+        <strong data-rm-odometer>0</strong>
+        <span>dependencies, today and permanently</span>
+      </div>
+      <div data-rm-reveal="up" data-rm-delay="160">
+        <strong data-rm-odometer>1</strong>
+        <span>scroll read per frame, shared by every effect</span>
+      </div>
+      <div data-rm-reveal="up" data-rm-delay="240">
+        <strong data-rm-odometer>100</strong>
+        <span>per cent honour reduced motion without hiding content</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── Componentes ──────────────────────────────────────────────────────── -->
-<section class="section" id="componentes">
+<!-- ── Components ───────────────────────────────────────────────────────── -->
+<section class="section" id="components">
   <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">La colección</p>
-    <h2 class="h2 big" data-rm-text="words" data-rm-effect="rise">Míralos funcionando</h2>
+    <p class="kicker" data-rm-reveal="up">The collection</p>
+    <h2 class="h2 big" data-rm-text="words" data-rm-effect="rise">Everything here is running</h2>
     <p class="body wide" data-rm-reveal="up">
-      Todo lo de abajo está corriendo ahora mismo en esta página, con el mismo
-      código que te llevas. Pasa el ratón, haz clic, arrastra.
+      Not screenshots. Every panel below is the shipped component on this page,
+      with the markup you copy. Hover, click, drag, use the keyboard.
     </p>
 
     <div class="grid">
 
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
-        <header><h3>reveal</h3><code>data-rm-reveal</code></header>
-        <div class="stage stage-reveal">
-          <div class="chip" data-rm-reveal="up">up</div>
-          <div class="chip" data-rm-reveal="left">left</div>
-          <div class="chip" data-rm-reveal="scale">scale</div>
-        </div>
-        <p>Entra al aparecer. El estado inicial lo pone JS, no el CSS.</p>
-        <button class="copy" data-copy='<div data-rm-reveal="up">…</div>'>copiar markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
-        <header><h3>textReveal</h3><code>data-rm-text</code></header>
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
+        <header><h3>morph</h3><code>data-rm-morph</code></header>
         <div class="stage">
-          <p class="stage-display" data-rm-text="chars" data-rm-effect="flip">Letra a letra</p>
+          <p class="stage-display"><span data-rm-morph="Motion|Notion|Nation"></span></p>
         </div>
-        <p>Parte el titular sin destrozar el nombre accesible ni el copiar-pegar.</p>
-        <button class="copy" data-copy='<h1 data-rm-text="chars" data-rm-effect="rise">…</h1>'>copiar markup</button>
+        <p>Shared letters travel to their new place; the rest blur away. A real match plus a FLIP, not a cross-fade.</p>
+        <button class="copy" data-copy='<span data-rm-morph="Motion|Notion|Nation"></span>'>copy markup</button>
       </article>
 
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
+        <header><h3>pressure</h3><code>data-rm-pressure</code></header>
+        <div class="stage">
+          <p class="stage-display" data-rm-pressure data-rm-radius="180">Pressure</p>
+        </div>
+        <p>Real variable-font axes bend toward the pointer — <code>wght</code> and <code>wdth</code>, not a fake scale.</p>
+        <button class="copy" data-copy='<h1 data-rm-pressure>Pressure</h1>'>copy markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
+        <header><h3>odometer</h3><code>data-rm-odometer</code></header>
+        <div class="stage">
+          <p class="stage-display"><span data-rm-odometer>128,400</span></p>
+        </div>
+        <p>Digit columns roll, the right-hand ones later, so the number settles from the left like a real counter.</p>
+        <button class="copy" data-copy="<strong data-rm-odometer>128,400</strong>">copy markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
+        <header><h3>curve</h3><code>data-rm-curve</code></header>
+        <div class="stage stage-curve">
+          <span data-rm-curve="62" data-rm-spin="14000">SOYRAGE · AWARD-GRADE MOTION · </span>
+        </div>
+        <p>A real <code>textPath</code>, so spacing follows the arc instead of letters being rotated one by one.</p>
+        <button class="copy" data-copy='<span data-rm-curve="120" data-rm-spin="18000">Text · </span>'>copy markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
+        <header><h3>electric</h3><code>data-rm-electric</code></header>
+        <div class="stage stage-dark">
+          <span class="badge" data-rm-electric>feTurbulence</span>
+        </div>
+        <p>An SVG displacement filter, so the edge ripples like current instead of wobbling like a scaled outline.</p>
+        <button class="copy" data-copy="<article data-rm-electric>…</article>">copy markup</button>
+      </article>
+
+      <article class="demo-card demo-card-trail" data-rm-reveal="up" data-rm-trail data-rm-size="90">
+        <header><h3>trail</h3><code>data-rm-trail</code></header>
+        <div class="stage stage-dark"><span class="badge">offset-path</span></div>
+        <p>The light follows the element's real rounded rectangle at an even speed — a spun conic gradient cannot.</p>
+        <button class="copy" data-copy="<article data-rm-trail>…</article>">copy markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
         <header><h3>waveText</h3><code>data-rm-wave</code></header>
         <div class="stage">
-          <p class="stage-display" data-rm-wave data-rm-lift="22">Pasa el ratón</p>
+          <p class="stage-display" data-rm-wave data-rm-lift="22">Hover me</p>
         </div>
-        <p>La ola cae en coseno sobre un radio, por eso se lee como ola.</p>
-        <button class="copy" data-copy='<h2 data-rm-wave>…</h2>'>copiar markup</button>
+        <p>A cosine falloff over a radius, so neighbours move too. That is what makes it a wave.</p>
+        <button class="copy" data-copy="<h2 data-rm-wave>Hover me</h2>">copy markup</button>
       </article>
 
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
         <header><h3>decrypt</h3><code>data-rm-decrypt</code></header>
         <div class="stage">
           <p class="stage-mono" data-rm-decrypt>SOYRAGE AGENCY</p>
         </div>
-        <p>Reserva el ancho final, así la línea no se mueve mientras cuaja.</p>
-        <button class="copy" data-copy='<span data-rm-decrypt>…</span>'>copiar markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
-        <header><h3>glitch</h3><code>data-rm-glitch</code></header>
-        <div class="stage">
-          <p class="stage-display" data-rm-glitch="hover">404</p>
-        </div>
-        <p>Separación RGB con pseudo-elementos: cero nodos extra.</p>
-        <button class="copy" data-copy='<h2 data-rm-glitch="hover">…</h2>'>copiar markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
-        <header><h3>countUp</h3><code>data-rm-count</code></header>
-        <div class="stage">
-          <p class="stage-display"><span data-rm-count>1.250</span></p>
-        </div>
-        <p>Lee el valor <em>y</em> el formato del texto que ya hay. «1.250» cuenta en español.</p>
-        <button class="copy" data-copy='<strong data-rm-count>1.250</strong>'>copiar markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
-        <header><h3>typewriter</h3><code>data-rm-type</code></header>
-        <div class="stage">
-          <p class="stage-display small"><span data-rm-type="Diseño|Desarrollo|Motion|Marca"></span></p>
-        </div>
-        <p>Reserva la frase más larga; el nombre accesible es la lista entera.</p>
-        <button class="copy" data-copy='<span data-rm-type="Uno|Dos|Tres"></span>'>copiar markup</button>
+        <p>Reserves the final width, so the line never reflows while it settles.</p>
+        <button class="copy" data-copy="<span data-rm-decrypt>SOYRAGE</span>">copy markup</button>
       </article>
 
       <article class="demo-card" data-rm-reveal="up" data-rm-tilt="9">
         <header><h3>tilt</h3><code>data-rm-tilt</code></header>
-        <div class="stage stage-tilt">
-          <span class="badge">3D</span>
-        </div>
-        <p>Tope en 10 grados: pasados doce el texto de dentro deja de leerse.</p>
-        <button class="copy" data-copy='<article data-rm-tilt="8">…</article>'>copiar markup</button>
+        <div class="stage stage-dark"><span class="badge">10° max</span></div>
+        <p>Capped at ten degrees. Past twelve it reads as a gimmick and the text stops being readable.</p>
+        <button class="copy" data-copy='<article data-rm-tilt="8">…</article>'>copy markup</button>
       </article>
 
-      <article class="demo-card demo-card-bare" data-rm-reveal="up" data-rm-border>
+      <article class="demo-card" data-rm-reveal="up" data-rm-border>
         <header><h3>border</h3><code>data-rm-border</code></header>
-        <div class="stage stage-border"><span class="badge">@property</span></div>
-        <p>El ángulo se registra con <code>@property</code>: barre en vez de saltar.</p>
-        <button class="copy" data-copy='<article data-rm-border>…</article>'>copiar markup</button>
+        <div class="stage stage-dark"><span class="badge">@property</span></div>
+        <p>The angle is registered as a real angle type, so the conic gradient sweeps instead of stepping.</p>
+        <button class="copy" data-copy="<article data-rm-border>…</article>">copy markup</button>
       </article>
 
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
         <header><h3>magnetLines</h3><code>data-rm-lines</code></header>
-        <div class="stage stage-lines" data-rm-lines data-rm-columns="10" data-rm-rows="5"></div>
-        <p>Giran por el camino corto; si no, el campo se desboca al cruzar por detrás.</p>
-        <button class="copy" data-copy='<div data-rm-lines data-rm-columns="16"></div>'>copiar markup</button>
+        <div class="stage stage-lines" data-rm-lines data-rm-columns="11" data-rm-rows="5"></div>
+        <p>They turn the short way round — otherwise the field spins backwards whenever you cross behind it.</p>
+        <button class="copy" data-copy='<div data-rm-lines data-rm-columns="16"></div>'>copy markup</button>
       </article>
 
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+      <article class="demo-card" data-rm-reveal="up" data-rm-glare>
         <header><h3>orbit</h3><code>data-rm-orbit</code></header>
         <div class="stage stage-orbit">
-          <div data-rm-orbit data-rm-radius="62" data-rm-duration="16000">
+          <div data-rm-orbit data-rm-radius="60" data-rm-duration="16000">
             <span class="pill">JS</span><span class="pill">CSS</span>
-            <span class="pill">WAAPI</span><span class="pill">MCP</span>
+            <span class="pill">SVG</span><span class="pill">MCP</span>
           </div>
         </div>
-        <p>El anillo gira y cada pieza contragira, así los logos no dan volteretas.</p>
-        <button class="copy" data-copy='<div data-rm-orbit data-rm-radius="140">…</div>'>copiar markup</button>
-      </article>
-
-      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
-        <header><h3>ripple</h3><code>data-rm-ripple</code></header>
-        <div class="stage stage-ripple">
-          <button class="btn btn-primary wide-btn" data-rm-ripple>Haz clic</button>
-        </div>
-        <p>El anillo llega a la esquina más lejana, sea cual sea la proporción.</p>
-        <button class="copy" data-copy='<button data-rm-ripple>…</button>'>copiar markup</button>
+        <p>The ring turns and each item counter-turns, so nothing does somersaults on the way round.</p>
+        <button class="copy" data-copy='<div data-rm-orbit data-rm-radius="140">…</div>'>copy markup</button>
       </article>
 
     </div>
+  </div>
+</section>
+
+<!-- ── Carousels ────────────────────────────────────────────────────────── -->
+<section class="section section-tight" id="carousels">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">Carousels</p>
+    <h2 class="h2" data-rm-reveal="up">Drag them. Then try the arrow keys.</h2>
+    <p class="body wide" data-rm-reveal="up">
+      The carousel is the component most likely to be bad on any given site,
+      and it is bad the same way every time: no drag, no keyboard, a hijacked
+      wheel, nothing announced. This one is the browser's own scrolling with
+      momentum added on top, so everything that already worked still does.
+    </p>
+  </div>
+
+  <div class="carousel-holder" data-rm-reveal="up">
+    <div data-rm-carousel data-rm-label="Component families">
+      <article class="slide slide-a"><span>Type</span><p>pressure · morph · curve · odometer</p></article>
+      <article class="slide slide-b"><span>Surface</span><p>beam · trail · glare · electric · blurEdge</p></article>
+      <article class="slide slide-c"><span>Fields</span><p>waves · retroGrid · dotGrid · grain</p></article>
+      <article class="slide slide-d"><span>Gallery</span><p>carousel · ring · deck · dock · scratch</p></article>
+      <article class="slide slide-e"><span>Navigation</span><p>pill · gooey · condense · overlay · tabs</p></article>
+      <article class="slide slide-f"><span>Buttons</span><p>fill · shimmer · spark · swap</p></article>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="pair">
+      <div class="pair-item" data-rm-reveal="up">
+        <h3 class="h3">ring</h3>
+        <div class="ring-holder" data-rm-ring data-rm-radius="210" data-rm-label="Number ring">
+          <span class="face face-1">01</span><span class="face face-2">02</span>
+          <span class="face face-3">03</span><span class="face face-4">04</span>
+          <span class="face face-5">05</span><span class="face face-6">06</span>
+        </div>
+        <p class="body">A cylinder you spin, with momentum. Arrow keys step one face.</p>
+      </div>
+
+      <div class="pair-item" data-rm-reveal="up" data-rm-delay="120">
+        <h3 class="h3">deck</h3>
+        <div class="deck-holder" data-rm-deck>
+          <article class="card card-1"><b>Front</b><span>flies out, lands at the back</span></article>
+          <article class="card card-2"><b>Second</b><span>steps forward</span></article>
+          <article class="card card-3"><b>Third</b><span>waits its turn</span></article>
+        </div>
+        <p class="body">Order is a custom property, not a re-sorted DOM — so focus stays put and nothing reloads.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Navigation ───────────────────────────────────────────────────────── -->
+<section class="section" id="navigation">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">Navigation</p>
+    <h2 class="h2" data-rm-reveal="up">Where a nice animation most often breaks the site.</h2>
+    <p class="body wide" data-rm-reveal="up">
+      So the rules are strict here: nothing replaces a link, nothing swallows a
+      click, the current page keeps its <code>aria-current</code>, and the
+      full-screen menu traps focus, closes on Escape and hands focus back.
+    </p>
+
+    <div class="nav-demos">
+      <div class="nav-demo" data-rm-reveal="up">
+        <p class="tag">pill</p>
+        <nav class="sample-nav" data-rm-pill aria-label="Example">
+          <a href="#navigation" aria-current="page">Work</a>
+          <a href="#navigation">Studio</a>
+          <a href="#navigation">Journal</a>
+          <a href="#navigation">Contact</a>
+        </nav>
+        <p class="tag-note">One indicator that travels between items of different widths.</p>
+      </div>
+
+      <div class="nav-demo" data-rm-reveal="up" data-rm-delay="90">
+        <p class="tag">gooey</p>
+        <nav class="sample-nav is-gooey" data-rm-gooey aria-label="Example, liquid">
+          <a href="#navigation" aria-current="page">Home</a>
+          <a href="#navigation">Cases</a>
+          <a href="#navigation">About</a>
+        </nav>
+        <p class="tag-note">Two blobs at different speeds, fused by an SVG filter. The stretch is a consequence, not a keyframe.</p>
+      </div>
+
+      <div class="nav-demo" data-rm-reveal="up" data-rm-delay="180">
+        <p class="tag">dock</p>
+        <nav class="sample-dock" data-rm-dock aria-label="Example, dock">
+          <a href="#navigation">◐</a><a href="#navigation">◑</a><a href="#navigation">◒</a>
+          <a href="#navigation">◓</a><a href="#navigation">◔</a>
+        </nav>
+        <p class="tag-note">Magnification falls off over a distance, so it is elastic rather than a row of hover states.</p>
+      </div>
+
+      <div class="nav-demo" data-rm-reveal="up" data-rm-delay="270">
+        <p class="tag">overlay</p>
+        <button class="btn btn-ghost" data-rm-overlay-open aria-controls="demo-menu" data-rm-magnetic>Open menu</button>
+        <p class="tag-note">Grows from the button you pressed. Escape closes it, focus is trapped, the page behind is inert.</p>
+      </div>
+    </div>
+
+    <div class="tabs-demo" data-rm-tabs data-rm-reveal="up">
+      <div class="tab-list">
+        <button class="tab" data-rm-tab>Direction</button>
+        <button class="tab" data-rm-tab>Keyboard</button>
+        <button class="tab" data-rm-tab>Honest</button>
+      </div>
+      <div class="tab-panel" data-rm-tab-panel>
+        <p>Move right along the tabs and the panel arrives from the right; move back and it comes from the left. One comparison, and the difference between tabs that feel spatial and tabs that blink.</p>
+      </div>
+      <div class="tab-panel" data-rm-tab-panel>
+        <p>A real tablist: arrow keys, Home and End, roving <code>tabindex</code>, and panels genuinely hidden when inactive rather than moved off screen.</p>
+      </div>
+      <div class="tab-panel" data-rm-tab-panel>
+        <p>Under reduced motion the slide is dropped and the switch is instant. The content is the point; the direction was the flourish.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Buttons ──────────────────────────────────────────────────────────── -->
+<section class="section section-tight" id="buttons">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">Buttons</p>
+    <h2 class="h2" data-rm-reveal="up">Decorated, never replaced.</h2>
+    <p class="body wide" data-rm-reveal="up">
+      Every one of these is a real <code>&lt;button&gt;</code> or
+      <code>&lt;a&gt;</code>. None adds a click handler or swallows an event,
+      so keyboard activation, form submission and middle-clicking a link all
+      behave exactly as before.
+    </p>
+
+    <div class="button-row" data-rm-reveal="up">
+      <button class="btn btn-outline" data-rm-fill data-rm-color="#2aa7e4">Directional fill</button>
+      <button class="btn btn-primary" data-rm-shimmer>Shimmer</button>
+      <button class="btn btn-outline" data-rm-spark data-rm-color="#d28c65">Spark on press</button>
+      <button class="btn btn-outline" data-rm-swap="Downloading…">Download</button>
+      <button class="btn btn-outline" data-rm-ripple>Ripple</button>
+      <button class="btn btn-outline" data-rm-magnetic>Magnetic</button>
+    </div>
+    <p class="hint">The fill knows which edge you came in through. Leave from the other side and watch it retreat that way.</p>
+  </div>
+</section>
+
+<!-- ── Scroll ───────────────────────────────────────────────────────────── -->
+<section class="section" id="scroll">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">Scroll</p>
+    <h2 class="h2" data-rm-reveal="up">Tied to position, never to a timer.</h2>
+
+    <article class="tracing-demo" data-rm-tracing>
+      <p class="body">
+        A line drawn down the article as you read it — a real path revealed
+        with <code>stroke-dashoffset</code>, which is why it can curve and why
+        the glowing head sits exactly on it.
+      </p>
+      <p class="body">
+        Because it is bound to reading position rather than played once,
+        scrolling back up un-draws it. An animation that only runs forwards
+        feels broken the instant somebody scrolls the other way, and that is
+        most of them.
+      </p>
+    </article>
+
+    <div class="flatten-holder" data-rm-reveal="up">
+      <div data-rm-flatten>
+        <img src="./assets/after.svg" alt="A panel lying flat as it scrolls into view" loading="lazy">
+      </div>
+    </div>
+    <p class="hint centred">flatten — the panel lies down as it arrives, and tilts back if you scroll away.</p>
   </div>
 </section>
 
@@ -257,22 +406,24 @@
     <div class="split">
       <div data-rm-reveal="up">
         <p class="kicker">compare</p>
-        <h2 class="h2">Antes y después, también con el teclado.</h2>
+        <h2 class="h2">Before and after, with the keyboard too.</h2>
         <p class="body">
-          Casi todos los <em>sliders</em> de antes/después de la web sólo
-          funcionan con puntero, lo que los deja inservibles con teclado e
-          invisibles para un lector de pantalla. Este es un
-          <code>role="slider"</code> de verdad: flechas, Home, End y valor
-          anunciado. Arrastrar es el extra, no la única puerta.
+          Almost every before/after slider on the web is pointer-only, which
+          leaves it unusable on a keyboard and invisible to a screen reader.
+          This is a real <code>role="slider"</code>: arrows, Home, End, and an
+          announced value. Dragging is the enhancement, not the only door.
         </p>
-        <button class="copy" data-copy='<div data-rm-compare><img data-rm-before …><img data-rm-after …></div>'>copiar markup</button>
+        <button class="copy" data-copy='<div data-rm-compare>
+  <img data-rm-before src="before.jpg" alt="Before">
+  <img data-rm-after src="after.jpg" alt="After">
+</div>'>copy markup</button>
       </div>
       <div class="compare-holder" data-rm-reveal="up" data-rm-delay="120">
-        <div data-rm-compare data-rm-label="Comparar antes y después">
-          <img data-rm-before src="./assets/before.svg" alt="Sin animación">
-          <img data-rm-after src="./assets/after.svg" alt="Con rage-motion">
+        <div data-rm-compare data-rm-label="Compare before and after">
+          <img data-rm-before src="./assets/before.svg" alt="Without motion">
+          <img data-rm-after src="./assets/after.svg" alt="With rage-motion">
         </div>
-        <p class="hint">Arrastra, o enfoca el tirador y usa ← →</p>
+        <p class="hint">Drag it, or focus the handle and use ← →</p>
       </div>
     </div>
   </div>
@@ -281,70 +432,69 @@
 <!-- ── MCP ──────────────────────────────────────────────────────────────── -->
 <section class="section section-dark" id="mcp">
   <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Lo que nadie más trae</p>
+    <p class="kicker" data-rm-reveal="up">The part nobody else ships</p>
     <h2 class="h2 big" data-rm-text="words" data-rm-effect="rise">
-      Enséñale estos componentes a tu IA
+      Teach these components to your AI
     </h2>
     <p class="body wide" data-rm-reveal="up">
-      Le pides a cualquier asistente «un scroll reveal» y te escribe el mismo
-      recorte de siempre: un <em>listener</em> de scroll, sin
-      <code>prefers-reduced-motion</code>, con el contenido escondido en el CSS.
-      No es que sea descuidado — es que no sabe qué tienes en el proyecto, así
-      que escribe lo más promedio que podría funcionar.
+      Ask any assistant for a scroll reveal and it writes the same snippet it
+      has written ten thousand times. It is not careless — it has no idea what
+      is already in your project, so it writes the most average thing that
+      could possibly work.
     </p>
 
     <div class="mcp-grid">
       <div class="mcp-before" data-rm-reveal="up">
-        <p class="tag tag-bad">Sin MCP</p>
+        <p class="tag tag-bad">Without MCP</p>
 <pre><code>window.addEventListener("scroll", () =&gt; {
   document.querySelectorAll(".fade").forEach((el) =&gt; {
     if (el.getBoundingClientRect().top &lt; innerHeight)
       el.classList.add("show");
   });
 });</code></pre>
-        <p class="tag-note">Una lectura de layout por elemento y por evento. Y un <code>.fade { opacity: 0 }</code> esperando a que el script no cargue.</p>
+        <p class="tag-note">A layout read per element per event. And a <code>.fade { opacity: 0 }</code> waiting for the day the script does not load.</p>
       </div>
 
       <div class="mcp-after" data-rm-reveal="up" data-rm-delay="120">
-        <p class="tag tag-good">Con MCP</p>
+        <p class="tag tag-good">With MCP</p>
 <pre><code>&lt;div data-rm-reveal="up" data-rm-delay="120"&gt;…&lt;/div&gt;</code></pre>
-        <p class="tag-note">Mira antes de escribir, encuentra el componente que ya tienes, y te cuenta por qué lo eligió — porque el razonamiento viaja con el componente.</p>
+        <p class="tag-note">It looks before it writes, finds the component you already have, and tells you why it chose it — because the reasoning travels with the component.</p>
       </div>
     </div>
 
     <div class="install" data-rm-reveal="up">
-      <h3>Instalar en 10 segundos</h3>
+      <h3>Ten seconds to install</h3>
       <div class="install-row">
         <span>Claude Code</span>
         <button class="copy mono" data-copy="claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp">claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp</button>
       </div>
       <div class="install-row">
-        <span>Cursor / Claude Desktop</span>
+        <span>Cursor · Claude Desktop</span>
         <button class="copy mono" data-copy='{"mcpServers":{"rage-motion":{"command":"npx","args":["-y","@soyrageagency/rage-motion-mcp"]}}}'>{"mcpServers": {"rage-motion": {"command": "npx", …}}}</button>
       </div>
-      <p class="hint">Sin claves, sin cuenta, sin red. El servidor sólo lee archivos del paquete instalado.</p>
+      <p class="hint">No key, no account, no network. The server only reads files from the installed package.</p>
     </div>
   </div>
 </section>
 
-<!-- ── Empezar ──────────────────────────────────────────────────────────── -->
-<section class="section" id="empezar">
+<!-- ── Start ────────────────────────────────────────────────────────────── -->
+<section class="section" id="start">
   <div class="wrap">
-    <p class="kicker" data-rm-reveal="up">Empezar</p>
+    <p class="kicker" data-rm-reveal="up">Start</p>
     <div class="start">
-      <div class="start-card" data-rm-reveal="up" data-rm-spotlight>
-        <h3>Un archivo</h3>
-        <p>Cada componente depende sólo de <code>core/motion.js</code>. Copia los dos y ya está — así lo va a usar casi todo el mundo, y está pensado para eso.</p>
+      <div class="start-card" data-rm-reveal="up" data-rm-glare>
+        <h3>One file</h3>
+        <p>Every component depends only on <code>core/motion.js</code>. Take the two and go — that is how most people will use this, and it is designed for exactly that.</p>
       </div>
-      <div class="start-card" data-rm-reveal="up" data-rm-delay="90" data-rm-spotlight>
-        <h3>El paquete</h3>
+      <div class="start-card" data-rm-reveal="up" data-rm-delay="90" data-rm-glare>
+        <h3>The package</h3>
 <pre><code>npm i @soyrageagency/rage-motion</code></pre>
 <pre><code>import { init } from "@soyrageagency/rage-motion";
 import "@soyrageagency/rage-motion/css";
 init();</code></pre>
       </div>
-      <div class="start-card" data-rm-reveal="up" data-rm-delay="180" data-rm-spotlight>
-        <h3>Sin build</h3>
+      <div class="start-card" data-rm-reveal="up" data-rm-delay="180" data-rm-glare>
+        <h3>No build</h3>
 <pre><code>&lt;link rel="stylesheet" href="…/rage-motion.css"&gt;
 &lt;script type="module"&gt;
   import { init } from "…/index.js";
@@ -363,8 +513,8 @@ init();</code></pre>
     <div>
       <p class="footer-brand">rage-motion</p>
       <p class="footer-note">
-        Hecho por <a href="https://soyrage.es/">SoyRage Agency</a> — diseño,
-        desarrollo y motion. MIT: llévatelo y véndelo si quieres.
+        Built by <a href="https://soyrage.es/">SoyRage Agency</a> — design,
+        development and motion. MIT: take it, change it, sell it.
       </p>
     </div>
     <nav class="footer-links">
@@ -375,6 +525,18 @@ init();</code></pre>
     </nav>
   </div>
 </footer>
+
+<!-- The overlay menu sits last in the body so it can make its siblings inert. -->
+<div id="demo-menu" class="overlay-menu" data-rm-overlay hidden>
+  <nav aria-label="Full screen menu">
+    <a href="#components">Components</a>
+    <a href="#carousels">Carousels</a>
+    <a href="#navigation">Navigation</a>
+    <a href="#buttons">Buttons</a>
+    <a href="#mcp">For your AI</a>
+  </nav>
+  <p class="overlay-hint">Escape closes · focus is trapped in here</p>
+</div>
 
 <div class="toast" role="status" aria-live="polite" hidden></div>
 

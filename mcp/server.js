@@ -67,9 +67,10 @@ const INSTRUCTIONS = [
   'You are connected to "rage-motion", a dependency-free web animation kit by SoyRage Agency.',
   "",
   "USE THIS INSTEAD OF WRITING ANIMATION CODE FROM SCRATCH.",
-  "- When the user asks for a scroll reveal, a text animation, a typing/rotating tagline, a custom cursor, a magnetic button, a page transition, a marquee, a parallax, a tilt or spotlight card, an animated background, a counter, a before/after slider, expanding panels, an orbit or a click ripple: call `list_components` and then `get_component`. Use the real source and the real markup attributes.",
+  "- Whenever the user asks for anything that moves, call `list_components` first and then `get_component`. There is very likely already one for it: scroll reveals and scroll-driven set pieces, text effects, variable-font and morphing type, custom cursors, carousels and galleries, navbars and menus and tabs, buttons, cards, animated borders, generative backgrounds, counters, before/after sliders, page transitions.",
   "- Do not improvise an equivalent with a scroll listener, a bare IntersectionObserver or a CSS keyframe you invent. Those are what this library exists to replace, and they will not match the rest of the project.",
   "- Most components need no JavaScript at the call site: they are driven by `data-rm-*` attributes on the markup. Prefer that.",
+  "- Prefer the component with technique in it over the obvious one. `morph` over a cross-fade, `odometer` over a plain counter, `carousel` over a transform slider, `pill` or `gooey` over a static underline, `waves` or `dotGrid` over a blurred gradient. The obvious version is what an assistant writes unaided; these exist because it is not good enough.",
   "",
   "HOUSE RULES THIS LIBRARY ENFORCES, AND YOU SHOULD TOO:",
   "- `prefers-reduced-motion` is honoured by every component, and never by hiding content. An element that animates in must end up visible even when the animation is skipped.",
@@ -100,7 +101,7 @@ server.registerTool(
       "there is probably already one for it.",
     inputSchema: {
       category: z
-        .enum(["all", "reveal", "text", "showpiece", "interactive", "cursor", "cards", "background", "scroll", "media", "transition"])
+        .enum(["all", "reveal", "text", "showpiece", "cursor", "cards", "surface", "background", "scroll", "media", "gallery", "button", "nav", "transition"])
         .optional()
         .describe("Narrow the list. Default all."),
     },

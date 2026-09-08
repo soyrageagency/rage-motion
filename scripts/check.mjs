@@ -12,7 +12,12 @@
  * pass, again with reduced motion forced on, and once more after jumping
  * straight to the bottom without scrolling through the middle.
  *
+ * It also drives the overlay menu with the keyboard, because the accessibility
+ * of that component is its entire justification and nothing else here would
+ * notice it regressing.
+ *
  *   npm run check
+ *   npm run check:dist
  *
  * Crafted by SoyRage Agency — https://soyrage.es/
  */
@@ -62,7 +67,7 @@ const wait = (ms) => new Promise((done) => setTimeout(done, ms));
  */
 function INVISIBLE_ON_SCREEN() {
   const found = [];
-  const watched = "[data-rm-reveal], [data-rm-text], [data-rm-count]";
+  const watched = "[data-rm-reveal], [data-rm-text], [data-rm-odometer]";
   for (const element of document.querySelectorAll(watched)) {
     const box = element.getBoundingClientRect();
     if (!box.height) continue; // not laid out at all
@@ -99,7 +104,7 @@ async function run(browser, { reducedMotion }) {
   page.on("pageerror", (error) => problems.push(String(error)));
 
   await page.goto(URL_BASE, { waitUntil: "networkidle" });
-  await wait(900);
+  await wait(1000);
 
   const label = reducedMotion ? "reduced motion" : "full motion";
   console.log(`\n${label}`);
@@ -109,26 +114,49 @@ async function run(browser, { reducedMotion }) {
   // selector matched nothing, this is where it shows.
   const started = await page.evaluate(() => ({
     split: document.querySelectorAll(".rm-split").length,
-    spotlight: document.querySelectorAll(".rm-spotlight").length,
-    marquee: document.querySelectorAll(".rm-marquee-track").length,
+    glare: document.querySelectorAll(".rm-glare").length,
+    morph: document.querySelectorAll(".rm-morph-stage").length,
+    odometer: document.querySelectorAll(".rm-odometer-column").length,
+    highlight: document.querySelectorAll(".rm-highlight-word").length,
     lines: document.querySelectorAll(".rm-lines i").length,
     orbit: document.querySelectorAll(".rm-orbit-item").length,
+    carousel: document.querySelectorAll(".rm-carousel-item").length,
+    ringItems: document.querySelectorAll(".rm-ring-item").length,
+    deck: document.querySelectorAll(".rm-deck-card").length,
+    dock: document.querySelectorAll(".rm-dock-item").length,
+    pill: document.querySelectorAll(".rm-pill-indicator").length,
+    gooey: document.querySelectorAll(".rm-gooey-blob").length,
+    tabs: document.querySelectorAll('[role="tab"]').length,
     compare: document.querySelectorAll('.rm-compare-handle[role="slider"]').length,
-    type: document.querySelectorAll(".rm-type-text").length,
     progress: document.querySelectorAll(".rm-progress").length,
+    waves: document.querySelectorAll(".rm-waves").length,
+    tracing: document.querySelectorAll(".rm-tracing-line").length,
+    fill: document.querySelectorAll(".rm-fill-sheet").length,
+    swap: document.querySelectorAll(".rm-swap-face").length,
   }));
 
   check(`${label}: text was split`, started.split > 0, JSON.stringify(started));
-  check(`${label}: spotlight cards initialised`, started.spotlight >= 6);
-  check(`${label}: marquee built a track`, started.marquee === 1);
-  check(`${label}: line fields built`, started.lines > 100);
-  check(`${label}: orbit placed its items`, started.orbit === 4);
-  check(`${label}: compare is a real slider`, started.compare === 1);
-  check(`${label}: typewriter mounted`, started.type === 2);
-  check(`${label}: progress bar mounted`, started.progress === 1);
+  check(`${label}: glare surfaces initialised`, started.glare >= 6, String(started.glare));
+  check(`${label}: morph mounted`, started.morph === 2, String(started.morph));
+  check(`${label}: odometer built its digit columns`, started.odometer >= 8, String(started.odometer));
+  check(`${label}: highlight split its paragraph`, started.highlight > 20, String(started.highlight));
+  check(`${label}: line field built`, started.lines === 55, String(started.lines));
+  check(`${label}: orbit placed its items`, started.orbit === 4, String(started.orbit));
+  check(`${label}: carousel took its slides`, started.carousel === 6, String(started.carousel));
+  check(`${label}: ring placed its faces`, started.ringItems === 6, String(started.ringItems));
+  check(`${label}: deck stacked its cards`, started.deck === 3, String(started.deck));
+  check(`${label}: dock took its items`, started.dock === 5, String(started.dock));
+  check(`${label}: pill indicators mounted`, started.pill === 2, String(started.pill));
+  check(`${label}: gooey built two blobs`, started.gooey === 2, String(started.gooey));
+  check(`${label}: tabs are a real tablist`, started.tabs === 3, String(started.tabs));
+  check(`${label}: compare is a real slider`, started.compare === 1, String(started.compare));
+  check(`${label}: progress bar mounted`, started.progress === 1, String(started.progress));
+  check(`${label}: the hero field is drawing`, started.waves === 1, String(started.waves));
+  check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));
+  check(`${label}: directional fills mounted`, started.fill >= 3, String(started.fill));
+  check(`${label}: swap has both faces`, started.swap === 2, String(started.swap));
 
-  // Scroll the whole page, then check that nothing that should be readable is
-  // still invisible. This is the one that catches a broken reveal.
+  // Scroll the whole page, then check nothing readable is left invisible.
   await page.evaluate(async () => {
     // Half a viewport at a time, and two frames per step. A loaded machine can
     // skip rendering opportunities entirely, and an observer that never got to
@@ -149,19 +177,97 @@ async function run(browser, { reducedMotion }) {
 
   // The accessible name has to survive text splitting.
   const headline = await page.evaluate(() => {
-    const h1 = document.querySelector("h1[data-rm-text]");
-    return { label: h1?.getAttribute("aria-label") ?? "", text: h1?.textContent?.trim() ?? "" };
+    const h2 = document.querySelector("h2[data-rm-text]");
+    return { label: h2?.getAttribute("aria-label") ?? "", text: h2?.textContent?.trim() ?? "" };
   });
-  check(`${label}: split headline keeps its accessible name`, headline.label === "Movimiento de premio", headline.label);
-  check(`${label}: split headline keeps its text for copy-paste`, headline.text.replace(/\s+/g, " ") === "Movimiento de premio", headline.text);
-
-  const counted = await page.evaluate(
-    () => document.querySelector("[data-rm-count]")?.textContent?.trim() ?? "",
+  check(
+    `${label}: split headline keeps its accessible name`,
+    headline.label === "Everything here is running",
+    headline.label,
   );
-  check(`${label}: counter finished on its real value`, counted === "0", counted);
+  check(
+    `${label}: split headline keeps its text for copy-paste`,
+    headline.text.replace(/\s+/g, " ") === "Everything here is running",
+    headline.text,
+  );
+
+  // An odometer replaces its text with digit columns, so the value has to
+  // survive somewhere a screen reader can reach.
+  const counted = await page.evaluate(
+    () => document.querySelector("[data-rm-odometer]")?.getAttribute("aria-label") ?? "",
+  );
+  check(`${label}: the counter still announces its value`, counted === "64", counted);
+
+  // The rotating words are decoration; the list of them is the content.
+  const morphLabel = await page.evaluate(
+    () => document.querySelector("[data-rm-morph]")?.getAttribute("aria-label") ?? "",
+  );
+  check(
+    `${label}: morph announces every word, not just the visible one`,
+    morphLabel.includes("portfolios") && morphLabel.includes("launches"),
+    morphLabel,
+  );
 
   await context.close();
   return problems;
+}
+
+/**
+ * Drive the full-screen menu with the keyboard.
+ *
+ * This component is only worth shipping because of its accessibility, and none
+ * of the checks above would notice that regressing: the menu would still open,
+ * still look right, and quietly become a trap.
+ */
+async function menu(browser) {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await context.newPage();
+  await page.goto(URL_BASE, { waitUntil: "networkidle" });
+
+  console.log("\noverlay menu");
+
+  const trigger = page.locator("[data-rm-overlay-open]");
+  await trigger.scrollIntoViewIfNeeded();
+  check("menu: starts closed and says so", (await trigger.getAttribute("aria-expanded")) === "false");
+
+  await trigger.click();
+  await wait(700);
+
+  const opened = await page.evaluate(() => {
+    const panel = document.querySelector("[data-rm-overlay]");
+    return {
+      hidden: panel.hidden,
+      focusInside: panel.contains(document.activeElement),
+      expanded: document.querySelector("[data-rm-overlay-open]").getAttribute("aria-expanded"),
+      siblingsInert: [...document.body.children]
+        .filter((el) => el !== panel && !el.contains(document.querySelector("[data-rm-overlay-open]")))
+        .every((el) => el.inert || el === panel),
+    };
+  });
+  check("menu: opens", opened.hidden === false);
+  check("menu: moves focus inside", opened.focusInside === true);
+  check("menu: reports itself expanded", opened.expanded === "true");
+  check("menu: makes the rest of the page inert", opened.siblingsInert === true);
+
+  await page.keyboard.press("Escape");
+  await wait(700);
+
+  const closed = await page.evaluate(() => {
+    const panel = document.querySelector("[data-rm-overlay]");
+    const button = document.querySelector("[data-rm-overlay-open]");
+    return {
+      hidden: panel.hidden,
+      focusReturned: document.activeElement === button,
+      expanded: button.getAttribute("aria-expanded"),
+      inertCleared: [...document.body.children].every((el) => !el.inert),
+    };
+  });
+  check("menu: Escape closes it", closed.hidden === true);
+  check("menu: focus goes back to the button", closed.focusReturned === true);
+  check("menu: reports itself collapsed", closed.expanded === "false");
+  check("menu: the page is usable again", closed.inertCleared === true);
+
+  await context.close();
 }
 
 /**
@@ -171,8 +277,8 @@ async function run(browser, { reducedMotion }) {
  * This is what a link to an anchor does, what a reloaded page with a restored
  * scroll position does, and what a hard flick on a slow phone amounts to. The
  * footer never crossed the viewport gradually, so the observer never saw it
- * arrive — and if a reveal depends on having seen that, the visitor lands on
- * a blank screen.
+ * arrive — and if a reveal depends on having seen that, the visitor lands on a
+ * blank screen.
  */
 async function jump(browser) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -195,6 +301,7 @@ try {
   const browser = await chromium.launch();
   await run(browser, { reducedMotion: false });
   await run(browser, { reducedMotion: true });
+  await menu(browser);
   await jump(browser);
   await browser.close();
 } finally {

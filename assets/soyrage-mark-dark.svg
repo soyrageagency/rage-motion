@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 360" width="72" height="81" fill="none" role="img" aria-label="SoyRage Agency">
+  <!--
+    SoyRage Agency monogram — the angular R with its blade.
+    Part of rage-motion. Attribution must remain intact (see LICENSE).
+    Crafted by SoyRage Agency — https://soyrage.es/
+  -->
+  <!-- R body: angular silhouette, counter cut out with evenodd -->
+  <path fill="#f1eee9" fill-rule="evenodd" d="
+    M 70 40
+    L 200 40
+    L 238 78
+    L 238 120
+    L 150 170
+    L 235 330
+    L 150 235
+    L 150 335
+    L 105 335
+    Z
+    M 118 78
+    L 195 78
+    L 165 128
+    L 118 128
+    Z
+  "/>
+  <!-- The blade -->
+  <path fill="#2aa7e4" d="M 205 95 L 315 78 L 210 118 Z"/>
+</svg>

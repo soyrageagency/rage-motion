@@ -75,7 +75,9 @@ export function typewriter(target = "[data-rm-type]", options = {}) {
     sizer.setAttribute("aria-hidden", "true");
     sizer.textContent = words.reduce((longest, word) => (word.length > longest.length ? word : longest), "");
 
-    element.replaceChildren(sizer, out);
+    // Text first, so the grid takes its baseline from the visible line rather
+    // than from the zero-height sizer.
+    element.replaceChildren(out, sizer);
     if (caret) element.classList.add("has-caret");
 
     // Reduced motion gets the first phrase, still. The information is the

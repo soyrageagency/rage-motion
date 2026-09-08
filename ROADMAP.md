@@ -1,85 +1,104 @@
+<div align="center">
+
+<a href="https://soyrage.es/">
+  <img src="./assets/soyrage-banner.svg" alt="SoyRage Agency — soyrage.es" width="100%">
+</a>
+
 # Roadmap
 
-Lo que viene, en el orden en que va a llegar. Y, al final, lo que no va a
-llegar nunca — que en una librería de animación importa igual.
+**What is coming, in the order it will arrive. And at the end, what will never arrive — which in an animation library matters just as much.**
 
-Las fechas son intenciones, no promesas. Si algo te hace falta antes,
-[ábrelo como issue](https://github.com/soyrageagency/rage-motion/issues) y lo
-subo.
+</div>
 
----
-
-## 0.1 — Publicado
-
-- [x] 33 componentes en nueve módulos, cada uno independiente y copiable.
-- [x] `core/motion.js`: preferencia de movimiento, easings, un solo `rAF`
-      compartido y un `animate()` que salta al estado final en vez de saltarse
-      la animación.
-- [x] Partido de texto que conserva el nombre accesible, el copiar-pegar y los
-      saltos de línea.
-- [x] Servidor MCP: `list_components`, `get_component`, `get_tokens`,
-      `get_stylesheet`, `about`, más un *prompt* y un recurso.
-- [x] Demo pública que es a la vez la documentación viva.
-- [x] `npm run check`: la demo en Chromium real, con y sin `reduced-motion`,
-      fallando ante cualquier error de consola o elemento que quede invisible.
-
-## 0.2 — Control más fino *(próximo)*
-
-- [ ] **`data-rm-once="false"` por elemento.** Hoy `once` es una opción del
-      conjunto, no del elemento; la demo tuvo que quitar el atributo porque no
-      hacía nada, y un atributo que no hace nada es peor que no tenerlo.
-- [ ] **`data-rm-*` para todas las opciones.** El markup debería poder
-      configurar lo mismo que JavaScript en todos los componentes, no sólo en
-      algunos.
-- [ ] **Tipos.** `.d.ts` generados desde el JSDoc que ya está escrito.
-- [ ] **Presets de escena**: combinaciones probadas (hero, índice de proyectos,
-      página de precios) que se activan con un atributo.
-
-## 0.3 — Rendimiento visible
-
-- [ ] **Presupuesto de movimiento.** Un aviso en consola cuando una página
-      arranca más componentes de los que puede sostener a 60fps, con cuáles
-      son los caros.
-- [ ] **Scroll timelines nativos en todo lo que se pueda.** `progress` ya los
-      usa; `parallax`, `scrub` y `stack` pueden.
-- [ ] **Carga por partes.** Un `init()` que sólo importe los módulos cuyos
-      atributos aparecen realmente en el documento.
-
-## 0.4 — Que se note fuera
-
-- [ ] **Envoltorios para React, Vue y Svelte.** Paquetes aparte: el núcleo
-      sigue sin dependencias y sin *framework*.
-- [ ] **Galería de plantillas.** Páginas completas — estudio, producto,
-      portfolio — para copiar enteras.
-- [ ] **Más componentes de vitrina**, a partir de lo que la gente pida en los
-      issues.
-
-## Sin fecha, pero en la lista
-
-- [ ] Vídeo corto de cada componente en el README, generado desde la demo.
-- [ ] Modo *debug* que dibuja los umbrales de disparo sobre la página.
-- [ ] Traducción del README y de la demo al inglés.
+Dates are intentions, not promises. If you need something sooner,
+[open an issue](https://github.com/soyrageagency/rage-motion/issues) and it moves up.
 
 ---
 
-## Lo que no va a pasar
+## 0.1 — Shipped
 
-Esto no es pereza: cada una de estas cosas haría peor la librería.
+- [x] **64 components** across seventeen modules, each standalone and copyable.
+- [x] `core/motion.js`: motion preference, easings, one shared `rAF`, one shared
+      scroll read, and an `animate()` that jumps to the finished state instead
+      of skipping the animation.
+- [x] Text splitting that keeps the accessible name, copy-paste and line breaks.
+- [x] **Typography with technique** — variable-font `pressure`, `morph` with a
+      real FLIP between shared letters, `curve` on a genuine `textPath`,
+      `odometer` digit columns.
+- [x] **Carousels that work** — `carousel` on native scrolling with momentum,
+      `ring` with drag inertia and arrow keys, `deck` that keeps card identity.
+- [x] **Navigation that does not break the site** — `pill`, `gooey`,
+      `condense`, `tabs` on the real tab pattern, and an `overlay` that traps
+      focus, closes on Escape, restores focus and marks the page inert.
+- [x] **Buttons that decorate rather than replace** — direction-aware `fill`,
+      `shimmer`, `spark`, `swap`.
+- [x] MCP server: `list_components`, `get_component`, `get_tokens`,
+      `get_stylesheet`, `about`, plus a prompt and a resource.
+- [x] A public demo that doubles as the documentation.
+- [x] `npm run check`: the demo in real Chromium, with and without reduced
+      motion, driving the menu by keyboard, failing on any console error or
+      anything left invisible on screen.
 
-- **Dependencias.** Ninguna. Ni GSAP, ni Lenis, ni una utilidad de 2 KB. El día
-  que este paquete tenga un `dependencies` no vacío, deja de ser lo que es.
-- **Scroll suave que sustituya al del navegador.** Rompe la barra de scroll, el
-  buscar-en-página, el teclado y media accesibilidad. `skew()` da la parte que
-  se ve — la inclinación — sin tocar el scroll.
-- **Un `* { animation: none !important }` para `reduced-motion`.** Es el
-  recorte habitual y deja invisible todo elemento cuyo estado visible sea el
-  final de una animación. Cada componente lo resuelve él.
-- **Animar propiedades de layout.** Nada de `top`, `left`, `width` o `margin`.
-  Si un efecto lo necesita, es que el efecto está mal planteado.
-- **Un *bundle* mínimo a costa de los comentarios.** El código explica por qué
-  hace lo que hace. Eso es la mitad del valor cuando lo copias en tu proyecto —
-  y lo que tu IA lee por MCP.
+## 0.2 — Finer control *(next)*
+
+- [ ] **Per-element `data-rm-once="false"`.** Today `once` is an option for the
+      set, not the element; the demo had to drop the attribute because it did
+      nothing, and an attribute that does nothing is worse than no attribute.
+- [ ] **Every option available as `data-rm-*`.** Markup should be able to
+      configure whatever JavaScript can, across all components rather than some.
+- [ ] **Types.** `.d.ts` generated from the JSDoc that is already written.
+- [ ] **Scene presets** — tested combinations (hero, project index, pricing)
+      behind a single attribute.
+
+## 0.3 — Performance you can see
+
+- [ ] **A motion budget.** A console warning when a page starts more components
+      than it can hold at 60fps, naming the expensive ones.
+- [ ] **Native scroll timelines everywhere they fit.** `progress` already uses
+      them; `parallax`, `scrub`, `stack` and `flatten` can.
+- [ ] **Load what the page uses.** An `init()` that imports only the modules
+      whose attributes actually appear in the document.
+
+## 0.4 — Reach
+
+- [ ] **React, Vue and Svelte wrappers.** Separate packages: the core stays
+      dependency-free and framework-free.
+- [ ] **Template gallery.** Whole pages — studio, product, portfolio — to take
+      outright.
+- [ ] **More showpiece components**, driven by what people ask for in issues.
+
+## Unscheduled, but on the list
+
+- [ ] A short clip of every component in the README, generated from the demo.
+- [ ] A debug mode that draws the trigger thresholds over the page.
+- [ ] A Spanish translation of the docs and the demo.
 
 ---
 
-Hecho por [SoyRage Agency](https://soyrage.es/).
+## What will not happen
+
+None of this is laziness. Each one would make the library worse.
+
+- **Dependencies.** Not one. Not GSAP, not Lenis, not a 2 KB utility. The day
+  this package has a non-empty `dependencies` it stops being what it is.
+- **Smooth scrolling that replaces the browser's.** It breaks the scrollbar,
+  find-in-page, the keyboard and half of accessibility. `skew()` gives you the
+  part you can actually see — the lean — without touching scroll.
+- **A blanket `* { animation: none !important }` for reduced motion.** It is
+  the usual snippet and it leaves invisible every element whose visible state
+  is the end of an animation. Each component handles the preference itself.
+- **Animating layout properties.** No `top`, `left`, `width` or `margin`. If an
+  effect needs them, the effect is wrong.
+- **A smaller bundle at the cost of the comments.** The code explains why it
+  does what it does. That is half the value when you copy a file into your
+  project — and it is exactly what your AI reads over MCP.
+
+---
+
+<div align="center">
+
+Built by **[SoyRage Agency](https://soyrage.es/)** — design, development and motion.
+
+**© 2026 SoyRage Agency — https://soyrage.es/**
+
+</div>

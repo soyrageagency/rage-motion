@@ -123,6 +123,44 @@ export function watch(target, enter, options = {}) {
   return () => observer.disconnect();
 }
 
+/**
+ * Run `start` only while `element` is on screen and the tab is visible.
+ *
+ * Both conditions matter and they are independent: a canvas that keeps
+ * painting in a hidden tab drains a laptop battery for nobody, and one that
+ * keeps painting after it has scrolled away burns frames the visible content
+ * needs. `start` returns its own stop function, which is called on the way out
+ * and again whenever the element leaves.
+ *
+ * @param {Element} element
+ * @param {() => (() => void)} start
+ * @returns {() => void} stop watching, and stop whatever is running
+ */
+export function whileVisible(element, start) {
+  let stopTask = null;
+  let onScreen = false;
+
+  const sync = () => {
+    const shouldRun = onScreen && !document.hidden;
+    if (shouldRun && !stopTask) stopTask = start();
+    else if (!shouldRun && stopTask) { stopTask(); stopTask = null; }
+  };
+
+  const observer = new IntersectionObserver(([entry]) => {
+    onScreen = entry.isIntersecting;
+    sync();
+  });
+  observer.observe(element);
+  document.addEventListener("visibilitychange", sync);
+
+  return () => {
+    observer.disconnect();
+    document.removeEventListener("visibilitychange", sync);
+    stopTask?.();
+    stopTask = null;
+  };
+}
+
 /** Accept a selector, an element, a NodeList or an array. */
 export function resolveElements(target) {
   if (!target) return [];

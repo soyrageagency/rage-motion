@@ -1,6 +1,12 @@
 <div align="center">
 
-# rage-motion for AI assistants
+<a href="https://soyrage.es/">
+  <img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/soyrage-banner.svg" alt="SoyRage Agency — soyrage.es" width="100%">
+</a>
+
+<br/>
+
+# 🤖 rage-motion for AI assistants
 
 **Stop your assistant inventing animations. Give it good ones.**
 
@@ -13,7 +19,7 @@ anything else that speaks the protocol the real
 [rage-motion](https://github.com/soyrageagency/rage-motion) components — source,
 markup, options and design tokens.
 
-Crafted by [SoyRage Agency](https://soyrage.es/)
+### Designed, built & maintained by **[SoyRage Agency](https://soyrage.es/)** · **https://soyrage.es/**
 
 </div>
 
@@ -48,8 +54,8 @@ reveal now and it looks first, finds `data-rm-reveal`, and writes markup:
 <div data-rm-reveal="up" data-rm-delay="120">…</div>
 ```
 
-Same for headlines, cursors, marquees, tilt cards, page transitions and the
-rest. It gets the real file when it needs the implementation, the real palette
+Same for headlines, carousels, navbars, buttons, cursors, generative
+backgrounds and page transitions — 64 components in all. It gets the real file when it needs the implementation, the real palette
 when it needs a colour, and the reasoning behind each component so it stops
 "simplifying" the parts that are load-bearing.
 
@@ -146,9 +152,24 @@ whatever it writes around the components matches them:
 
 ---
 
+## 💙 Support the project
+
+Free and MIT licensed. If it saves you time, you can [support development on PayPal](https://www.paypal.com/paypalme/soyrageagency) — a ⭐ on the repo helps just as much.
+
+---
+
+## 🖋️ Credits & License
+
 <div align="center">
 
-Built by **[SoyRage Agency](https://soyrage.es/)** — design, development and motion.
-Hire us: [soyrage.es](https://soyrage.es/) · MIT licensed.
+**Designed, built and maintained by [SoyRage Agency](https://soyrage.es/) — https://soyrage.es/**
+
+</div>
+
+Released under the **[MIT License](../LICENSE)** — use it, modify it, ship it commercially.
+
+<div align="center">
+
+**© 2026 SoyRage Agency — https://soyrage.es/** · Made with care in Valencia, Spain.
 
 </div>

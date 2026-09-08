@@ -71,9 +71,11 @@ export function reveal(target = "[data-rm-reveal]", options = {}) {
   elements.forEach((el) => prepare(el, dataString(el, "rmReveal", from)));
 
   let index = 0;
-  const stop = watch(
-    elements,
-    (el) => {
+  const played = new WeakSet();
+
+  const enter = (el) => {
+      if (played.has(el)) return;
+      played.add(el);
       const direction = dataString(el, "rmReveal", from);
       const start = FROM[direction] ?? FROM.up;
       const own = dataNumber(el, "rmDelay", null);
@@ -99,9 +101,25 @@ export function reveal(target = "[data-rm-reveal]", options = {}) {
       };
       if (animation) animation.finished.then(settle).catch(settle);
       else settle();
-    },
-    { threshold, margin, once },
-  );
+  };
+
+  const stop = watch(elements, enter, { threshold, margin, once });
+
+  /*
+   * Anything already on screen when the page loads animates in straight away.
+   *
+   * The trigger margin pulls the bottom of the band up, so that elements
+   * arriving from below start a little after they appear. On first paint that
+   * same margin leaves anything sitting in the lower slice of the first
+   * viewport untouched — visible space on the landing screen, blank, until the
+   * visitor scrolls. Which is precisely the thing this library refuses to do.
+   */
+  requestAnimationFrame(() => {
+    for (const el of elements) {
+      const box = el.getBoundingClientRect();
+      if (box.top < innerHeight && box.bottom > 0) enter(el);
+    }
+  });
 
   return () => {
     stop();
