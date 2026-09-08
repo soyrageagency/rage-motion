@@ -1794,10 +1794,14 @@ export function recentlyBought(target = "[data-rm-recently-bought]", options = {
 
     const hold = () => { row.classList.add("is-held"); };
     const release = () => { row.classList.remove("is-held"); };
+    // Focus moving between the pause button and the list is not a departure, so
+    // this is named rather than inline — both because it has to check where the
+    // focus went, and because an anonymous listener can never be removed.
+    const onFocusOut = (event) => { if (!row.contains(event.relatedTarget)) release(); };
     row.addEventListener("pointerenter", hold);
     row.addEventListener("pointerleave", release);
     row.addEventListener("focusin", hold);
-    row.addEventListener("focusout", (event) => { if (!row.contains(event.relatedTarget)) release(); });
+    row.addEventListener("focusout", onFocusOut);
     paint();
 
     cleanups.push(whileVisible(row, () => {
@@ -1808,6 +1812,8 @@ export function recentlyBought(target = "[data-rm-recently-bought]", options = {
     cleanups.push(() => {
       row.removeEventListener("pointerenter", hold);
       row.removeEventListener("pointerleave", release);
+      row.removeEventListener("focusin", hold);
+      row.removeEventListener("focusout", onFocusOut);
       controls.remove();
       caveat.remove();
       items.forEach((item) => {

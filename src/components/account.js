@@ -73,12 +73,17 @@ const uid = (prefix) => `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
  * so writing to it on mount interrupts the page to report a state nobody has
  * touched yet.
  */
-function speaker(holder, tone = "polite") {
+function speaker(holder, tone = "polite", beside = false) {
   const region = document.createElement("p");
   region.className = "rm-account-live";
   region.setAttribute("aria-live", tone);
   region.setAttribute("role", tone === "assertive" ? "alert" : "status");
-  holder.appendChild(region);
+  // A list has a content model, and a `<p>` is not in it. Dropping a stray flow
+  // element among the `<li>`s makes several screen readers stop reporting the
+  // list role or miscount "list, 8 items" — which undoes the very announcement
+  // the region exists to make. So a list gets its region as a sibling.
+  if (beside) holder.after(region);
+  else holder.appendChild(region);
   return region;
 }
 
@@ -98,13 +103,29 @@ function said(text) {
  * would be a lie and a full layout pass on every frame. So the change happens at
  * once, the survivors are put back where they were with a transform, and they are
  * let go. The browser lays out once and the compositor does the rest.
+ *
+ * The subtlety, and the one that is wrong in most hand-rolled FLIPs: a row that
+ * was `hidden` at measure time has no box at all, so its "before" rectangle is
+ * `{0, 0, 0, 0}` — the top-left corner of the viewport. Inverting from that
+ * throws a row that has just been *revealed* in from the corner of the screen,
+ * which is the opposite of the calm the technique is for. So visibility is
+ * recorded alongside the rectangle, and a row that was hidden before the
+ * mutation is not FLIPped at all; it arrives on its own short fade instead,
+ * because it was never anywhere to move from.
  */
 function flipList(nodes, mutate, duration = 320) {
-  const before = nodes.map((node) => [node, node.getBoundingClientRect()]);
+  const before = nodes.map((node) => [node, node.hidden, node.getBoundingClientRect()]);
   mutate();
   if (prefersReducedMotion()) return;
-  for (const [node, was] of before) {
+  for (const [node, wasHidden, was] of before) {
     if (!node.isConnected || node.hidden) continue;
+    if (wasHidden) {
+      node.animate(
+        [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }],
+        { duration: Math.round(duration * 0.75), easing: EASE.out },
+      );
+      continue;
+    }
     const now = node.getBoundingClientRect();
     const dx = was.left - now.left;
     const dy = was.top - now.top;
@@ -209,7 +230,7 @@ export function orderList(target = "[data-rm-order-list]", options = {}) {
 
     const gap = Math.max(0, dataNumber(list, "rmStagger", stagger));
     const speed = dataNumber(list, "rmDuration", duration);
-    const live = speaker(list);
+    const live = speaker(list, "polite", true);
     rows.forEach((row) => row.classList.add("rm-order-list-row"));
 
     const play = () => {
@@ -754,9 +775,12 @@ export function addressCard(target = "[data-rm-address-card]", options = {}) {
     });
 
     // The fade is opt-out, and it is applied from here rather than from the
-    // stylesheet so that a page whose script never runs shows the actions.
+    // stylesheet so that a page whose script never runs shows the actions. A
+    // visitor on reduced motion never gets the class at all: a control that is
+    // only readable once you have hovered it is a movement-dependent interface,
+    // and the promise in the doc above is that they simply see both buttons.
     const hush = dataString(card, "rmQuiet", String(quiet)) === "true" && buttons.length > 0;
-    if (hush) card.classList.add("is-quiet");
+    if (hush && !prefersReducedMotion()) card.classList.add("is-quiet");
 
     const name = card.querySelector("h1,h2,h3,h4,h5,h6")?.textContent?.trim();
     // "Edit" three times in a column is three identical buttons. Each one says
@@ -913,7 +937,10 @@ export function subscriptionCard(target = "[data-rm-subscription-card]", options
   const cards = resolveElements(target);
   if (!cards.length) return () => {};
 
-  const { day = 0, cycle = 30, duration = 620, skipLabel = "Skip the next delivery" } = options;
+  const {
+    day = 0, cycle = 30, duration = 620,
+    skipLabel = "Skip the next delivery", cycleLabel = "Subscription cycle",
+  } = options;
   const cleanups = [];
 
   for (const card of cards) {
@@ -925,6 +952,10 @@ export function subscriptionCard(target = "[data-rm-subscription-card]", options
     const bar = document.createElement("div");
     bar.className = "rm-subscription-card-bar";
     bar.setAttribute("role", "progressbar");
+    // A meter without a name is announced as "progress bar, day 12 of 30" and
+    // the listener is left to work out which of the card's numbers it belongs
+    // to. Every other bar in this library names itself; so does this one.
+    bar.setAttribute("aria-label", dataString(card, "rmCycleLabel", cycleLabel));
     bar.setAttribute("aria-valuemin", "0");
     bar.setAttribute("aria-valuemax", String(total));
     const fill = document.createElement("i");
@@ -1086,6 +1117,9 @@ export function pauseSubscription(target = "[data-rm-pause-subscription]", optio
         paused = false;
         holder.classList.remove("is-paused");
         trigger.textContent = "Pause deliveries";
+        // It is a disclosure again, so it says so again.
+        trigger.setAttribute("aria-controls", panel.id);
+        trigger.setAttribute("aria-expanded", "false");
         live.textContent = "Deliveries resumed. The next one is back on its usual date.";
         return;
       }
@@ -1105,6 +1139,12 @@ export function pauseSubscription(target = "[data-rm-pause-subscription]", optio
       // this one is not.
       trigger.textContent = "Resume deliveries";
       show(false, false);
+      // And it is no longer a disclosure at all: pressing it now resumes the
+      // subscription and will never open the panel again. Leaving `aria-expanded`
+      // on would have it announced as "Resume deliveries, collapsed, button",
+      // promising a panel that does not exist any more.
+      trigger.removeAttribute("aria-expanded");
+      trigger.removeAttribute("aria-controls");
       trigger.focus();
       live.textContent = `Paused until ${when}. Deliveries resume automatically.`;
       onPause?.(chosen, holder);
@@ -1368,7 +1408,7 @@ export function wishlistGrid(target = "[data-rm-wishlist-grid]", options = {}) {
     const hadLabel = grid.getAttribute("aria-label");
     grid.setAttribute("aria-label", dataString(grid, "rmLabel", hadLabel ?? label));
     const speed = dataNumber(grid, "rmDuration", duration);
-    const live = speaker(grid);
+    const live = speaker(grid, "polite", true);
 
     const empty = document.createElement("p");
     empty.className = "rm-wishlist-grid-empty";
@@ -1493,6 +1533,15 @@ export function reviewForm(target = "[data-rm-review-form]", options = {}) {
     }
     form.prepend(errors, group);
 
+    // Both of these belong to the page, not to this component: the counter's id
+    // is appended to whatever description the textarea already carried, and a
+    // failed submit gives the textarea an id so the error summary can link to
+    // it. Neither may survive teardown — a dangling `aria-describedby` points at
+    // an element that no longer exists, and a second mount would append a second
+    // id to the first one's leftovers.
+    const hadDescribedBy = body ? body.getAttribute("aria-describedby") : null;
+    const hadBodyId = body ? body.id : "";
+
     let counter = null;
     const onType = () => {
       if (!counter || !body) return;
@@ -1563,6 +1612,12 @@ export function reviewForm(target = "[data-rm-review-form]", options = {}) {
       form.removeEventListener("submit", onSend);
       body?.removeEventListener("input", onType);
       counter?.remove();
+      if (body) {
+        if (hadDescribedBy === null) body.removeAttribute("aria-describedby");
+        else body.setAttribute("aria-describedby", hadDescribedBy);
+        if (hadBodyId) body.id = hadBodyId;
+        else body.removeAttribute("id");
+      }
       body?.classList.remove("rm-review-form-body");
       group.remove();
       errors.remove();
@@ -1583,8 +1638,12 @@ export function reviewForm(target = "[data-rm-review-form]", options = {}) {
  * that reveals nothing is a control that teaches people to stop trusting the
  * control.
  *
- * Expanding is a FLIP on the card: the clamp comes off, the new height is
- * measured, and the card is played from its old size with a transform. Nothing
+ * Expanding is deliberately not a FLIP. Removing the clamp moves neither the
+ * card's top-left corner nor its width — only its height — and the one thing a
+ * FLIP cannot honestly invert is a height: a `scaleY` would squash every line of
+ * the text on the way open. So the clamp comes off, the layout settles in a
+ * single pass, and the newly revealed text is played in with an opacity and
+ * `clip-path` wipe, exactly the way `orderCard()` reveals its detail. Nothing
  * animates a height, so the reviews below it move once instead of on every frame.
  * "Helpful" is a toggle button with `aria-pressed` and a count that rolls in place
  * at a fixed width.
@@ -1632,13 +1691,29 @@ export function reviewCard(target = "[data-rm-review-card]", options = {}) {
     check();
 
     const onMore = () => {
-      const was = card.getBoundingClientRect();
+      // The clamped height, taken before the class comes off, is where the wipe
+      // starts: the lines that were already readable do not flash, and only the
+      // part that has just been revealed is played.
+      const clamped = body.clientHeight;
       open = !open;
       card.classList.toggle("is-clamped", !open);
       more.setAttribute("aria-expanded", String(open));
       more.textContent = open ? "Show less" : "Read the whole review";
-      flipTo(card, was, speed);
       check();
+      // Only on the way open. Wiping the text back shut would animate a
+      // paragraph the clamp is about to cut off mid-sentence anyway, which
+      // reads as a glitch rather than as a closing.
+      if (!open || prefersReducedMotion()) return;
+      const full = body.clientHeight;
+      if (full <= clamped) return;
+      const from = ((full - clamped) / full) * 100;
+      body.animate(
+        [
+          { clipPath: `inset(0 0 ${from}% 0)`, opacity: 0.55 },
+          { clipPath: "inset(0 0 0 0)", opacity: 1 },
+        ],
+        { duration: speed, easing: EASE.out },
+      );
     };
     more.addEventListener("click", onMore);
 
@@ -1999,6 +2074,12 @@ export function chatBubble(target = "[data-rm-chat-bubble]", options = {}) {
     const hadLabel = thread.getAttribute("aria-label");
     thread.setAttribute("aria-label", dataString(thread, "rmLabel", hadLabel ?? label));
     const speed = dataNumber(thread, "rmDuration", duration);
+    // The thread is the guaranteed landing site for focus when the jump button
+    // hides itself. An author's own `<li>` is not focusable, so `focus()` on it
+    // is a no-op and the browser drops focus on `<body>` — the reader is thrown
+    // back to the top of the document by pressing "New message".
+    const hadTabIndex = thread.getAttribute("tabindex");
+    thread.setAttribute("tabindex", "-1");
 
     const dress = (bubble) => {
       bubble.classList.add("rm-chat-bubble-item");

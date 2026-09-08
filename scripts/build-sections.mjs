@@ -35,6 +35,8 @@ const SECTIONS = [
   ["shop", "Ecommerce — product"],
   ["cart", "Ecommerce — cart and checkout"],
   ["extras", "Thirty more"],
+  ["storefront", "Ecommerce — storefront"],
+  ["account", "Ecommerce — account and support"],
 ];
 
 /*
@@ -53,12 +55,21 @@ const plate = () => `./assets/tiles/${TILES[served++ % TILES.length]}.svg`;
  * and on the demo that is a 404 in the console like any other. Anything
  * already pointing inside ./assets is left exactly as it is.
  */
-const realPictures = (markup) =>
-  markup.replace(
-    /(src|data-rm-image|data-rm-src)="([^"]*\.(?:jpe?g|png|webp|avif|svg|gif))"/g,
-    (whole, attribute, path) =>
-      (path.includes("assets/") ? whole : `${attribute}="${plate()}"`),
+function realPictures(markup) {
+  let out = markup.replace(
+    /(src|poster|data-rm-image|data-rm-src)="([^"]*\.(?:jpe?g|png|webp|avif|svg|gif))"/g,
+    (whole, attribute, path) => (path.includes("assets/") ? whole : `${attribute}="${plate()}"`),
   );
+
+  /*
+   * There is no film in this repository, and a <video> pointing at a file that
+   * is not there is a 404 in everybody's console. The poster stays — which is
+   * exactly what a video looks like before it plays — and the source goes.
+   */
+  out = out.replace(/<source[^>]*>/g, "");
+  out = out.replace(/\ssrc="[^"]*\.(?:mp4|webm|mov|ogv|m4v)"/g, "");
+  return out;
+}
 
 /*
  * An ellipsis is documentation shorthand for "your content goes here", and on

@@ -5276,6 +5276,2669 @@ html.rm-cursor-active * { cursor: none !important; }
  * Crafted by SoyRage Agency — https://soyrage.es/
  */
 
+
+/* ══ Ecommerce — product and catalogue ══════════════════════════════════════════════ */
+
+/*
+ * Ecommerce — product and catalogue.
+ *
+ * Three techniques here are worth explaining, because they look like mistakes
+ * until you know what they are avoiding.
+ *
+ * 1. Nothing that moves has a width or a height in a transition. The stock
+ *    meter, the review bars and the tab underline all move by `transform`, and
+ *    the elements they live on are already at their final size before anything
+ *    animates. A `width` transition on a bar re-lays-out its whole row sixty
+ *    times a second for a decoration; a `scaleX` on the same bar is one
+ *    composited layer the browser can hand to the GPU.
+ *
+ * 2. Radio and checkbox inputs are shrunk to a nearly transparent pixel, never
+ *    `display: none` and never `visibility: hidden`. A hidden input is not
+ *    focusable, so hiding one the lazy way removes the arrow keys, the focus
+ *    ring and the form value — the three reasons for using a real input at
+ *    all. Left in place at a pixel it keeps every one of them, and the visible
+ *    chip picks the focus ring back up with `:has(input:focus-visible)`.
+ *
+ * 3. The panels that open — the filter disclosure, the quick view, the compare
+ *    tray — are all on their own layer, out of the flow. That is what lets them
+ *    animate without moving the catalogue behind them. It also means their
+ *    closed state is the `hidden` attribute rather than a zero size, so before
+ *    the script runs the page is complete and readable rather than collapsed.
+ *
+ * Crafted by SoyRage Agency — https://soyrage.es/
+ * MIT licensed (see LICENSE).
+ */
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/*
+ * Read but not drawn. Not `display: none`, which removes it from the
+ * accessibility tree along with everything else — this is the difference
+ * between a strike-through that is announced and one that is only a picture.
+ */
+.rm-shop-said,
+.rm-shop-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Any real input this kit hides keeps its focus, its keys and its value. */
+.rm-swatches-chip input,
+.rm-size-picker-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0.001; /* not 0: some engines skip focus on a fully transparent box */
+  pointer-events: none;
+}
+
+/* ── Product card ───────────────────────────────────────────────────────── */
+
+.rm-product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  transition:
+    transform var(--rm-product-card-duration, 420ms) var(--rm-ease-out),
+    box-shadow var(--rm-product-card-duration, 420ms) var(--rm-ease-out);
+}
+.rm-product-card.is-lifted {
+  transform: translateY(var(--rm-product-card-lift, -6px));
+  box-shadow: 0 18px 40px -22px color-mix(in srgb, var(--rm-ink) 60%, transparent);
+}
+.rm-product-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: calc(var(--rm-radius) - 8px);
+}
+
+/*
+ * One stretched link. The pseudo element is the hit area for the whole card,
+ * and everything else in the card is lifted above it so its own clicks survive
+ * — which is the part that a card wrapped in a single <a> cannot do at all.
+ */
+.rm-product-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 0;
+}
+.rm-product-card > :is(button, a:not(.rm-product-card-link), label, input, select),
+.rm-product-card :is(button, label, input, select) {
+  position: relative;
+  z-index: 1;
+}
+.rm-product-card-link { text-decoration: none; color: inherit; }
+.rm-product-card-link:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Product gallery ────────────────────────────────────────────────────── */
+
+.rm-product-gallery { display: grid; gap: 0.7rem; font-family: var(--rm-body); }
+.rm-product-gallery-main {
+  display: block;
+  width: 100%;
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, var(--rm-ink) 6%, var(--rm-cream));
+}
+.rm-product-gallery-strip {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.rm-product-gallery-thumb {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: calc(var(--rm-radius) / 2.4);
+  background: none;
+  cursor: pointer;
+  transition: transform 240ms var(--rm-ease-out), border-color 240ms var(--rm-ease-out);
+}
+.rm-product-gallery-thumb img {
+  display: block;
+  width: 72px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.rm-product-gallery-thumb:hover,
+.rm-product-gallery-thumb:focus-visible { transform: translateY(-3px); }
+.rm-product-gallery-thumb.is-current { border-color: var(--rm-accent); }
+.rm-product-gallery-thumb:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Product zoom ───────────────────────────────────────────────────────── */
+
+/*
+ * The frame is the lens. It clips, and the one real <img> inside it scales
+ * around whichever point the pointer or the arrow keys have chosen — so there
+ * is no second copy of the photograph to download, decode or announce.
+ */
+.rm-product-zoom {
+  position: relative;
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  cursor: zoom-in;
+}
+.rm-product-zoom.is-zoomed { cursor: zoom-out; }
+.rm-product-zoom-image {
+  display: block;
+  width: 100%;
+  will-change: transform;
+}
+.rm-product-zoom-toggle {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  padding: 0.35rem 0.8rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 82%, transparent);
+  color: var(--rm-cream);
+  font: 500 0.78rem/1.4 var(--rm-body);
+  cursor: pointer;
+}
+.rm-product-zoom-toggle[aria-pressed="true"] { background: var(--rm-accent); }
+.rm-product-zoom:focus-visible,
+.rm-product-zoom-toggle:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Colour swatches ────────────────────────────────────────────────────── */
+
+.rm-swatches {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: var(--rm-body);
+}
+.rm-swatches legend { padding: 0; margin-bottom: 0.5rem; font-weight: 600; }
+.rm-swatches-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 5%, transparent);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.rm-swatches-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rm-ink) 22%, transparent);
+}
+/*
+ * One ring for the whole group, placed from a measurement and moved with a
+ * FLIP. It is appended last, so it paints over the chips — which is what an
+ * outline should do — and `pointer-events: none` is what makes that safe: it
+ * can lie across a label without ever swallowing the click meant for it.
+ */
+.rm-swatches-ring {
+  position: absolute;
+  border-radius: var(--rm-radius-pill);
+  box-shadow: 0 0 0 2px var(--rm-accent);
+  pointer-events: none;
+  will-change: transform;
+}
+.rm-swatches-chip:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Size picker ────────────────────────────────────────────────────────── */
+
+.rm-size-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: var(--rm-body);
+}
+.rm-size-picker legend { padding: 0; margin-bottom: 0.5rem; font-weight: 600; }
+.rm-size-picker-option {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 3rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: calc(var(--rm-radius) / 3);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rm-ink) 25%, transparent);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.rm-size-picker-option:has(input:checked) {
+  box-shadow: inset 0 0 0 2px var(--rm-ink);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+}
+/* Struck and dimmed for the eye; the JS adds ", out of stock" for everyone else. */
+.rm-size-picker-option.is-gone {
+  color: var(--rm-muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    color-mix(in srgb, var(--rm-ink) 7%, transparent) 5px 10px
+  );
+}
+.rm-size-picker-option:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Price tag ──────────────────────────────────────────────────────────── */
+
+.rm-price-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  overflow: hidden; /* the roll leaves and arrives inside this box */
+  font-family: var(--rm-body);
+  font-variant-numeric: tabular-nums; /* digits of one width: no jitter as it rolls */
+}
+.rm-price-tag-now { font-family: var(--rm-display); font-size: 1.35rem; }
+.rm-price-tag.is-reduced .rm-price-tag-now { color: var(--rm-terracotta); }
+.rm-price-tag-was { color: var(--rm-muted); font-size: 0.95rem; }
+
+/* ── Discount badge ─────────────────────────────────────────────────────── */
+
+.rm-discount-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-yellow);
+  color: var(--rm-ink);
+  font: 700 0.75rem/1.5 var(--rm-mono);
+  letter-spacing: 0.02em;
+  transform-origin: center; /* it scales out of its own middle, so nothing shifts */
+}
+
+/* ── Stock meter ────────────────────────────────────────────────────────── */
+
+.rm-stock-meter { display: grid; gap: 0.35rem; font-family: var(--rm-body); font-size: 0.85rem; }
+.rm-stock-meter-track {
+  display: block;
+  height: 6px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 10%, transparent);
+  overflow: hidden;
+}
+/* Full width already; only the scale changes, so the row never re-lays-out. */
+.rm-stock-meter-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-stock-meter-value, 0));
+  transform-origin: left center;
+  transition: transform var(--rm-stock-meter-duration, 520ms) var(--rm-ease-out);
+}
+.rm-stock-meter.is-low .rm-stock-meter-track i { background: var(--rm-terracotta); }
+.rm-stock-meter.is-low .rm-stock-meter-words { color: var(--rm-terracotta); font-weight: 600; }
+.rm-stock-meter.is-gone .rm-stock-meter-words { color: var(--rm-muted); }
+
+/* ── Rating stars ───────────────────────────────────────────────────────── */
+
+.rm-rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-family: var(--rm-body);
+}
+.rm-rating-stars-shape { position: relative; display: inline-block; letter-spacing: 0.08em; }
+.rm-rating-stars-back { color: color-mix(in srgb, var(--rm-ink) 18%, transparent); }
+/* The filled copy sits exactly on top and is clipped to the score — so 4.3
+   stars is genuinely four and a third, on its own layer, with no reflow. */
+.rm-rating-stars-front {
+  position: absolute;
+  inset: 0;
+  color: var(--rm-yellow);
+  white-space: nowrap;
+}
+.rm-rating-stars-number { color: var(--rm-muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+
+/* ── Review summary ─────────────────────────────────────────────────────── */
+
+.rm-review-summary {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--rm-body);
+  font-size: 0.85rem;
+}
+.rm-review-summary-row { display: grid; grid-template-columns: 4.5rem 1fr 5rem; gap: 0.6rem; align-items: center; }
+.rm-review-summary-bar {
+  height: 8px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 9%, transparent);
+  overflow: hidden;
+}
+.rm-review-summary-bar i {
+  display: block;
+  height: 100%;
+  background: var(--rm-yellow);
+  transform: scaleX(var(--rm-review-summary-share, 0));
+  transform-origin: left center;
+}
+.rm-review-summary-count { color: var(--rm-muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ── Add to cart ────────────────────────────────────────────────────────── */
+
+/*
+ * All three faces share one grid cell, so the button is already as wide as its
+ * widest state and swapping between them cannot resize it mid-click. Inactive
+ * faces are `visibility: hidden` rather than transparent, because
+ * invisible-but-present text is still read aloud and still found by
+ * find-in-page — a tick nobody can see should not be in either. That is also
+ * why the JS marks all three `aria-hidden` and gives the button a fixed
+ * `aria-label`: with the faces in the tree the visible one *is* the button's
+ * name, and the name would change under the live region saying the same thing.
+ */
+.rm-add-to-cart {
+  display: inline-grid;
+  place-items: center;
+  padding: 0.7rem 1.4rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font: 600 0.9rem/1.3 var(--rm-body);
+  cursor: pointer;
+}
+.rm-add-to-cart-face { grid-area: 1 / 1; visibility: hidden; }
+.rm-add-to-cart-face.is-on { visibility: visible; }
+.rm-add-to-cart[aria-disabled="true"] { cursor: progress; }
+.rm-add-to-cart:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Wishlist heart ─────────────────────────────────────────────────────── */
+
+.rm-wishlist {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rm-cream) 88%, transparent);
+  color: var(--rm-ink);
+  cursor: pointer;
+}
+.rm-wishlist-heart { display: grid; place-items: center; width: 22px; height: 22px; }
+.rm-wishlist-heart svg { width: 100%; height: 100%; }
+.rm-wishlist.is-on { color: var(--rm-terracotta); }
+.rm-wishlist.is-on svg path { fill: currentColor; }
+/* The burst is its own layer; the heart never moves the card it sits on. */
+.rm-wishlist-ring {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 2px solid var(--rm-terracotta);
+  pointer-events: none;
+  transform: scale(0.5);
+}
+.rm-wishlist:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Compare tray ───────────────────────────────────────────────────────── */
+
+/* Fixed, so the first product added does not push the catalogue upward. */
+.rm-compare-tray {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  translate: -50% 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  box-shadow: 0 20px 46px -24px rgb(0 0 0 / 0.7);
+  font-family: var(--rm-body);
+}
+.rm-compare-tray-list { display: flex; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.rm-compare-tray-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.25rem;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-cream) 14%, transparent);
+  font-size: 0.8rem;
+}
+.rm-compare-tray-item img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.rm-compare-tray-drop {
+  border: 0;
+  border-radius: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  background: none;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rm-compare-tray-drop:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Quick view ─────────────────────────────────────────────────────────── */
+
+.rm-quick-view-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--rm-ink) 62%, transparent);
+  backdrop-filter: blur(3px);
+}
+.rm-quick-view {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  z-index: 81;
+  width: min(46rem, calc(100vw - 2rem));
+  max-height: min(44rem, calc(100vh - 2rem));
+  overflow: auto;
+  padding: 1.6rem;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-quick-view-close {
+  position: absolute;
+  right: 0.9rem;
+  top: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rm-ink) 8%, transparent);
+  color: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rm-quick-view-close:focus-visible,
+.rm-quick-view:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Product tabs ───────────────────────────────────────────────────────── */
+
+.rm-product-tabs { font-family: var(--rm-body); }
+.rm-product-tabs-bar {
+  position: relative;
+  display: flex;
+  gap: 0.3rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--rm-ink) 14%, transparent);
+  overflow-x: auto;
+}
+.rm-product-tabs-tab {
+  border: 0;
+  background: none;
+  padding: 0.7rem 0.9rem;
+  color: var(--rm-muted);
+  font: 600 0.9rem/1.3 var(--rm-body);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.rm-product-tabs-tab.is-current { color: var(--rm-ink); }
+.rm-product-tabs-tab:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: -3px; }
+/*
+ * One underline for the whole bar. Its box is set once from a measurement and
+ * the movement between tabs is a transform, so an indicator sliding across six
+ * tabs costs nothing in layout.
+ */
+.rm-product-tabs-line {
+  position: absolute;
+  bottom: -1px;
+  height: 2px;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  pointer-events: none;
+  will-change: transform;
+}
+.rm-product-tabs-panel { padding: 1rem 0; }
+.rm-product-tabs-panel:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 4px; }
+
+/* ── Variant picker ─────────────────────────────────────────────────────── */
+
+.rm-variant-picker { display: grid; gap: 1rem; font-family: var(--rm-body); }
+.rm-variant-picker.is-unavailable .rm-swatches-ring { box-shadow: 0 0 0 2px var(--rm-terracotta); }
+/* aria-disabled, not disabled — it can still be reached, and still explains itself. */
+.rm-variant-picker .is-off { opacity: 0.55; }
+.rm-variant-picker .is-off::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    color-mix(in srgb, var(--rm-ink) 45%, transparent) 50%,
+    transparent calc(50% + 1px)
+  );
+  pointer-events: none;
+}
+
+/* ── Breadcrumb trail ───────────────────────────────────────────────────── */
+
+.rm-breadcrumb-trail { font-family: var(--rm-body); font-size: 0.85rem; }
+.rm-breadcrumb-trail-list {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+}
+.rm-breadcrumb-trail-list > li { display: flex; align-items: center; gap: 0.4rem; }
+.rm-breadcrumb-trail-list > li + li::before { content: "/"; color: var(--rm-muted); }
+.rm-breadcrumb-trail-list a { color: var(--rm-muted); text-decoration: none; }
+.rm-breadcrumb-trail-list a:hover,
+.rm-breadcrumb-trail-list a:focus-visible { color: var(--rm-ink); text-decoration: underline; }
+.rm-breadcrumb-trail-list .is-current { color: var(--rm-ink); font-weight: 600; }
+/* A real button, not an ellipsis: the folded levels can be got back. */
+.rm-breadcrumb-trail-more button {
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  padding: 0.1rem 0.5rem;
+  background: color-mix(in srgb, var(--rm-ink) 9%, transparent);
+  color: var(--rm-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.rm-breadcrumb-trail-more button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Sort bar ───────────────────────────────────────────────────────────── */
+
+.rm-sort-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--rm-body);
+  font-size: 0.85rem;
+}
+/* The native control, dressed — never replaced. */
+.rm-sort-bar-select {
+  appearance: none;
+  padding: 0.45rem 2rem 0.45rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 20%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background:
+    linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 15px) 55% / 5px 5px no-repeat,
+    linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 10px) 55% / 5px 5px no-repeat,
+    var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.rm-sort-bar-select:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Filter panel ───────────────────────────────────────────────────────── */
+
+.rm-filter-panel { position: relative; font-family: var(--rm-body); font-size: 0.85rem; }
+.rm-filter-panel-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 20%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.rm-filter-panel.is-open .rm-filter-panel-trigger { border-color: var(--rm-ink); }
+.rm-filter-panel-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-accent);
+  color: var(--rm-cream);
+  font: 700 0.7rem/1 var(--rm-mono);
+}
+/*
+ * Absolutely positioned on purpose. A disclosure that opens in the flow has to
+ * animate a height, and animating a height re-lays-out every product below it
+ * on every frame. Out of the flow, opening is a clip-path and the grid behind
+ * does not move at all.
+ */
+.rm-filter-panel-body {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.4rem);
+  z-index: 40;
+  display: grid;
+  gap: 0.4rem;
+  min-width: 12rem;
+  padding: 0.8rem;
+  border-radius: calc(var(--rm-radius) / 1.6);
+  background: var(--rm-cream);
+  box-shadow: 0 22px 48px -26px rgb(0 0 0 / 0.55);
+}
+.rm-filter-panel-body label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.rm-filter-panel-trigger:focus-visible,
+.rm-filter-panel-body input:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Result count ───────────────────────────────────────────────────────── */
+
+.rm-result-count {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  margin: 0;
+  overflow: hidden; /* the old digits leave inside this box, not beside it */
+  font-family: var(--rm-body);
+  font-size: 0.9rem;
+}
+.rm-result-count-face {
+  display: inline-block;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.rm-result-count-face.is-leaving { position: absolute; }
+.rm-result-count-noun { color: var(--rm-muted); }
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+/*
+ * Everything above still ends in its finished state; only the travel goes. The
+ * bars stay filled, the underline stays under the chosen tab and the tray stays
+ * open — nothing here is allowed to leave content invisible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-product-card,
+  .rm-product-gallery-thumb,
+  .rm-stock-meter-track i {
+    transition-duration: 1ms;
+  }
+  .rm-product-card.is-lifted { transform: none; }
+  .rm-product-gallery-thumb:hover,
+  .rm-product-gallery-thumb:focus-visible { transform: none; }
+}
+
+
+/* ══ Ecommerce — storefront and merchandising ══════════════════════════════════════════════ */
+
+/*
+ * Ecommerce — storefront and merchandising.
+ *
+ * Nothing in here hides content and waits for a script. Every start state that
+ * belongs to an animation is written from JavaScript and cleared again when the
+ * animation finishes, so a storefront whose bundle never arrives is a
+ * storefront that is simply not animated. The only invisible things below are
+ * elements this module creates itself, which do not exist at all without it.
+ *
+ * Part of rage-motion.
+ * Crafted by SoyRage Agency — https://soyrage.es/
+ * MIT licensed (see LICENSE).
+ */
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/*
+ * Read but not drawn. Not `display: none`, which would take it out of the
+ * accessibility tree along with everything else — this is the difference
+ * between a signal that is announced and one that is only a picture.
+ */
+.rm-storefront-said,
+.rm-storefront-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * An author `display` beats the user-agent rule for `[hidden]`, so every class
+ * in this file that is given a display and is also toggled with `el.hidden`
+ * has to say so explicitly. Without these lines the panel is still laid out,
+ * still takes clicks and still collects a Tab press while claiming to be gone.
+ */
+.rm-collection-grid-item[hidden],
+.rm-lookbook-card[hidden],
+.rm-sale-countdown-clock[hidden],
+.rm-sale-countdown-over[hidden],
+.rm-bundle-builder-saving[hidden],
+.rm-size-guide[hidden],
+.rm-size-guide-veil[hidden],
+.rm-size-guide-table tbody[hidden],
+.rm-stock-notify-error[hidden],
+.rm-badge-stack-item[hidden],
+.rm-badge-stack-more[hidden],
+.rm-recently-bought-item[hidden],
+.rm-upsell-row-ring[hidden],
+.rm-subscribe-box-summary[hidden] { display: none; }
+
+/* ── Hero banner ────────────────────────────────────────────────────────── */
+
+.rm-hero-banner {
+  position: relative;
+  display: grid;
+  align-content: end;
+  gap: 0.9rem;
+  min-height: clamp(20rem, 56vh, 34rem);
+  padding: clamp(1.4rem, 4vw, 3.2rem);
+  overflow: hidden;
+  border-radius: var(--rm-radius);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-family: var(--rm-body);
+  isolation: isolate;
+}
+.rm-hero-banner-art {
+  position: absolute;
+  inset: -6%;
+  z-index: -1;
+  width: 112%;
+  height: 112%;
+  object-fit: cover;
+  will-change: transform;
+}
+/* A wash under the copy, so a heading over a photograph stays legible. */
+.rm-hero-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--rm-ink) 88%, transparent) 8%,
+    color-mix(in srgb, var(--rm-ink) 20%, transparent) 62%,
+    transparent
+  );
+}
+.rm-hero-banner-copy { position: relative; margin: 0; max-width: 34ch; }
+.rm-hero-banner :is(h1, h2, h3) {
+  margin: 0;
+  font-family: var(--rm-display);
+  font-size: clamp(2rem, 6vw, 4.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.rm-hero-banner p { color: color-mix(in srgb, var(--rm-cream) 82%, transparent); }
+.rm-hero-banner a[href] {
+  justify-self: start;
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-yellow);
+  color: var(--rm-ink);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 260ms var(--rm-ease-out);
+}
+.rm-hero-banner a[href]:hover,
+.rm-hero-banner a[href]:focus-visible { transform: translateY(-2px); }
+.rm-hero-banner a[href]:focus-visible { outline: 2px solid var(--rm-cream); outline-offset: 3px; }
+
+/* ── Collection grid ────────────────────────────────────────────────────── */
+
+.rm-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--rm-collection-grid-min, 220px), 1fr));
+  gap: clamp(0.7rem, 2vw, 1.4rem);
+  font-family: var(--rm-body);
+}
+.rm-collection-grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  will-change: transform;
+}
+.rm-collection-grid-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: calc(var(--rm-radius) - 10px);
+  background: color-mix(in srgb, var(--rm-ink) 6%, var(--rm-cream));
+}
+.rm-collection-grid-item :is(h2, h3, h4) { margin: 0; font-size: 1rem; font-weight: 600; }
+
+/* ── Lookbook ───────────────────────────────────────────────────────────── */
+
+.rm-lookbook {
+  position: relative;
+  display: block;
+  margin: 0;
+  border-radius: var(--rm-radius);
+  overflow: hidden;
+  font-family: var(--rm-body);
+}
+.rm-lookbook-image { display: block; width: 100%; height: auto; }
+.rm-lookbook-spot {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-cream) 92%, transparent);
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: transform 260ms var(--rm-ease-out), background-color 260ms var(--rm-ease-out);
+}
+.rm-lookbook-spot:hover,
+.rm-lookbook-spot:focus-visible { transform: translate(-50%, -50%) scale(1.06); }
+.rm-lookbook-spot:focus-visible { outline: 2px solid var(--rm-ink); outline-offset: 3px; }
+.rm-lookbook-spot.is-open { background: var(--rm-yellow); }
+.rm-lookbook-dot {
+  position: relative;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--rm-accent);
+}
+/* The pulse is a ring on its own layer — a transform, never a box-shadow. */
+.rm-lookbook-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--rm-accent);
+  animation: rm-lookbook-pulse 2.4s var(--rm-ease-out) infinite;
+}
+@keyframes rm-lookbook-pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  70%, 100% { transform: scale(2.6); opacity: 0; }
+}
+.rm-lookbook-name { white-space: nowrap; font-weight: 600; }
+.rm-lookbook-card {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: grid;
+  gap: 0.3rem;
+  max-width: min(20rem, 70%);
+  padding: 0.9rem 1.1rem;
+  border-radius: calc(var(--rm-radius) - 8px);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  box-shadow: 0 20px 50px -26px color-mix(in srgb, var(--rm-ink) 80%, transparent);
+}
+.rm-lookbook-card :is(h2, h3, h4) { margin: 0; font-size: 1rem; }
+.rm-lookbook-card p { margin: 0; color: var(--rm-muted); font-size: 0.9rem; }
+
+/* ── Category tiles ─────────────────────────────────────────────────────── */
+
+.rm-category-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: clamp(0.6rem, 2vw, 1.2rem);
+  font-family: var(--rm-body);
+}
+.rm-category-tiles-tile {
+  position: relative;
+  display: grid;
+  align-content: end;
+  min-height: 15rem;
+  padding: 1rem;
+  overflow: hidden;
+  border-radius: var(--rm-radius);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  text-decoration: none;
+  isolation: isolate;
+}
+.rm-category-tiles-image {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center;
+  transition: transform 620ms var(--rm-ease-out), filter 620ms var(--rm-ease-out);
+}
+.rm-category-tiles-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, color-mix(in srgb, var(--rm-ink) 80%, transparent), transparent 68%);
+}
+.rm-category-tiles-tile:hover .rm-category-tiles-image,
+.rm-category-tiles-tile:focus-visible .rm-category-tiles-image {
+  transform: scale(var(--rm-category-tiles-zoom, 1.07));
+}
+.rm-category-tiles-tile:focus-visible { outline: 3px solid var(--rm-yellow); outline-offset: 2px; }
+.rm-category-tiles-tile :is(h2, h3, h4) {
+  margin: 0;
+  font-family: var(--rm-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+}
+.rm-category-tiles-tile[aria-current="page"] { outline: 2px solid var(--rm-yellow); outline-offset: -2px; }
+
+/* ── Sale countdown ─────────────────────────────────────────────────────── */
+
+.rm-sale-countdown {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 1rem 1.2rem;
+  border-radius: var(--rm-radius);
+  background: var(--rm-terracotta);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-sale-countdown-head { font-family: var(--rm-display); font-size: 1.1rem; }
+.rm-sale-countdown-clock { display: flex; gap: 0.55rem; }
+.rm-sale-countdown-unit {
+  display: grid;
+  justify-items: center;
+  min-width: 3.2rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: calc(var(--rm-radius) / 2.6);
+  background: color-mix(in srgb, var(--rm-ink) 10%, transparent);
+}
+.rm-sale-countdown-unit b {
+  display: block;
+  overflow: hidden;
+  font-family: var(--rm-mono);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.rm-sale-countdown-unit small {
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--rm-ink) 70%, transparent);
+}
+.rm-sale-countdown-over { display: block; font-weight: 600; }
+.rm-sale-countdown-note {
+  display: block;
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--rm-ink) 72%, transparent);
+}
+.rm-sale-countdown.is-over { background: color-mix(in srgb, var(--rm-ink) 8%, var(--rm-cream)); }
+
+/* ── Bundle builder ─────────────────────────────────────────────────────── */
+
+.rm-bundle-builder {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 14%, transparent);
+  border-radius: var(--rm-radius);
+  font-family: var(--rm-body);
+}
+.rm-bundle-builder legend { font-family: var(--rm-display); font-size: 1.1rem; padding-inline: 0.3rem; }
+.rm-bundle-builder-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: calc(var(--rm-radius) / 2.4);
+  cursor: pointer;
+  transition: background-color 220ms var(--rm-ease-out);
+}
+.rm-bundle-builder-pick:hover { background: color-mix(in srgb, var(--rm-ink) 5%, transparent); }
+.rm-bundle-builder-pick:has(input:checked) { background: color-mix(in srgb, var(--rm-accent) 12%, transparent); }
+.rm-bundle-builder-pick:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-bundle-builder-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid color-mix(in srgb, var(--rm-ink) 14%, transparent);
+}
+.rm-bundle-builder-figure {
+  display: inline-block;
+  min-width: 5ch;
+  font-family: var(--rm-display);
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.rm-bundle-builder-saving {
+  display: inline-flex;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-yellow);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.rm-bundle-builder-advice { flex: 1 1 100%; color: var(--rm-muted); font-size: 0.86rem; }
+
+/* ── Size guide ─────────────────────────────────────────────────────────── */
+
+.rm-size-guide-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: block;
+  background: color-mix(in srgb, var(--rm-ink) 62%, transparent);
+}
+.rm-size-guide {
+  position: fixed;
+  z-index: 91;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: 0.9rem;
+  width: min(44rem, calc(100vw - 2rem));
+  max-height: min(80vh, 46rem);
+  padding: 1.4rem;
+  overflow: auto;
+  transform: translate(-50%, -50%);
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-size-guide :is(h1, h2, h3) { margin: 0; font-family: var(--rm-display); }
+.rm-size-guide-close {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rm-ink) 8%, transparent);
+  color: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rm-size-guide-close:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-size-guide-units {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 14%, transparent);
+  border-radius: var(--rm-radius-pill);
+}
+.rm-size-guide-units legend { padding-inline: 0.3rem; font-size: 0.8rem; color: var(--rm-muted); }
+.rm-size-guide-units label { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+.rm-size-guide-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.rm-size-guide-table :is(th, td) {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid color-mix(in srgb, var(--rm-ink) 12%, transparent);
+}
+.rm-size-guide-table thead th { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.rm-size-guide-table tbody th {
+  position: sticky;
+  left: 0;
+  background: var(--rm-cream);
+  font-weight: 600;
+}
+
+/* ── Stock notify ───────────────────────────────────────────────────────── */
+
+.rm-stock-notify {
+  display: grid;
+  font-family: var(--rm-body);
+}
+/*
+ * Two faces, one grid cell. The box is already as tall as the taller of them,
+ * so confirming does not shove the product page down — and `visibility` rather
+ * than `display` keeps the inactive face out of the tab order and out of the
+ * accessibility tree while it holds the space open.
+ */
+.rm-stock-notify-face,
+.rm-subscribe-box-face {
+  grid-area: 1 / 1;
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  visibility: hidden;
+}
+.rm-stock-notify-face.is-on,
+.rm-subscribe-box-face.is-on { visibility: visible; }
+.rm-stock-notify label,
+.rm-subscribe-box label { font-size: 0.86rem; font-weight: 600; }
+.rm-stock-notify input:not([type="checkbox"]),
+.rm-subscribe-box input:not([type="checkbox"]) {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 22%, transparent);
+  border-radius: calc(var(--rm-radius) / 2.6);
+  background: var(--rm-cream);
+  color: inherit;
+  font: inherit;
+}
+.rm-stock-notify input[aria-invalid="true"],
+.rm-subscribe-box input[aria-invalid="true"] { border-color: var(--rm-terracotta); }
+.rm-stock-notify button[type="submit"],
+.rm-subscribe-box button[type="submit"] {
+  justify-self: start;
+  padding: 0.6rem 1.2rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rm-stock-notify-error {
+  display: block;
+  margin: 0;
+  color: var(--rm-terracotta);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+.rm-stock-notify-done,
+.rm-subscribe-box-done {
+  margin: 0;
+  align-content: center;
+  font-weight: 600;
+}
+.rm-stock-notify-done:focus-visible,
+.rm-subscribe-box-done:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Product video ──────────────────────────────────────────────────────── */
+
+.rm-product-video {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, var(--rm-ink) 8%, var(--rm-cream));
+  font-family: var(--rm-body);
+}
+.rm-product-video-media { display: block; width: 100%; height: auto; }
+.rm-product-video figcaption { padding: 0.6rem 0.9rem; color: var(--rm-muted); font-size: 0.86rem; }
+.rm-product-video-toggle {
+  position: absolute;
+  left: 0.8rem;
+  bottom: 0.8rem;
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-cream) 92%, transparent);
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: transform 240ms var(--rm-ease-out);
+}
+.rm-product-video-toggle:hover,
+.rm-product-video-toggle:focus-visible { transform: translateY(-2px); }
+.rm-product-video-toggle:focus-visible { outline: 2px solid var(--rm-ink); outline-offset: 2px; }
+
+/* ── Swatch gallery ─────────────────────────────────────────────────────── */
+
+.rm-swatch-gallery { display: grid; gap: 0.8rem; font-family: var(--rm-body); }
+.rm-swatch-gallery-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, var(--rm-ink) 6%, var(--rm-cream));
+}
+.rm-swatch-gallery fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.rm-swatch-gallery legend { padding: 0 0 0.35rem; font-size: 0.86rem; font-weight: 600; }
+.rm-swatch-gallery-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+  border: 2px solid transparent;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 5%, transparent);
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+/* A real input, kept focusable, kept in the form, kept on the arrow keys. */
+.rm-swatch-gallery-chip input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0.001; /* not 0: some engines skip focus on a fully transparent box */
+  pointer-events: none;
+}
+.rm-swatch-gallery-dot {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rm-ink) 24%, transparent);
+}
+.rm-swatch-gallery-chip:has(input:checked) { border-color: var(--rm-ink); }
+.rm-swatch-gallery-chip:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Badge stack ────────────────────────────────────────────────────────── */
+
+.rm-badge-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--rm-body);
+}
+.rm-badge-stack-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 8%, transparent);
+  color: var(--rm-ink);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.rm-badge-stack-item.is-low { background: var(--rm-terracotta); }
+.rm-badge-stack-item.is-sale,
+.rm-badge-stack-item.is-offer { background: var(--rm-yellow); }
+.rm-badge-stack-item.is-new { background: var(--rm-accent); color: var(--rm-cream); }
+.rm-badge-stack-more { display: inline-flex; }
+.rm-badge-stack-more button {
+  padding: 0.2rem 0.65rem;
+  border: 1px dashed color-mix(in srgb, var(--rm-ink) 35%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: none;
+  color: var(--rm-muted);
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+.rm-badge-stack-more button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Trust row ──────────────────────────────────────────────────────────── */
+
+.rm-trust-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: clamp(0.7rem, 2vw, 1.4rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--rm-body);
+}
+.rm-trust-row-item {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  border-radius: calc(var(--rm-radius) - 8px);
+  background: color-mix(in srgb, var(--rm-ink) 5%, transparent);
+}
+.rm-trust-row-item strong { font-size: 0.94rem; }
+.rm-trust-row-item span { color: var(--rm-muted); font-size: 0.84rem; }
+.rm-trust-row-item :is(svg, img) { width: 1.5rem; height: 1.5rem; }
+
+/* ── Shipping estimate ──────────────────────────────────────────────────── */
+
+.rm-shipping-estimate {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  font-family: var(--rm-body);
+  font-size: 0.9rem;
+}
+.rm-shipping-estimate-line time { font-weight: 600; white-space: nowrap; }
+.rm-shipping-estimate-caveat { color: var(--rm-muted); font-size: 0.78rem; }
+
+/* ── Recently bought ────────────────────────────────────────────────────── */
+
+.rm-recently-bought {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.8rem 1rem;
+  border-radius: calc(var(--rm-radius) - 8px);
+  background: color-mix(in srgb, var(--rm-ink) 5%, transparent);
+  font-family: var(--rm-body);
+}
+.rm-recently-bought-list { display: grid; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+.rm-recently-bought-item { display: flex; gap: 0.4rem; font-size: 0.86rem; }
+.rm-recently-bought-controls { display: flex; gap: 0.5rem; margin: 0; }
+.rm-recently-bought-controls button {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 25%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+.rm-recently-bought-controls button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-recently-bought-controls button[disabled] { opacity: 0.5; cursor: default; }
+.rm-recently-bought-note { margin: 0; color: var(--rm-muted); font-size: 0.74rem; font-style: italic; }
+
+/* ── Cross sell ─────────────────────────────────────────────────────────── */
+
+.rm-cross-sell { position: relative; display: grid; gap: 0.7rem; font-family: var(--rm-body); }
+.rm-cross-sell :is(h1, h2, h3) { margin: 0; font-family: var(--rm-display); font-size: 1.2rem; }
+.rm-cross-sell-rail {
+  display: flex;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0 0 0.4rem;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+.rm-cross-sell-rail:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-cross-sell-item { flex: 0 0 clamp(9rem, 32vw, 12rem); scroll-snap-align: start; }
+.rm-cross-sell-item a { display: grid; gap: 0.35rem; color: inherit; text-decoration: none; }
+.rm-cross-sell-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: calc(var(--rm-radius) - 10px);
+  background: color-mix(in srgb, var(--rm-ink) 6%, var(--rm-cream));
+}
+.rm-cross-sell-item a:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-cross-sell-nav { display: flex; gap: 0.4rem; justify-content: flex-end; margin: 0; }
+.rm-cross-sell-page {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 22%, transparent);
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 220ms var(--rm-ease-out);
+}
+.rm-cross-sell-page:hover:not([disabled]) { transform: scale(1.08); }
+.rm-cross-sell-page[disabled] { opacity: 0.35; cursor: default; }
+.rm-cross-sell-page:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Upsell row ─────────────────────────────────────────────────────────── */
+
+.rm-upsell-row {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.4rem;
+  border: 0;
+  font-family: var(--rm-body);
+}
+.rm-upsell-row legend { padding: 0 0 0.4rem; font-family: var(--rm-display); font-size: 1.05rem; }
+.rm-upsell-row-tier {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: calc(var(--rm-radius) / 2.2);
+  background: color-mix(in srgb, var(--rm-ink) 4%, transparent);
+  cursor: pointer;
+}
+.rm-upsell-row-diff {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.rm-upsell-row-pick {
+  padding: 0.1rem 0.55rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-yellow);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+/* One ring, moved by a measured FLIP — never an animated width. */
+.rm-upsell-row-ring {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  border: 2px solid var(--rm-ink);
+  border-radius: calc(var(--rm-radius) / 2.2);
+  pointer-events: none;
+}
+.rm-upsell-row-tier:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Gift card ──────────────────────────────────────────────────────────── */
+
+.rm-gift-card { display: grid; gap: 0.7rem; font-family: var(--rm-body); }
+.rm-gift-card fieldset { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; border: 0; }
+.rm-gift-card legend { padding: 0 0 0.35rem; font-size: 0.86rem; font-weight: 600; }
+.rm-gift-card fieldset label {
+  padding: 0.35rem 0.85rem;
+  border: 2px solid color-mix(in srgb, var(--rm-ink) 16%, transparent);
+  border-radius: var(--rm-radius-pill);
+  cursor: pointer;
+}
+.rm-gift-card fieldset label:has(input:checked) { border-color: var(--rm-ink); background: var(--rm-yellow); }
+.rm-gift-card fieldset label:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-gift-card textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 22%, transparent);
+  border-radius: calc(var(--rm-radius) / 2.6);
+  background: var(--rm-cream);
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+.rm-gift-card-preview { perspective: 800px; }
+.rm-gift-card-face {
+  display: grid;
+  align-content: space-between;
+  gap: 0.6rem;
+  min-height: 9rem;
+  padding: 1.1rem;
+  border-radius: var(--rm-radius);
+  background: linear-gradient(140deg, var(--rm-terracotta), var(--rm-yellow));
+  color: var(--rm-ink);
+  transform-style: preserve-3d;
+}
+.rm-gift-card-figure { font-family: var(--rm-display); font-size: 2rem; }
+.rm-gift-card-words { margin: 0; font-size: 0.9rem; overflow-wrap: anywhere; }
+.rm-gift-card-counter { margin: 0; color: var(--rm-muted); font-size: 0.76rem; }
+
+/* ── Loyalty points ─────────────────────────────────────────────────────── */
+
+.rm-loyalty-points { display: grid; gap: 0.45rem; font-family: var(--rm-body); }
+.rm-loyalty-points-head {
+  position: relative; /* the rolling clone is absolute inside this box */
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  overflow: hidden;
+}
+.rm-loyalty-points-figure {
+  display: inline-block;
+  min-width: 3ch;
+  font-family: var(--rm-display);
+  font-size: 1.8rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+.rm-loyalty-points-figure.is-leaving { position: absolute; }
+.rm-loyalty-points-words { color: var(--rm-muted); font-size: 0.86rem; }
+.rm-loyalty-points-track {
+  position: relative;
+  display: block;
+  height: 0.55rem;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 10%, transparent);
+  overflow: hidden;
+}
+.rm-loyalty-points-track i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-loyalty-points-value, 0));
+  transform-origin: left center;
+  transition: transform var(--rm-loyalty-points-duration, 620ms) var(--rm-ease-out);
+}
+.rm-loyalty-points-tiers {
+  position: relative;
+  display: block;
+  height: 1.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rm-loyalty-points-tier {
+  position: absolute;
+  top: 0;
+  left: calc(var(--rm-loyalty-points-at, 0) * 100%);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--rm-muted);
+  font-size: 0.72rem;
+}
+.rm-loyalty-points-tier.is-reached { color: var(--rm-ink); font-weight: 600; }
+.rm-loyalty-points-tier[aria-current="true"] { color: var(--rm-accent); font-weight: 600; }
+
+/* ── Referral box ───────────────────────────────────────────────────────── */
+
+.rm-referral-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--rm-body);
+}
+.rm-referral-box label { flex: 1 1 100%; font-size: 0.86rem; font-weight: 600; }
+.rm-referral-box-field {
+  flex: 1 1 14rem;
+  min-width: 0;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 22%, transparent);
+  border-radius: calc(var(--rm-radius) / 2.6);
+  background: color-mix(in srgb, var(--rm-ink) 4%, transparent);
+  color: inherit;
+  font-family: var(--rm-mono);
+  font-size: 0.84rem;
+}
+.rm-referral-box-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rm-referral-box-copy:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-referral-box-tick { opacity: 0; transition: opacity 240ms var(--rm-ease-out); }
+.rm-referral-box.is-copied .rm-referral-box-tick { opacity: 1; }
+.rm-referral-box.is-copied .rm-referral-box-copy { background: var(--rm-accent); }
+
+/* ── Subscribe box ──────────────────────────────────────────────────────── */
+
+.rm-subscribe-box { display: grid; font-family: var(--rm-body); }
+.rm-subscribe-box-summary {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--rm-terracotta);
+  border-radius: calc(var(--rm-radius) / 2.4);
+}
+.rm-subscribe-box-summary:focus-visible { outline: 2px solid var(--rm-terracotta); outline-offset: 3px; }
+.rm-subscribe-box-summary-title { margin: 0; font-weight: 700; }
+.rm-subscribe-box-summary ul { margin: 0; padding-left: 1.1rem; font-size: 0.86rem; }
+.rm-subscribe-box-summary a { color: var(--rm-terracotta); }
+.rm-subscribe-box label:has(input[type="checkbox"]) {
+  display: flex;
+  gap: 0.5rem;
+  align-items: start;
+  font-weight: 400;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+/*
+ * Nothing below hides anything: every component ends at its finished state,
+ * visible and readable, with only the travel taken away.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-lookbook-dot::after { animation: none; opacity: 0; }
+  .rm-hero-banner a[href],
+  .rm-lookbook-spot,
+  .rm-category-tiles-image,
+  .rm-product-video-toggle,
+  .rm-cross-sell-page,
+  .rm-loyalty-points-track i,
+  .rm-referral-box-tick,
+  .rm-bundle-builder-pick { transition-duration: 1ms; }
+  .rm-category-tiles-tile:hover .rm-category-tiles-image,
+  .rm-category-tiles-tile:focus-visible .rm-category-tiles-image { transform: none; }
+  .rm-cross-sell-rail { scroll-behavior: auto; }
+}
+
+
+/* ══ Ecommerce — account, orders and support ══════════════════════════════════════════════ */
+
+/* ═══ Ecommerce — account, orders and support ════════════════════════════════
+ *
+ * Styles for src/components/account.js.
+ *
+ * Two rules run through the whole file. Nothing here starts an element at
+ * opacity 0, visibility hidden or display none waiting for a script to reveal
+ * it — every hidden state is either the [hidden] attribute set from JavaScript
+ * or a class the script adds, so a page whose script never arrives is a page
+ * with all of its content in it. And nothing here transitions a width, a height
+ * or a padding: the bars fill by transform and clip-path, the markers move by
+ * transform, and the lists close up with a FLIP played from JavaScript.
+ *
+ * Part of rage-motion.
+ * Crafted by SoyRage Agency — https://soyrage.es/
+ * MIT licensed (see LICENSE).
+ */
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/* Announced, never seen. Every component in this module owns one. */
+.rm-account-live,
+.rm-account-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * An author `display` beats the user-agent rule for [hidden], so every element
+ * in this file that is given a display AND hidden from JavaScript needs saying
+ * again explicitly. Without it the panel is still laid out and still takes
+ * clicks — invisible to the eye, entirely present to a pointer.
+ */
+.rm-account-said[hidden],
+.rm-order-list-row[hidden],
+.rm-order-card-detail[hidden],
+.rm-pause-subscription-panel[hidden],
+.rm-invoice-list-row[hidden],
+.rm-download-row-bar[hidden],
+.rm-wishlist-grid-empty[hidden],
+.rm-review-form-errors[hidden],
+.rm-review-card-more[hidden],
+.rm-support-ticket-thread[hidden],
+.rm-support-ticket-reply[hidden],
+.rm-chat-bubble-jump[hidden],
+.rm-account-nav-marker[hidden] { display: none; }
+
+.rm-order-list,
+.rm-order-card,
+.rm-tracking-map,
+.rm-delivery-slot,
+.rm-address-book,
+.rm-address-card,
+.rm-payment-cards,
+.rm-subscription-card,
+.rm-pause-subscription,
+.rm-invoice-list,
+.rm-download-row,
+.rm-wishlist-grid,
+.rm-review-form,
+.rm-review-card,
+.rm-question-answer,
+.rm-support-ticket,
+.rm-chat-bubble,
+.rm-refund-status,
+.rm-account-nav {
+  font-family: var(--rm-body);
+  color: var(--rm-ink);
+}
+
+.rm-order-card-toggle:focus-visible,
+.rm-delivery-slot-option:focus-within,
+.rm-address-card-action:focus-visible,
+.rm-subscription-card-skip:focus-visible,
+.rm-pause-subscription-trigger:focus-visible,
+.rm-pause-subscription-confirm:focus-visible,
+.rm-invoice-list-select:focus-visible,
+.rm-download-row-button:focus-visible,
+.rm-wishlist-grid-drop:focus-visible,
+.rm-review-card-more:focus-visible,
+.rm-review-card-helpful:focus-visible,
+.rm-question-answer-vote:focus-visible,
+.rm-support-ticket-toggle:focus-visible,
+.rm-support-ticket-send:focus-visible,
+.rm-chat-bubble-jump:focus-visible,
+.rm-account-nav-link:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+/* One card shape, borrowed by everything in the account area. */
+.rm-order-card,
+.rm-address-card,
+.rm-subscription-card,
+.rm-review-card,
+.rm-support-ticket {
+  position: relative;
+  display: block;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid rgb(14 14 14 / 10%);
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+}
+
+/* ── Order list ─────────────────────────────────────────────────────────── */
+
+.rm-order-list {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rm-order-list-row {
+  display: grid;
+  gap: 0.35rem;
+  list-style: none;
+  /* The rows are FLIPped when the filter changes, so they need their own layer
+     rather than inheriting one from a parent that also moves. */
+  will-change: transform;
+}
+
+/* ── Order card ─────────────────────────────────────────────────────────── */
+
+.rm-order-card-toggle {
+  margin-top: 0.9rem;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.18s var(--rm-ease-out), border-color 0.18s var(--rm-ease-out);
+}
+.rm-order-card-toggle:hover { background: rgb(14 14 14 / 6%); border-color: rgb(14 14 14 / 28%); }
+
+.rm-order-card-detail {
+  display: block;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgb(14 14 14 / 10%);
+}
+.rm-order-card-detail ul { margin: 0; padding-left: 1.1rem; }
+
+/* ── Order status pill ──────────────────────────────────────────────────── */
+
+.rm-order-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid currentcolor;
+  border-radius: var(--rm-radius-pill);
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  /* The pill's box never changes size as the word rolls, so a card full of
+     these does not twitch when one of them updates. */
+  white-space: nowrap;
+}
+
+/*
+ * The dot changes shape as well as colour. A hue on its own is invisible to a
+ * screen reader, unreliable for a colour vision deficiency and gone entirely in
+ * a forced-colours theme, so the word beside it is the real message and this is
+ * only ever a second, redundant cue.
+ */
+.rm-order-status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  background: currentcolor;
+  border-radius: var(--rm-radius-pill);
+}
+.rm-order-status.is-waiting { color: var(--rm-terracotta); }
+.rm-order-status.is-moving { color: var(--rm-accent); }
+.rm-order-status.is-done { color: #2f7d4a; }
+.rm-order-status.is-stopped { color: var(--rm-muted); }
+.rm-order-status.is-moving .rm-order-status-dot { border-radius: 2px; transform: rotate(45deg); }
+.rm-order-status.is-done .rm-order-status-dot { border-radius: 2px; }
+.rm-order-status.is-stopped .rm-order-status-dot { height: 2px; width: 0.7rem; border-radius: 0; }
+
+.rm-order-status-word { font-weight: 500; }
+
+/* ── Tracking map ───────────────────────────────────────────────────────── */
+
+.rm-tracking-map { display: grid; gap: 1rem; }
+
+.rm-tracking-map-frame {
+  position: relative;
+  /* A fixed ratio so the marker's pixel arithmetic has a stable box to work in
+     — it is measured with a ResizeObserver, not assumed. */
+  aspect-ratio: 5 / 2;
+  width: 100%;
+  color: rgb(14 14 14 / 16%);
+}
+.rm-tracking-map-frame > svg,
+.rm-tracking-map-done > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.rm-tracking-map-done {
+  position: absolute;
+  inset: 0;
+  color: var(--rm-accent);
+  /* Clipped, not resized: the completed part of the route is revealed by a
+     paint-only property, so advancing it costs no layout at all. */
+  clip-path: inset(0 100% 0 0);
+}
+
+.rm-tracking-map-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin: -0.45rem 0 0 -0.45rem;
+  border: 2px solid var(--rm-cream);
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-accent);
+  will-change: transform;
+}
+
+.rm-tracking-map-stops {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--rm-muted);
+}
+.rm-tracking-map-stop.is-reached { color: var(--rm-ink); }
+.rm-tracking-map-stop[aria-current="step"] { font-weight: 600; }
+
+/* ── Delivery slot ──────────────────────────────────────────────────────── */
+
+.rm-delivery-slot {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.6rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.rm-delivery-slot legend { grid-column: 1 / -1; padding: 0; font-family: var(--rm-display); }
+
+.rm-delivery-slot-option {
+  display: block;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius);
+  cursor: pointer;
+  transition: border-color 0.18s var(--rm-ease-out), background 0.18s var(--rm-ease-out);
+}
+.rm-delivery-slot-option:hover { background: rgb(14 14 14 / 4%); }
+/* :has, not a class kept in step from JavaScript — the browser already knows
+   which radio is checked and toggling a class on every arrow press is work that
+   shows up in a profile and nowhere on the screen. */
+.rm-delivery-slot-option:has(input:checked) {
+  border-color: var(--rm-ink);
+  box-shadow: inset 0 0 0 1px var(--rm-ink);
+}
+.rm-delivery-slot-option.is-full {
+  color: var(--rm-muted);
+  cursor: not-allowed;
+  background: repeating-linear-gradient(
+    -45deg, transparent 0 6px, rgb(14 14 14 / 5%) 6px 12px
+  );
+}
+
+/*
+ * Clipped, never display:none. A hidden input has no focus ring, no arrow-key
+ * cycling and no form value, which is exactly what the div-based picker throws
+ * away without noticing.
+ */
+.rm-delivery-slot-option input,
+.rm-address-book-card input,
+.rm-payment-cards-row input,
+.rm-review-form-rating input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* ── Address book ───────────────────────────────────────────────────────── */
+
+.rm-address-book {
+  display: grid;
+  gap: 0.6rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.rm-address-book legend { padding: 0; font-family: var(--rm-display); }
+
+.rm-address-book-card {
+  position: relative;
+  display: block;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(14 14 14 / 14%);
+  border-radius: var(--rm-radius);
+  cursor: pointer;
+  will-change: transform;
+}
+.rm-address-book-card.is-default {
+  border-color: var(--rm-ink);
+  box-shadow: inset 0 0 0 1px var(--rm-ink);
+}
+
+/* ── Address card ───────────────────────────────────────────────────────── */
+
+.rm-address-card-flag {
+  margin: 0 0 0.4rem;
+  color: var(--rm-terracotta);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rm-address-card-action {
+  margin: 0.8rem 0.5rem 0 0;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.rm-address-card-action:hover { background: rgb(14 14 14 / 6%); }
+
+/*
+ * The fade only applies under `.is-quiet`, which JavaScript adds. With the
+ * script absent the buttons are simply visible, and they come back on
+ * :focus-within as well as :hover — hiding them with display:none until hover,
+ * which is the usual build, deletes them for every keyboard and touch visitor.
+ */
+.rm-address-card.is-quiet .rm-address-card-action {
+  opacity: 0.35;
+  transition: opacity 0.2s var(--rm-ease-out);
+}
+.rm-address-card.is-quiet:hover .rm-address-card-action,
+.rm-address-card.is-quiet:focus-within .rm-address-card-action { opacity: 1; }
+
+/* ── Payment cards ──────────────────────────────────────────────────────── */
+
+.rm-payment-cards {
+  display: grid;
+  gap: 0.55rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.rm-payment-cards legend { padding: 0; font-family: var(--rm-display); }
+
+.rm-payment-cards-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgb(14 14 14 / 14%);
+  border-radius: var(--rm-radius);
+  cursor: pointer;
+}
+.rm-payment-cards-row:has(input:checked) {
+  border-color: var(--rm-ink);
+  box-shadow: inset 0 0 0 1px var(--rm-ink);
+}
+
+.rm-payment-cards-brand { font-weight: 500; }
+
+/*
+ * A masked stub and nothing else. The component will not draw more than four
+ * digits whatever the markup says; this only makes the four look like what they
+ * are.
+ */
+.rm-payment-cards-stub {
+  font-family: var(--rm-mono);
+  font-size: 0.9rem;
+  color: var(--rm-muted);
+  letter-spacing: 0.08em;
+}
+
+/* ── Subscription card ──────────────────────────────────────────────────── */
+
+.rm-subscription-card-bar {
+  position: relative;
+  height: 0.5rem;
+  margin: 1rem 0 0.6rem;
+  border-radius: var(--rm-radius-pill);
+  background: rgb(14 14 14 / 10%);
+  overflow: hidden;
+}
+.rm-subscription-card-bar > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  /* Already full width, scaled down. Growing the width instead would re-lay-out
+     the card on every frame. */
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.4s var(--rm-ease-out);
+}
+.rm-subscription-card.is-skipped .rm-subscription-card-bar > i { background: var(--rm-muted); }
+
+.rm-subscription-card-words { margin: 0 0 0.9rem; color: var(--rm-muted); font-size: 0.9rem; }
+
+.rm-subscription-card-skip {
+  padding: 0.45rem 0.95rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.rm-subscription-card-skip[aria-pressed="true"] {
+  background: var(--rm-ink);
+  border-color: var(--rm-ink);
+  color: var(--rm-cream);
+}
+
+/* ── Pause subscription ─────────────────────────────────────────────────── */
+
+.rm-pause-subscription { display: grid; gap: 0.7rem; justify-items: start; }
+
+.rm-pause-subscription-trigger {
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--rm-ink);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.18s var(--rm-ease-out), color 0.18s var(--rm-ease-out);
+}
+.rm-pause-subscription-trigger:hover { background: var(--rm-ink); color: var(--rm-cream); }
+.rm-pause-subscription.is-paused .rm-pause-subscription-trigger {
+  border-color: var(--rm-terracotta);
+  color: var(--rm-terracotta);
+}
+.rm-pause-subscription.is-paused .rm-pause-subscription-trigger:hover {
+  background: var(--rm-terracotta);
+  color: var(--rm-cream);
+}
+
+.rm-pause-subscription-panel {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgb(14 14 14 / 14%);
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+}
+
+.rm-pause-subscription-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.rm-pause-subscription-choices legend { padding: 0 0 0.5rem; width: 100%; }
+.rm-pause-subscription-choices label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius-pill);
+  cursor: pointer;
+}
+.rm-pause-subscription-choices label:has(input:checked) { border-color: var(--rm-ink); }
+
+.rm-pause-subscription-confirm {
+  padding: 0.5rem 1.1rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ── Invoice list ───────────────────────────────────────────────────────── */
+
+.rm-invoice-list-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+.rm-invoice-list-bar label { color: var(--rm-muted); font-size: 0.9rem; }
+
+/* The browser's own select, dressed and otherwise left alone: type-ahead, Home
+   and End, the platform picker on a phone and voice control all come free. */
+.rm-invoice-list-select {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid rgb(14 14 14 / 18%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.rm-invoice-list-total {
+  margin: 0 0 0 auto;
+  font-family: var(--rm-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.rm-invoice-list-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgb(14 14 14 / 8%);
+  list-style: none;
+  will-change: transform;
+}
+
+/* ── Download row ───────────────────────────────────────────────────────── */
+
+.rm-download-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.35rem 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgb(14 14 14 / 8%);
+  list-style: none;
+}
+.rm-download-row-size { grid-column: 1; margin: 0; color: var(--rm-muted); font-size: 0.85rem; }
+
+.rm-download-row-button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  padding: 0.45rem 1rem;
+  border: 1px solid rgb(14 14 14 / 18%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.rm-download-row-button:hover { background: rgb(14 14 14 / 6%); }
+
+.rm-download-row-bar {
+  grid-column: 1 / -1;
+  height: 0.3rem;
+  border-radius: var(--rm-radius-pill);
+  background: rgb(14 14 14 / 10%);
+  overflow: hidden;
+}
+.rm-download-row-bar > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--rm-accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.25s linear;
+}
+.rm-download-row.is-done .rm-download-row-bar > i { background: #2f7d4a; }
+
+/* ── Wishlist grid ──────────────────────────────────────────────────────── */
+
+.rm-wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rm-wishlist-grid-item {
+  position: relative;
+  padding: 0.75rem;
+  border: 1px solid rgb(14 14 14 / 10%);
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  list-style: none;
+  will-change: transform;
+}
+.rm-wishlist-grid-item img {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--rm-radius) - 0.5rem);
+}
+
+.rm-wishlist-grid-drop {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: rgb(241 238 233 / 88%);
+  color: var(--rm-ink);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.16s var(--rm-ease-out), color 0.16s var(--rm-ease-out);
+}
+.rm-wishlist-grid-drop:hover { color: var(--rm-terracotta); transform: rotate(90deg); }
+
+.rm-wishlist-grid-empty {
+  display: block;
+  padding: 2rem 1.5rem;
+  border: 1px dashed rgb(14 14 14 / 18%);
+  border-radius: var(--rm-radius);
+  color: var(--rm-muted);
+  text-align: center;
+}
+.rm-wishlist-grid-empty:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Review form ────────────────────────────────────────────────────────── */
+
+.rm-review-form { display: grid; gap: 0.8rem; justify-items: start; }
+
+.rm-review-form-errors {
+  display: block;
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid var(--rm-terracotta);
+  border-radius: var(--rm-radius);
+  color: var(--rm-ink);
+}
+.rm-review-form-errors p { margin: 0 0 0.5rem; font-weight: 600; }
+.rm-review-form-errors ul { margin: 0; padding-left: 1.1rem; }
+.rm-review-form-errors a { color: var(--rm-terracotta); }
+
+.rm-review-form-rating {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.rm-review-form-rating legend { padding: 0 0 0.4rem; width: 100%; font-family: var(--rm-display); }
+.rm-review-form-rating label {
+  position: relative;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--rm-radius-sm, 4px);
+  color: rgb(14 14 14 / 30%);
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: color 0.16s var(--rm-ease-out), transform 0.16s var(--rm-ease-out);
+}
+.rm-review-form-rating label:hover { transform: translateY(-2px); }
+.rm-review-form-rating label:has(input:checked) { color: var(--rm-yellow); }
+.rm-review-form-rating label:has(input:focus-visible) {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+.rm-review-form-body {
+  width: 100%;
+  min-height: 7rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgb(14 14 14 / 18%);
+  border-radius: var(--rm-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+
+.rm-review-form-count { margin: 0; color: var(--rm-muted); font-size: 0.82rem; }
+.rm-review-form-count.is-over { color: var(--rm-terracotta); }
+
+/* ── Review card ────────────────────────────────────────────────────────── */
+
+.rm-review-card-body { margin: 0.5rem 0 0; }
+/*
+ * The clamp is a class the script adds, so an un-scripted page shows the whole
+ * review. Line clamping is the one place a box genuinely changes height, which
+ * is why opening it is a FLIP played from JavaScript rather than a transition.
+ */
+.rm-review-card.is-clamped .rm-review-card-body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--rm-review-card-lines, 4);
+  line-clamp: var(--rm-review-card-lines, 4);
+  overflow: hidden;
+}
+
+.rm-review-card-more {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.rm-review-card-more:hover { color: var(--rm-terracotta); }
+
+.rm-review-card-helpful {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.rm-review-card-helpful[aria-pressed="true"] { border-color: var(--rm-ink); background: rgb(14 14 14 / 6%); }
+
+/* A slot the rolling number cannot resize, so the button never twitches. */
+.rm-review-card-tally {
+  display: inline-block;
+  min-width: 2ch;
+  overflow: hidden;
+  font-family: var(--rm-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ── Question and answer ────────────────────────────────────────────────── */
+
+.rm-question-answer-list { display: grid; gap: 0.7rem; margin: 0.8rem 0 0; padding: 0; }
+
+.rm-question-answer-item {
+  position: relative;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgb(14 14 14 / 12%);
+  border-radius: var(--rm-radius);
+  list-style: none;
+  will-change: transform;
+}
+.rm-question-answer-item.is-seller { border-color: var(--rm-accent); }
+
+.rm-question-answer-flag {
+  margin: 0 0 0.35rem;
+  color: var(--rm-accent);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rm-question-answer-vote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.rm-question-answer-vote[aria-pressed="true"] { border-color: var(--rm-ink); background: rgb(14 14 14 / 6%); }
+.rm-question-answer-count { font-family: var(--rm-mono); font-variant-numeric: tabular-nums; }
+
+/* ── Support ticket ─────────────────────────────────────────────────────── */
+
+.rm-support-ticket-meta {
+  margin: 0 0 0.5rem;
+  color: var(--rm-muted);
+  font-size: 0.85rem;
+}
+.rm-support-ticket-state { color: var(--rm-ink); font-weight: 500; }
+.rm-support-ticket-state.is-moving { color: var(--rm-accent); }
+.rm-support-ticket-state.is-waiting { color: var(--rm-terracotta); }
+.rm-support-ticket-state.is-done { color: #2f7d4a; }
+
+.rm-support-ticket-toggle {
+  margin: 0.8rem 0.5rem 0 0;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgb(14 14 14 / 16%);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.rm-support-ticket-toggle:hover { background: rgb(14 14 14 / 6%); }
+
+.rm-support-ticket-thread {
+  display: block;
+  margin-top: 0.9rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid rgb(14 14 14 / 12%);
+}
+
+.rm-support-ticket-reply {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  margin-top: 0.9rem;
+}
+.rm-support-ticket-reply textarea {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgb(14 14 14 / 18%);
+  border-radius: var(--rm-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+.rm-support-ticket-send {
+  padding: 0.45rem 1rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+/* ── Chat bubbles ───────────────────────────────────────────────────────── */
+
+.rm-chat-bubble {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 22rem;
+  margin: 0;
+  padding: 0.5rem;
+  overflow-y: auto;
+  list-style: none;
+  /* This box is the scroll container, which is what lets the component decide
+     whether the reader was at the bottom before a message arrived. */
+  overscroll-behavior: contain;
+}
+
+.rm-chat-bubble-item {
+  max-width: 78%;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--rm-radius);
+  list-style: none;
+}
+.rm-chat-bubble-item p { margin: 0; }
+.rm-chat-bubble-item.is-them {
+  justify-self: start;
+  background: rgb(14 14 14 / 6%);
+  border-bottom-left-radius: 0.35rem;
+}
+.rm-chat-bubble-item.is-you {
+  justify-self: end;
+  background: var(--rm-accent);
+  color: #fff;
+  border-bottom-right-radius: 0.35rem;
+}
+
+/* Which side of the column a bubble sits on is invisible to a screen reader, so
+   the author is written down rather than implied. */
+.rm-chat-bubble-author {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.rm-chat-bubble-jump {
+  display: block;
+  margin: 0.5rem auto 0;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgb(14 14 14 / 18%);
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* ── Refund status ──────────────────────────────────────────────────────── */
+
+.rm-refund-status { display: grid; gap: 0.8rem; }
+
+.rm-refund-status-track,
+.rm-refund-status-fill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 1rem;
+  padding: 0 0.15rem;
+}
+.rm-refund-status-track {
+  position: relative;
+  color: rgb(14 14 14 / 18%);
+}
+.rm-refund-status-track::before,
+.rm-refund-status-fill::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  right: 0.15rem;
+  height: 2px;
+  background: currentcolor;
+}
+.rm-refund-status-track > i,
+.rm-refund-status-fill > i {
+  position: relative;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: var(--rm-radius-pill);
+  background: currentcolor;
+}
+
+/*
+ * The filled copy is revealed with clip-path, which paints and nothing more.
+ * Transitioning its width instead re-lays-out the row on every frame — and on a
+ * page listing four refunds, four rows on every frame.
+ */
+.rm-refund-status-fill {
+  position: absolute;
+  inset: 0;
+  color: var(--rm-accent);
+  clip-path: inset(0 100% 0 0);
+}
+.rm-refund-status.is-paid .rm-refund-status-fill { color: #2f7d4a; }
+
+.rm-refund-status-words { margin: 0; }
+
+/* ── Account nav ────────────────────────────────────────────────────────── */
+
+.rm-account-nav {
+  position: relative;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.rm-account-nav-link {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: var(--rm-radius-pill);
+  color: var(--rm-muted);
+  text-decoration: none;
+  transition: color 0.18s var(--rm-ease-out);
+}
+.rm-account-nav-link:hover { color: var(--rm-ink); }
+.rm-account-nav-link.is-current { color: var(--rm-ink); font-weight: 600; }
+
+/* One marker for the whole column, placed by measurement and FLIPped between
+   links — no per-link background to keep in step, and no animated top. */
+.rm-account-nav-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: var(--rm-radius-pill);
+  background: rgb(14 14 14 / 8%);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.rm-account-nav-tally {
+  min-width: 1.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-terracotta);
+  color: var(--rm-cream);
+  font-family: var(--rm-mono);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
 /*

@@ -110,6 +110,18 @@ export {
   changelogFeed, bentoGrid, splitPanel, stickyAside, dividerMark, sectionMark,
 } from "./components/extras.js";
 export {
+  heroBanner, collectionGrid, lookbook, categoryTiles, saleCountdown, bundleBuilder,
+  sizeGuide, stockNotify, productVideo, swatchGallery, badgeStack, trustRow,
+  shippingEstimate, recentlyBought, crossSell, upsellRow, giftCard, loyaltyPoints,
+  referralBox, subscribeBox,
+} from "./components/storefront.js";
+export {
+  orderList, orderCard, orderStatusPill, trackingMap, deliverySlot, addressBook,
+  addressCard, paymentCards, subscriptionCard, pauseSubscription, invoiceList, downloadRow,
+  wishlistGrid, reviewForm, reviewCard, questionAnswer, supportTicket, chatBubble,
+  refundStatus, accountNav,
+} from "./components/account.js";
+export {
   masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
   crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
   imageWall, flipGrid, peelStack, focusGrid, ribbon, contactSheet,
@@ -216,6 +228,18 @@ import {
   rowExpand, tableEmpty, codeBlock, diffView, apiRow, uptimeDots,
   changelogFeed, bentoGrid, splitPanel, stickyAside, dividerMark, sectionMark,
 } from "./components/extras.js";
+import {
+  heroBanner, collectionGrid, lookbook, categoryTiles, saleCountdown, bundleBuilder,
+  sizeGuide, stockNotify, productVideo, swatchGallery, badgeStack, trustRow,
+  shippingEstimate, recentlyBought, crossSell, upsellRow, giftCard, loyaltyPoints,
+  referralBox, subscribeBox,
+} from "./components/storefront.js";
+import {
+  orderList, orderCard, orderStatusPill, trackingMap, deliverySlot, addressBook,
+  addressCard, paymentCards, subscriptionCard, pauseSubscription, invoiceList, downloadRow,
+  wishlistGrid, reviewForm, reviewCard, questionAnswer, supportTicket, chatBubble,
+  refundStatus, accountNav,
+} from "./components/account.js";
 import {
   masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
   crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
@@ -543,6 +567,48 @@ export function init(options = {}) {
     stickyAside("[data-rm-sticky-aside]", options.stickyAside),
     dividerMark("[data-rm-divider]", options.dividerMark),
     sectionMark("[data-rm-section-mark]", options.sectionMark),
+
+    heroBanner("[data-rm-hero-banner]", options.heroBanner),
+    collectionGrid("[data-rm-collection-grid]", options.collectionGrid),
+    lookbook("[data-rm-lookbook]", options.lookbook),
+    categoryTiles("[data-rm-category-tiles]", options.categoryTiles),
+    saleCountdown("[data-rm-sale-countdown]", options.saleCountdown),
+    bundleBuilder("[data-rm-bundle-builder]", options.bundleBuilder),
+    sizeGuide("[data-rm-size-guide]", options.sizeGuide),
+    stockNotify("[data-rm-stock-notify]", options.stockNotify),
+    productVideo("[data-rm-product-video]", options.productVideo),
+    swatchGallery("[data-rm-swatch-gallery]", options.swatchGallery),
+    badgeStack("[data-rm-badge-stack]", options.badgeStack),
+    trustRow("[data-rm-trust-row]", options.trustRow),
+    shippingEstimate("[data-rm-shipping-estimate]", options.shippingEstimate),
+    recentlyBought("[data-rm-recently-bought]", options.recentlyBought),
+    crossSell("[data-rm-cross-sell]", options.crossSell),
+    upsellRow("[data-rm-upsell-row]", options.upsellRow),
+    giftCard("[data-rm-gift-card]", options.giftCard),
+    loyaltyPoints("[data-rm-loyalty-points]", options.loyaltyPoints),
+    referralBox("[data-rm-referral-box]", options.referralBox),
+    subscribeBox("[data-rm-subscribe-box]", options.subscribeBox),
+
+    orderList("[data-rm-order-list]", options.orderList),
+    orderCard("[data-rm-order-card]", options.orderCard),
+    orderStatusPill("[data-rm-order-status]", options.orderStatusPill),
+    trackingMap("[data-rm-tracking-map]", options.trackingMap),
+    deliverySlot("[data-rm-delivery-slot]", options.deliverySlot),
+    addressBook("[data-rm-address-book]", options.addressBook),
+    addressCard("[data-rm-address-card]", options.addressCard),
+    paymentCards("[data-rm-payment-cards]", options.paymentCards),
+    subscriptionCard("[data-rm-subscription-card]", options.subscriptionCard),
+    pauseSubscription("[data-rm-pause-subscription]", options.pauseSubscription),
+    invoiceList("[data-rm-invoice-list]", options.invoiceList),
+    downloadRow("[data-rm-download-row]", options.downloadRow),
+    wishlistGrid("[data-rm-wishlist-grid]", options.wishlistGrid),
+    reviewForm("[data-rm-review-form]", options.reviewForm),
+    reviewCard("[data-rm-review-card]", options.reviewCard),
+    questionAnswer("[data-rm-question-answer]", options.questionAnswer),
+    supportTicket("[data-rm-support-ticket]", options.supportTicket),
+    chatBubble("[data-rm-chat-bubble]", options.chatBubble),
+    refundStatus("[data-rm-refund-status]", options.refundStatus),
+    accountNav("[data-rm-account-nav]", options.accountNav),
 
     masonry("[data-rm-masonry]", options.masonry),
     swipeStack("[data-rm-swipe-stack]", options.swipeStack),
