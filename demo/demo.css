@@ -1930,3 +1930,58 @@ code { font-size: 0.9em; }
   background: var(--panel);
   color: var(--text);
 }
+
+/*
+ * The wall pairs three horizontal rows with one running upward beside them,
+ * which is the point of the vertical direction: the two axes are the same
+ * component and they read as one piece of furniture rather than two demos.
+ */
+.marquee-wall {
+  display: grid;
+  grid-template-columns: 1fr 132px;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 0 18px 0;
+  min-height: 230px;
+}
+.marquee-rows { display: grid; gap: 12px; min-width: 0; }
+
+.marquee-column {
+  height: 210px;
+  border-left: 1px solid var(--line-soft);
+  padding-left: 14px;
+}
+.mq-tag {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-family: var(--rm-mono);
+  font-size: 11px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.marquee-row.is-chips { align-items: center; }
+.mq-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  font-family: var(--rm-display);
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.marquee-row.is-outline span {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--dim);
+}
+
+@media (max-width: 720px) {
+  .marquee-wall { grid-template-columns: 1fr; }
+  .marquee-column { display: none; }
+}

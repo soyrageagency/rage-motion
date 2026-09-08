@@ -468,22 +468,28 @@
     </article>
 
     <article class="cell cell-wide cell-tall">
-      <p class="cell-name">marquee <span class="cell-hint">drag it · scroll the page</span></p>
+      <p class="cell-name">marquee <span class="cell-hint">drag any row · scroll the page · one runs upward</span></p>
       <div class="cell-body cell-body-flush marquee-wall">
-        <div class="marquee-row is-loud" data-rm-marquee data-rm-speed="46" data-rm-gap="34" data-rm-fade="9">
-          <span>TRANSFORM</span><i></i><span>OPACITY</span><i></i>
-          <span>CLIP-PATH</span><i></i><span>FILTER</span><i></i>
+        <div class="marquee-rows">
+          <div class="marquee-row is-loud" data-rm-marquee data-rm-speed="42" data-rm-gap="30" data-rm-fade="8">
+            <span>TRANSFORM</span><i></i><span>OPACITY</span><i></i>
+            <span>CLIP-PATH</span><i></i><span>FILTER</span><i></i>
+          </div>
+          <div class="marquee-row is-chips" data-rm-marquee data-rm-direction="right" data-rm-speed="34" data-rm-gap="10" data-rm-fade="8">
+            <span class="mq-chip">no layout shift</span><span class="mq-chip">one shared frame</span><span class="mq-chip">one scroll read</span>
+            <span class="mq-chip">zero dependencies</span><span class="mq-chip">prefers-reduced-motion</span><span class="mq-chip">MIT</span>
+          </div>
+          <div class="marquee-row is-outline" data-rm-marquee data-rm-speed="66" data-rm-gap="30" data-rm-fade="8" data-rm-lean="1.6">
+            <span>SOYRAGE</span><i></i><span>RAGE MOTION</span><i></i>
+            <span>376 COMPONENTS</span><i></i>
+          </div>
         </div>
-        <div class="marquee-row is-quiet" data-rm-marquee data-rm-direction="right" data-rm-speed="30" data-rm-gap="26" data-rm-fade="9">
-          <span>no layout shift</span><i></i><span>one shared frame</span><i></i>
-          <span>one scroll read</span><i></i><span>zero dependencies</span><i></i>
-        </div>
-        <div class="marquee-row is-loud" data-rm-marquee data-rm-speed="72" data-rm-gap="34" data-rm-fade="9" data-rm-lean="1.6">
-          <span>SOYRAGE</span><i></i><span>RAGE MOTION</span><i></i>
-          <span>MIT</span><i></i><span>376 COMPONENTS</span><i></i>
+        <div class="marquee-column is-tags" data-rm-marquee data-rm-direction="up" data-rm-speed="26" data-rm-gap="8" data-rm-fade="14">
+          <span class="mq-tag">reveal</span><span class="mq-tag">marquee</span><span class="mq-tag">coverflow</span><span class="mq-tag">masonry</span>
+          <span class="mq-tag">cartDrawer</span><span class="mq-tag">heatCalendar</span><span class="mq-tag">cartoonCursor</span><span class="mq-tag">treeNav</span>
         </div>
       </div>
-      <button class="cell-copy" data-copy='<div data-rm-marquee data-rm-speed="80">…</div>'>copy</button>
+      <button class="cell-copy" data-copy="&lt;div data-rm-marquee data-rm-direction=&quot;up&quot; data-rm-speed=&quot;30&quot;&gt;…&lt;/div&gt;">copy</button>
     </article>
   </div>
 

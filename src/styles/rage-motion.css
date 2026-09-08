@@ -367,6 +367,50 @@ html.rm-cursor-active * { cursor: none !important; }
 }
 .rm-marquee-group { display: flex; align-items: center; flex: none; }
 
+/*
+ * Vertical: the same track, turned. The mask fades top and bottom instead of
+ * left and right, the drag is pan-x so a horizontal swipe still works the
+ * page, and the group stacks. Nothing else in the component changes.
+ */
+.rm-marquee.is-vertical {
+  touch-action: pan-x;
+  mask: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 var(--rm-marquee-fade, 12%),
+    #000 calc(100% - var(--rm-marquee-fade, 12%)),
+    transparent 100%
+  );
+}
+.rm-marquee.is-vertical .rm-marquee-track {
+  flex-direction: column;
+  width: auto;
+  height: max-content;
+}
+.rm-marquee.is-vertical .rm-marquee-group { flex-direction: column; }
+
+/*
+ * Vertical: the same track, turned. The mask fades top and bottom instead of
+ * left and right, the drag is pan-x so a horizontal swipe still works the page,
+ * and the group stacks. Nothing else in the component changes.
+ */
+.rm-marquee.is-vertical {
+  touch-action: pan-x;
+  mask: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 var(--rm-marquee-fade, 12%),
+    #000 calc(100% - var(--rm-marquee-fade, 12%)),
+    transparent 100%
+  );
+}
+.rm-marquee.is-vertical .rm-marquee-track {
+  flex-direction: column;
+  width: auto;
+  height: max-content;
+}
+.rm-marquee.is-vertical .rm-marquee-group { flex-direction: column; }
+
 .rm-marquee.is-static {
   overflow-x: auto;
   cursor: auto;

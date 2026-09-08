@@ -294,7 +294,20 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
     const original = element.innerHTML;
     const space = dataNumber(element, "rmGap", gap);
     const base = dataNumber(element, "rmSpeed", speed);
-    const facing = dataString(element, "rmDirection", direction) === "right" ? 1 : -1;
+    /*
+     * Four directions, two axes, one set of arithmetic.
+     *
+     * A vertical marquee is not a different component — it is the same track
+     * measured on the other side and translated on the other axis. Writing it
+     * as a second component is how you end up with two of everything: two
+     * wrap conditions, two drag handlers, two places for the seam bug to live.
+     * So the axis is a pair of numbers and the rest of the file does not know
+     * which way it is pointing.
+     */
+    const way = dataString(element, "rmDirection", direction);
+    const vertical = way === "up" || way === "down";
+    const facing = way === "right" || way === "down" ? 1 : -1;
+    element.classList.toggle("is-vertical", vertical);
 
     element.classList.add("rm-marquee");
     element.style.setProperty("--rm-marquee-fade", `${dataNumber(element, "rmFade", fade)}%`);
@@ -315,9 +328,10 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
       // Rebuild from one copy, then add copies until the track is at least
       // twice the viewport: enough that a reset is never visible.
       track.replaceChildren(group);
-      copyWidth = group.getBoundingClientRect().width + space;
+      const box = group.getBoundingClientRect();
+      copyWidth = (vertical ? box.height : box.width) + space;
       if (copyWidth <= 0) return;
-      const needed = Math.ceil((innerWidth * 2) / copyWidth);
+      const needed = Math.ceil(((vertical ? innerHeight : innerWidth) * 2) / copyWidth);
       for (let i = 0; i < needed; i++) {
         const clone = group.cloneNode(true);
         clone.setAttribute("aria-hidden", "true");
@@ -391,16 +405,17 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
     const onDown = (event) => {
       if (!drag || event.button > 0) return;
       dragging = true;
-      dragFrom = event.clientX;
-      dragAt = event.clientX;
+      dragFrom = vertical ? event.clientY : event.clientX;
+      dragAt = dragFrom;
       flung = 0;
       element.classList.add("is-dragging");
       element.setPointerCapture?.(event.pointerId);
     };
+    const along = (event) => (vertical ? event.clientY : event.clientX);
     const onMove = (event) => {
       if (!dragging) return;
-      const moved = event.clientX - dragAt;
-      dragAt = event.clientX;
+      const moved = along(event) - dragAt;
+      dragAt = along(event);
       offset += moved;
       flung = moved;
     };
@@ -412,7 +427,7 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
       // A flick hands its speed to the strip; a slow drag hands over nothing.
       velocity += flung * 18;
       // A drag that went nowhere was a click, and a click on a link is a link.
-      if (Math.abs(event.clientX - dragFrom) > 6) {
+      if (Math.abs((vertical ? event.clientY : event.clientX) - dragFrom) > 6) {
         const swallow = (click) => { click.preventDefault(); click.stopPropagation(); };
         element.addEventListener("click", swallow, { capture: true, once: true });
         setTimeout(() => element.removeEventListener("click", swallow, { capture: true }), 0);
@@ -455,8 +470,10 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
       // Skew with the velocity: the strip leans into its own movement and
       // straightens as it settles. It is a transform, so it costs nothing.
       const tilt = clamp((velocity / 900) * lean, -6, 6);
-      track.style.transform =
-        `translate3d(${offset.toFixed(2)}px, 0, 0) skewX(${tilt.toFixed(2)}deg)`;
+      // The lean is across the direction of travel, whichever that is.
+      track.style.transform = vertical
+        ? `translate3d(0, ${offset.toFixed(2)}px, 0) skewY(${tilt.toFixed(2)}deg)`
+        : `translate3d(${offset.toFixed(2)}px, 0, 0) skewX(${tilt.toFixed(2)}deg)`;
     });
 
     cleanups.push(() => {
