@@ -1598,3 +1598,135 @@ code { font-size: 0.9em; }
   .button-grid { grid-template-columns: repeat(2, 1fr); }
   .card-grid { grid-template-columns: 1fr; }
 }
+
+
+/* ── Marquee wall ────────────────────────────────────────────────────────── */
+
+.cell-tall .cell-body { min-height: 210px; }
+.marquee-wall {
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  padding: 18px 0;
+  width: 100%;
+}
+.marquee-row {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.marquee-row span { display: inline-block; }
+/* The separator is a shape rather than a bullet character. */
+.marquee-row i {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.55;
+  flex: none;
+}
+.marquee-row.is-loud span {
+  font-family: var(--rm-display);
+  font-size: clamp(24px, 3.6vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.marquee-row.is-loud:nth-child(3) span {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--dim);
+}
+.marquee-row.is-quiet span {
+  font-family: var(--rm-display);
+  font-size: 14px;
+  letter-spacing: -0.005em;
+  color: var(--dim);
+}
+
+
+/* ── Gallery cells ───────────────────────────────────────────────────────── */
+
+.gallery-body { padding: 12px; overflow: hidden; }
+.gallery-body img { display: block; width: 100%; height: auto; border-radius: 8px; }
+
+.gal-masonry { width: 100%; }
+.gal-swipe { width: min(180px, 100%); }
+.gal-swipe article { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); }
+.gal-film { width: 100%; }
+.gal-film img { width: 120px; border-radius: 4px; }
+
+.gal-peek { width: 100%; margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.gal-peek li {
+  padding: 7px 4px;
+  border-bottom: 1px solid var(--line-soft);
+  font-family: var(--rm-display);
+  font-size: 15px;
+  color: var(--dim);
+  cursor: default;
+}
+.gal-peek li:hover, .gal-peek li:focus-visible { color: var(--text); }
+
+.gal-polaroids figure {
+  margin: 0;
+  width: 84px;
+  padding: 6px 6px 18px;
+  background: #f1eee9;
+  border-radius: 3px;
+}
+.gal-polaroids img { border-radius: 1px; }
+
+.gal-fold { width: 100%; height: 130px; }
+.gal-fold figure { margin: 0; border-radius: 8px; }
+.gal-fold img { height: 130px; object-fit: cover; }
+
+.gal-zoomgrid { width: 100%; }
+.gal-crossfade { width: 100%; position: relative; }
+.gal-parallax { grid-template-columns: repeat(3, 1fr); width: 100%; }
+.gal-tilt { grid-template-columns: repeat(2, 1fr); width: 100%; }
+.gal-tilt figure { margin: 0; }
+
+.gal-mask { margin: 0; width: 100%; }
+.gal-slats { width: 100%; height: 130px; border-radius: 8px; }
+.gal-zoomstrip { width: 100%; }
+.gal-zoomstrip img { width: 110px; border-radius: 8px; }
+
+.gal-spiral { width: 100%; min-height: 240px; }
+.gal-spiral img { width: 54px; border-radius: 6px; }
+
+.gal-wall { width: 100%; height: 170px; }
+.gal-wall > div { display: grid; grid-template-columns: repeat(6, 90px); gap: 8px; width: max-content; }
+
+.gal-flip { grid-template-columns: repeat(3, 1fr); width: 100%; }
+.gal-flip article { aspect-ratio: 1; }
+.gal-flip article > div:last-child {
+  display: grid;
+  place-content: center;
+  gap: 2px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-family: var(--rm-display);
+  text-align: center;
+}
+.gal-flip b { color: var(--accent); font-size: 15px; }
+.gal-flip span { font-size: 11px; color: var(--dim); }
+
+.gal-peel { width: min(150px, 100%); }
+.gal-peel figure { margin: 0; }
+.gal-focus { grid-template-columns: repeat(2, 1fr); width: 100%; }
+.gal-focus figure { margin: 0; }
+.gal-ribbon { width: 100%; min-height: 220px; }
+.gal-ribbon img { width: 92px; border-radius: 8px; }
+.gal-contact { width: 100%; }
+
+/* Cells are narrow; the galleries inside them need their own proportions. */
+.gal-zoomgrid { grid-template-columns: repeat(2, 1fr); }
+.gal-zoomgrid img { aspect-ratio: 1; object-fit: cover; }
+.gal-crossfade img { aspect-ratio: 4 / 3; object-fit: cover; }
+.gal-parallax img, .gal-focus img, .gal-tilt img { aspect-ratio: 1; object-fit: cover; }
+.gal-mask img { aspect-ratio: 4 / 3; object-fit: cover; }
+.gal-slats { height: 150px; }
+.gal-contact img { aspect-ratio: 1; object-fit: cover; }
+.gal-spiral { min-height: 210px; }
+.gal-ribbon { min-height: 200px; overflow: hidden; }

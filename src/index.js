@@ -59,6 +59,11 @@ export {
   cartoonCursor, blobCursor, trailCursor, sayCursor, spotlightCursor, arrowCursor, lensCursor,
 } from "./components/cursors.js";
 export {
+  masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
+  crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
+  imageWall, flipGrid, peelStack, focusGrid, ribbon, contactSheet,
+} from "./components/galleries.js";
+export {
   rings, hexGrid, plusGrid, diagonals, topography, circuit, vignette, halftone,
 } from "./components/texture.js";
 export {
@@ -109,6 +114,11 @@ import {
 import {
   inputKit, searchField, tagsField, selectField, clearable, maskField, inlineEdit,
 } from "./components/inputs.js";
+import {
+  masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
+  crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
+  imageWall, flipGrid, peelStack, focusGrid, ribbon, contactSheet,
+} from "./components/galleries.js";
 import {
   rings, hexGrid, plusGrid, diagonals, topography, circuit, vignette, halftone,
 } from "./components/texture.js";
@@ -251,6 +261,27 @@ export function init(options = {}) {
     gauge("[data-rm-gauge]", options.gauge),
     stat("[data-rm-stat]", options.stat),
     stars("[data-rm-rating]", options.stars),
+
+    masonry("[data-rm-masonry]", options.masonry),
+    swipeStack("[data-rm-swipe-stack]", options.swipeStack),
+    filmstrip("[data-rm-filmstrip]", options.filmstrip),
+    hoverPeek("[data-rm-hover-peek]", options.hoverPeek),
+    polaroids("[data-rm-polaroids]", options.polaroids),
+    foldGallery("[data-rm-fold]", options.foldGallery),
+    gridZoom("[data-rm-grid-zoom]", options.gridZoom),
+    crossfade("[data-rm-crossfade]", options.crossfade),
+    parallaxGrid("[data-rm-parallax-grid]", options.parallaxGrid),
+    tiltGrid("[data-rm-tilt-grid]", options.tiltGrid),
+    maskReveal("[data-rm-mask-reveal]", options.maskReveal),
+    slats("[data-rm-slats]", options.slats),
+    zoomStrip("[data-rm-zoom-strip]", options.zoomStrip),
+    spiralGallery("[data-rm-spiral]", options.spiralGallery),
+    imageWall("[data-rm-image-wall]", options.imageWall),
+    flipGrid("[data-rm-flip-grid]", options.flipGrid),
+    peelStack("[data-rm-peel]", options.peelStack),
+    focusGrid("[data-rm-focus-grid]", options.focusGrid),
+    ribbon("[data-rm-ribbon]", options.ribbon),
+    contactSheet("[data-rm-contact-sheet]", options.contactSheet),
 
     inputKit("[data-rm-input]", options.inputKit),
     searchField("[data-rm-search]", options.searchField),

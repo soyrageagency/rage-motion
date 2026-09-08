@@ -336,10 +336,42 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-preview.is-visible { opacity: 1; }
 .rm-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.rm-marquee { overflow: hidden; width: 100%; }
-.rm-marquee-track { display: flex; width: max-content; will-change: transform; }
+/*
+ * The edges fade rather than cutting the content off at a hard boundary, which
+ * is the single thing that separates a marquee that looks designed from one
+ * that looks like overflow: hidden.
+ *
+ * pan-y so a vertical swipe still scrolls the page while a horizontal one
+ * drags the strip.
+ */
+.rm-marquee {
+  overflow: hidden;
+  width: 100%;
+  touch-action: pan-y;
+  cursor: grab;
+  mask: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 var(--rm-marquee-fade, 12%),
+    #000 calc(100% - var(--rm-marquee-fade, 12%)),
+    transparent 100%
+  );
+}
+.rm-marquee.is-dragging { cursor: grabbing; user-select: none; }
+.rm-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  /* The skew leans from the middle, not from a corner. */
+  transform-origin: 50% 50%;
+}
 .rm-marquee-group { display: flex; align-items: center; flex: none; }
-.rm-marquee.is-static { overflow-x: auto; }
+
+.rm-marquee.is-static {
+  overflow-x: auto;
+  cursor: auto;
+  mask: none;
+}
 .rm-marquee.is-static .rm-marquee-track { transform: none !important; }
 
 /* ── Showpiece ──────────────────────────────────────────────────────────── */
@@ -3981,6 +4013,317 @@ html.rm-cursor-active * { cursor: none !important; }
   backdrop-filter: blur(0.2px);
   transform: scale(var(--rm-lens-cursor-zoom, 1.35));
 }
+
+/* ── Galleries ──────────────────────────────────────────────────────────── */
+
+/*
+ * Every one of these leaves the pictures visible with the script removed. What
+ * the classes add is arrangement and movement, never visibility — a gallery
+ * that starts at opacity 0 is a gallery that is blank when the script fails.
+ */
+
+.rm-masonry { display: flex; align-items: flex-start; gap: var(--rm-masonry-gap, 14px); }
+.rm-masonry-lane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rm-masonry-gap, 14px);
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.rm-swipe-stack {
+  position: relative;
+  display: grid;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.rm-swipe-stack:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 4px; }
+.rm-swipe-stack-card {
+  grid-area: 1 / 1;
+  will-change: transform;
+  transition: opacity 0.24s var(--rm-ease-out);
+}
+.rm-swipe-stack-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.rm-filmstrip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 16px 0;
+  touch-action: pan-x pan-y;
+  cursor: grab;
+  /* Sprocket holes: one repeating gradient top and bottom, not 200 elements. */
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0 8px, transparent 8px 22px) 0 0 / 100% 5px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0 8px, transparent 8px 22px) 0 100% / 100% 5px no-repeat;
+}
+.rm-filmstrip.is-dragging { cursor: grabbing; user-select: none; scroll-snap-type: none; }
+.rm-filmstrip-frame { flex: none; scroll-snap-align: center; }
+
+.rm-hover-peek { position: relative; }
+.rm-hover-peek-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 190px;
+  height: auto;
+  border-radius: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s var(--rm-ease-out);
+  will-change: transform;
+  z-index: 3;
+}
+.rm-hover-peek.is-peeking .rm-hover-peek-image { opacity: 1; }
+
+.rm-polaroids { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.rm-polaroids-print {
+  transform: rotate(var(--rm-polaroids-angle, 0deg)) translateY(var(--rm-polaroids-drop, 0px));
+  transition: transform 0.34s var(--rm-ease-out), box-shadow 0.34s var(--rm-ease-out);
+  will-change: transform;
+}
+.rm-polaroids-print:hover,
+.rm-polaroids-print:focus-visible,
+.rm-polaroids-print:focus-within {
+  transform: rotate(0deg) translateY(-8px) scale(1.04);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  z-index: 20 !important;
+}
+
+/*
+ * flex-grow rather than percentage widths: the browser distributes the space,
+ * so the panels always exactly fill the strip whatever the count.
+ */
+.rm-fold { display: flex; gap: 6px; overflow: hidden; }
+.rm-fold-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  transition: flex-grow 0.42s var(--rm-ease-out);
+}
+.rm-fold-panel:hover,
+.rm-fold-panel:focus-visible,
+.rm-fold-panel:focus-within { flex-grow: var(--rm-fold-open, 3); }
+
+.rm-grid-zoom { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+.rm-grid-zoom-tile {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.rm-grid-zoom-tile.is-open {
+  grid-column: 1 / -1;
+  grid-row: span 2;
+  cursor: zoom-out;
+}
+
+.rm-crossfade { position: relative; display: grid; }
+.rm-crossfade-frame {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity var(--rm-crossfade-duration, 700ms) var(--rm-ease-out);
+}
+.rm-crossfade-frame.is-current { opacity: 1; }
+.rm-crossfade-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 7px;
+  z-index: 2;
+}
+.rm-crossfade-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: transform 0.22s var(--rm-ease-out), background 0.22s;
+}
+.rm-crossfade-dot[aria-selected="true"] { background: #fff; transform: scale(1.35); }
+
+.rm-parallax-grid { display: grid; gap: 12px; }
+.rm-parallax-grid-tile { will-change: transform; }
+
+.rm-tilt-grid { display: grid; gap: 12px; }
+.rm-tilt-grid-tile { will-change: transform; transform-style: preserve-3d; }
+
+.rm-mask-reveal { overflow: hidden; }
+.rm-mask-reveal img,
+.rm-mask-reveal video { display: block; width: 100%; will-change: clip-path; }
+
+.rm-slats { position: relative; display: flex; overflow: hidden; }
+/* The original stays in the document for alt text and indexing. */
+.rm-slats-source { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.rm-slats-slat {
+  flex: 1 1 0;
+  min-width: 0;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+.rm-zoom-strip {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 26px 40%;
+}
+.rm-zoom-strip-item {
+  flex: none;
+  scroll-snap-align: center;
+  will-change: transform;
+  transform-origin: 50% 50%;
+}
+
+.rm-spiral {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  rotate: var(--rm-spiral-turn, 0deg);
+  transition: rotate 0.1s linear;
+}
+.rm-spiral-item {
+  position: absolute;
+  transform: translate(var(--rm-spiral-x, 0px), var(--rm-spiral-y, 0px))
+    rotate(calc(var(--rm-spiral-turn, 0deg) * -1));
+}
+
+.rm-image-wall { overflow: hidden; cursor: grab; touch-action: none; }
+.rm-image-wall:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-image-wall.is-dragging { cursor: grabbing; user-select: none; }
+.rm-image-wall-inner { will-change: transform; }
+
+.rm-flip-grid { display: grid; gap: 12px; perspective: 1200px; }
+.rm-flip-grid-card {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.rm-flip-grid-front,
+.rm-flip-grid-back { backface-visibility: hidden; }
+.rm-flip-grid-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+
+.rm-peel { position: relative; display: grid; justify-items: center; }
+.rm-peel-print { grid-area: 1 / 1; will-change: transform; }
+.rm-peel-next {
+  grid-area: 2 / 1;
+  margin-top: 14px;
+  justify-self: center;
+  border: 1px solid var(--rm-input-line, rgba(255, 255, 255, 0.16));
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.rm-peel-next:hover { border-color: var(--rm-accent); }
+.rm-peel-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/*
+ * The others give way rather than the reached one growing, so the grid never
+ * changes size and nothing around it reflows.
+ */
+.rm-focus-grid { display: grid; gap: 12px; }
+.rm-focus-grid-tile {
+  transition: opacity 0.3s var(--rm-ease-out), transform 0.3s var(--rm-ease-out);
+  will-change: transform, opacity;
+}
+.rm-focus-grid.has-focus .rm-focus-grid-tile {
+  opacity: var(--rm-focus-grid-dim, 0.42);
+  transform: scale(var(--rm-focus-grid-shrink, 0.96));
+}
+.rm-focus-grid.has-focus .rm-focus-grid-tile.is-reached { opacity: 1; transform: none; }
+
+.rm-ribbon { position: relative; min-height: 260px; }
+.rm-ribbon-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-path: path("M 0 200 C 180 40, 420 40, 600 200 S 1020 360, 1200 200");
+  offset-distance: calc(var(--rm-ribbon-at, 0%) + var(--rm-ribbon-slide, 0%));
+  offset-rotate: 0deg;
+  will-change: offset-distance;
+}
+
+.rm-contact-sheet {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+}
+.rm-contact-sheet-frame {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.rm-contact-sheet-frame img { display: block; width: 100%; height: auto; }
+.rm-contact-sheet-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  background: rgba(8, 8, 8, 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+}
+.rm-contact-sheet-stage[hidden] { display: none; }
+.rm-contact-sheet-shown {
+  max-width: 88%;
+  max-height: 88%;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  will-change: transform;
+}
+.rm-contact-sheet-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: inherit;
+  font: inherit;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.rm-contact-sheet-close:hover { background: rgba(255, 255, 255, 0.24); }
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 

@@ -213,7 +213,9 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: dock took its items`, started.dock === 5, String(started.dock));
   check(`${label}: pill indicators mounted`, started.pill === 2, String(started.pill));
   check(`${label}: gooey built two blobs`, started.gooey === 2, String(started.gooey));
-  check(`${label}: tabs and slideshow dots are real tabs`, started.tabs === 6, String(started.tabs));
+  // Three tab panels, three slideshow dots, three crossfade dots. Every one
+  // of them a real tab rather than a div with a click handler.
+  check(`${label}: tabs and slideshow dots are real tabs`, started.tabs === 9, String(started.tabs));
   check(`${label}: compare is a real slider`, started.compare === 1, String(started.compare));
   check(`${label}: the wave fields are drawing`, started.waves === 2, String(started.waves));
   check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));

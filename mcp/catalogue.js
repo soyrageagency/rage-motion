@@ -76,6 +76,7 @@ const TRANSITIONS = "src/components/transitions.js";
 const MENUS = "src/components/menus.js";
 const INPUTS = "src/components/inputs.js";
 const CURSORS2 = "src/components/cursors.js";
+const GALLERIES = "src/components/galleries.js";
 const TEXTURE = "src/components/texture.js";
 
 const option = (name, type, dflt, about) => ({ name, type, default: dflt, about });
@@ -2529,6 +2530,304 @@ export const CATALOGUE = [
     example: "<fieldset data-rm-rating><legend>Rating</legend></fieldset>",
     usage: 'import { stars } from "@soyrageagency/rage-motion";\nstars();',
     options: [option("out-of", "number", "5", "Clamped to 10.")],
+  },
+
+  // ── Galleries, the twenty ─────────────────────────────────────────────────
+  {
+    name: "masonry",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-masonry",
+    summary: "A column grid that settles with a FLIP when it reflows.",
+    notes:
+      "Balanced by height rather than dealt round-robin, so the columns end level instead of one running long — trivial arithmetic, and the whole difference between a masonry that looks composed and one that looks like a bug. When the column count changes, every tile that moves plays a FLIP from where it was, so a resize reads as a rearrangement rather than a jump cut.",
+    example: "<div data-rm-masonry data-rm-columns=\"3\">…</div>",
+    usage: "import { masonry } from \"@soyrageagency/rage-motion\";\nmasonry();",
+    options: [
+      option("columns", "number", "3", "The most columns it will use."),
+      option("min", "number", "220", "Narrowest a column may get before dropping one."),
+      option("gap", "number", "14", "Space between tiles, in pixels."),
+    ],
+  },
+  {
+    name: "swipeStack",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-swipe-stack",
+    summary: "A pile you throw away, by hand or by keyboard.",
+    notes:
+      "The card follows the hand while it is held and leaves in the direction it was travelling, so the throw is the gesture rather than a canned animation played after one. Left and right arrows do the same thing, and a live region announces what is on top — a stack you can only operate by dragging is a stack half your visitors cannot use.",
+    example: "<div data-rm-swipe-stack><article>…</article></div>",
+    usage: "import { swipeStack } from \"@soyrageagency/rage-motion\";\nswipeStack();",
+    options: [
+      option("throwAt", "number", "110", "How far a drag must go to count as a throw."),
+      option("lift", "number", "12", "Offset between the cards in the pile."),
+    ],
+  },
+  {
+    name: "filmstrip",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-filmstrip",
+    summary: "A strip with sprocket holes and real inertia.",
+    notes:
+      "Native scrolling underneath, so it keeps momentum, snapping, the trackpad, the scrollbar and every affordance the platform provides, with a drag added on top for the mouse. The sprocket holes are one repeating gradient rather than two hundred elements.",
+    example: "<div data-rm-filmstrip><img>…</div>",
+    usage: "import { filmstrip } from \"@soyrageagency/rage-motion\";\nfilmstrip();",
+    options: [
+      option("label", "string", "\"Film strip\"", "The region's accessible name."),
+    ],
+  },
+  {
+    name: "hoverPeek",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-hover-peek",
+    summary: "A list of titles that floats its picture by the pointer.",
+    notes:
+      "One shared image element with the source swapped as you move, rather than one per row — a hundred-row index costs one node and one decode at a time. The picture lags the pointer, which is what makes it feel attached rather than teleported, and focus shows it too, pinned beside the focused row instead of at a pointer that is not there.",
+    example: "<ul data-rm-hover-peek><li data-rm-peek-src=\"/a.jpg\">Title</li></ul>",
+    usage: "import { hoverPeek } from \"@soyrageagency/rage-motion\";\nhoverPeek();",
+    options: [
+      option("attribute", "string", "\"data-rm-peek-src\"", "Where each row's picture is named."),
+      option("ease", "number", "0.16", "How closely the picture follows."),
+    ],
+  },
+  {
+    name: "polaroids",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-polaroids",
+    summary: "Scattered prints that straighten when you reach them.",
+    notes:
+      "The scatter is seeded from each print's position in the set rather than random, so the wall is the same on every load — a gallery that reshuffles itself on reload draws attention to its own cleverness. Reaching one lifts it, squares it up and brings it to the front, by pointer or by keyboard.",
+    example: "<div data-rm-polaroids><figure>…</figure></div>",
+    usage: "import { polaroids } from \"@soyrageagency/rage-motion\";\npolaroids();",
+    options: [
+      option("spread", "number", "7", "Most degrees of scatter."),
+      option("shift", "number", "10", "Most pixels of vertical drift."),
+    ],
+  },
+  {
+    name: "foldGallery",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-fold",
+    summary: "Panels that open sideways, one at a time.",
+    notes:
+      "The widths are flex-grow on a flex row, so the browser distributes the space and the panels always exactly fill the strip however many there are. The version that sets percentage widths has to be told the count and is one rounding error from a gap at the end. Focus opens a panel just as hovering does.",
+    example: "<div data-rm-fold><figure>…</figure></div>",
+    usage: "import { foldGallery } from \"@soyrageagency/rage-motion\";\nfoldGallery();",
+    options: [
+      option("open", "number", "3", "How many times its share an open panel takes."),
+    ],
+  },
+  {
+    name: "gridZoom",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-grid-zoom",
+    summary: "A tile that grows to fill the grid, and comes back.",
+    notes:
+      "A FLIP in both directions: the tile is promoted, the layout settles at the new size, and only then is it animated from where it was. Nothing animates a width, so the grid never reflows mid-flight and the picture never squashes. Escape closes it and focus goes back to the tile that opened.",
+    example: "<div data-rm-grid-zoom><button><img></button></div>",
+    usage: "import { gridZoom } from \"@soyrageagency/rage-motion\";\ngridZoom();",
+    options: [
+      option("duration", "number", "480", "How long the growth takes."),
+    ],
+  },
+  {
+    name: "crossfade",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-crossfade",
+    summary: "A slideshow that is really a tablist.",
+    notes:
+      "The frames cross-fade on opacity and the dots are real tabs — arrow keys, Home and End, aria-selected, one tab stop for the set. A slideshow whose controls are anonymous divs is a slideshow a keyboard cannot operate, which is most of them. It advances only while it is on screen.",
+    example: "<div data-rm-crossfade><img><img></div>",
+    usage: "import { crossfade } from \"@soyrageagency/rage-motion\";\ncrossfade();",
+    options: [
+      option("interval", "number", "4200", "Time on each frame, in ms."),
+      option("duration", "number", "700", "The cross-fade itself."),
+    ],
+  },
+  {
+    name: "parallaxGrid",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-parallax-grid",
+    summary: "Tiles drifting at their own rates as you scroll.",
+    notes:
+      "One scroll read for the whole grid and one transform per tile, with the rates assigned by column so the drift reads as depth rather than as noise. It runs only while the grid is on screen.",
+    example: "<div data-rm-parallax-grid><img>…</div>",
+    usage: "import { parallaxGrid } from \"@soyrageagency/rage-motion\";\nparallaxGrid();",
+    options: [
+      option("travel", "number", "40", "Most pixels of drift."),
+      option("columns", "number", "3", "Used to assign the rates."),
+    ],
+  },
+  {
+    name: "tiltGrid",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-tilt-grid",
+    summary: "Every tile leaning toward the pointer.",
+    notes:
+      "One listener on the grid and one shared frame for all of it. The usual version gives forty tiles forty listeners and forty rAF loops, which is exactly why those grids stutter.",
+    example: "<div data-rm-tilt-grid><figure>…</figure></div>",
+    usage: "import { tiltGrid } from \"@soyrageagency/rage-motion\";\ntiltGrid();",
+    options: [
+      option("lean", "number", "9", "Most degrees of tilt."),
+      option("ease", "number", "0.16", "How quickly a tile follows."),
+    ],
+  },
+  {
+    name: "maskReveal",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-mask-reveal",
+    summary: "A picture uncovered by a shape as you scroll.",
+    notes:
+      "clip-path on the image itself, so the picture is never moved, scaled or duplicated — what changes is how much of it you are allowed to see. circle, wipe, bars and corner are the same one property with different values.",
+    example: "<figure data-rm-mask-reveal=\"circle\"><img></figure>",
+    usage: "import { maskReveal } from \"@soyrageagency/rage-motion\";\nmaskReveal();",
+    options: [
+      option("shape", "string", "\"circle\"", "circle · wipe · bars · corner."),
+    ],
+  },
+  {
+    name: "slats",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-slats",
+    summary: "A picture assembled from vertical strips.",
+    notes:
+      "The image is drawn once per slat as a background at an offset, so there is one download and no cropping arithmetic in the markup. The original img stays in the document — hidden from the layout but not from the page — so the alt text, indexing and a no-script view all survive.",
+    example: "<div data-rm-slats=\"8\" data-rm-src=\"/photo.jpg\"><img src=\"/photo.jpg\" alt=\"…\"></div>",
+    usage: "import { slats } from \"@soyrageagency/rage-motion\";\nslats();",
+    options: [
+      option("count", "number", "8", "Clamped to 2–24."),
+      option("stagger", "number", "70", "Delay between slats, in ms."),
+    ],
+  },
+  {
+    name: "zoomStrip",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-zoom-strip",
+    summary: "A row where whatever is centred is largest.",
+    notes:
+      "Scale from the distance to the middle of the frame, read once a frame for the whole row. Native scrolling underneath, so the momentum, the snapping and the scrollbar are the platform's rather than an imitation of them.",
+    example: "<div data-rm-zoom-strip><img>…</div>",
+    usage: "import { zoomStrip } from \"@soyrageagency/rage-motion\";\nzoomStrip();",
+    options: [
+      option("grow", "number", "0.22", "How much bigger the centred item gets."),
+    ],
+  },
+  {
+    name: "spiralGallery",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-spiral",
+    summary: "Items on a spiral that turns with the page.",
+    notes:
+      "Each item is placed by angle and radius from its index, so the shape is arithmetic rather than a hundred hand-set positions and adding an item extends the spiral for free. The items counter-rotate, so they stay upright while the spiral turns.",
+    example: "<div data-rm-spiral><img>…</div>",
+    usage: "import { spiralGallery } from \"@soyrageagency/rage-motion\";\nspiralGallery();",
+    options: [
+      option("turns", "number", "1.6", "How many times round."),
+      option("radius", "number", "190", "The outermost reach, in pixels."),
+      option("spin", "number", "90", "Degrees turned across the scroll."),
+    ],
+  },
+  {
+    name: "imageWall",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-image-wall",
+    summary: "A wall you drag around, with weight.",
+    notes:
+      "Two axes of drag on one transform, and the throw keeps its velocity and eases out rather than stopping dead under your finger. The arrow keys move it too, because a wall that can only be dragged is a wall a keyboard cannot see.",
+    example: "<div data-rm-image-wall><div><img>…</div></div>",
+    usage: "import { imageWall } from \"@soyrageagency/rage-motion\";\nimageWall();",
+    options: [
+      option("friction", "number", "0.92", "How quickly a throw slows."),
+      option("step", "number", "90", "Pixels moved per arrow press."),
+    ],
+  },
+  {
+    name: "flipGrid",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-flip-grid",
+    summary: "Cards turning over in sequence as they arrive.",
+    notes:
+      "Both faces are in the markup and both are real content, so the back of a card is text a search engine and a screen reader can read. The turn is rotateY on a preserved-3d parent, which is one transform rather than a cross-fade between two absolutely positioned copies.",
+    example: "<div data-rm-flip-grid><article><div>front</div><div>back</div></article></div>",
+    usage: "import { flipGrid } from \"@soyrageagency/rage-motion\";\nflipGrid();",
+    options: [
+      option("duration", "number", "700", "One card's turn."),
+      option("stagger", "number", "110", "Delay between cards."),
+    ],
+  },
+  {
+    name: "peelStack",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-peel",
+    summary: "A pile you peel through, one print at a time.",
+    notes:
+      "The top print lifts and slides away to the back, so the pile never empties and the order is preserved. A real button does the same thing and the pile announces which print is showing — the gesture is the flourish, not the only way in.",
+    example: "<div data-rm-peel><figure>…</figure></div>",
+    usage: "import { peelStack } from \"@soyrageagency/rage-motion\";\npeelStack();",
+    options: [
+      option("offset", "number", "9", "Pixels between prints in the pile."),
+      option("duration", "number", "520", "One peel."),
+    ],
+  },
+  {
+    name: "focusGrid",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-focus-grid",
+    summary: "Reach for one tile and the rest stand back.",
+    notes:
+      "The others dim and shrink slightly rather than the reached one growing, so the grid never changes size and nothing reflows — the emphasis comes from everything else giving way, which is both cheaper and calmer. Focus does it too, so tabbing reads the same as pointing.",
+    example: "<div data-rm-focus-grid><figure>…</figure></div>",
+    usage: "import { focusGrid } from \"@soyrageagency/rage-motion\";\nfocusGrid();",
+    options: [
+      option("dim", "number", "0.42", "Opacity of the tiles standing back."),
+      option("shrink", "number", "0.04", "How much they give way."),
+    ],
+  },
+  {
+    name: "ribbon",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-ribbon",
+    summary: "Pictures along a curve, moving with the scroll.",
+    notes:
+      "offset-path puts each item on a real path and offset-distance moves it along, so the curve is one declaration and the items follow it exactly, corners included. The version with hand-computed positions has to be redone every time the shape changes.",
+    example: "<div data-rm-ribbon><img>…</div>",
+    usage: "import { ribbon } from \"@soyrageagency/rage-motion\";\nribbon();",
+    options: [
+      option("travel", "number", "55", "How far along the path the scroll slides them."),
+      option("spread", "number", "70", "How much of the path the set occupies."),
+    ],
+  },
+  {
+    name: "contactSheet",
+    category: "gallery",
+    file: GALLERIES,
+    attribute: "data-rm-contact-sheet",
+    summary: "A sheet of frames, one of which opens.",
+    notes:
+      "The sheet stays exactly where it is and the chosen frame is drawn over it from its own position — a FLIP, so the sheet never reflows and the frame appears to grow out of where it was rather than fading in on top. It is a dialog while open: focus goes in, the rest is inert, Escape closes it and focus comes back.",
+    example: "<div data-rm-contact-sheet><button><img></button></div>",
+    usage: "import { contactSheet } from \"@soyrageagency/rage-motion\";\ncontactSheet();",
+    options: [
+      option("duration", "number", "460", "The growth."),
+    ],
   },
 
   // ── Playful cursors ──────────────────────────────────────────────────────

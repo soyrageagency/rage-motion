@@ -17,7 +17,7 @@ Dates are intentions, not promises. If you need something sooner,
 
 ## 0.1 — Shipped
 
-- [x] **185 components** across thirty-five modules, each standalone and
+- [x] **205 components** across thirty-six modules, each standalone and
       copyable — plus 50 named scroll entrances on `reveal`, 52 named looks on
       `buttonKit` and 24 on `cardKit`, which are variants of one component
       rather than a hundred more files to keep correct.

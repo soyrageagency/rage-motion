@@ -241,7 +241,7 @@ export function autoplay(target = "[data-rm-autoplay]", options = {}) {
 
     const go = () => {
       at = (at + 1) % slides.length;
-      keepInView(frame, slides[at], prefersReducedMotion() ? "auto" : "smooth");
+      keepInView(rail, slides[at], prefersReducedMotion() ? "auto" : "smooth");
     };
 
     const start = () => {

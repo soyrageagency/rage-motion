@@ -53,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="hero-readout"><span data-rm-decrypt data-rm-loop="6000">185 components · 0 dependencies · MIT</span></p>
+    <p class="hero-readout"><span data-rm-decrypt data-rm-loop="6000">205 components · 0 dependencies · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">185</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">205</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">36</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">37</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -467,12 +467,20 @@
       <button class="cell-copy" data-copy='<span data-rm-curve="120" data-rm-spin="18000">Text · </span>'>copy</button>
     </article>
 
-    <article class="cell cell-wide">
-      <p class="cell-name">marquee</p>
-      <div class="cell-body cell-body-flush">
-        <div class="ticker" data-rm-marquee data-rm-speed="42" data-rm-gap="14">
-          <span>transform</span><span>·</span><span>opacity</span><span>·</span>
-          <span>no layout shift</span><span>·</span>
+    <article class="cell cell-wide cell-tall">
+      <p class="cell-name">marquee <span class="cell-hint">drag it · scroll the page</span></p>
+      <div class="cell-body cell-body-flush marquee-wall">
+        <div class="marquee-row is-loud" data-rm-marquee data-rm-speed="46" data-rm-gap="34" data-rm-fade="9">
+          <span>TRANSFORM</span><i></i><span>OPACITY</span><i></i>
+          <span>CLIP-PATH</span><i></i><span>FILTER</span><i></i>
+        </div>
+        <div class="marquee-row is-quiet" data-rm-marquee data-rm-direction="right" data-rm-speed="30" data-rm-gap="26" data-rm-fade="9">
+          <span>no layout shift</span><i></i><span>one shared frame</span><i></i>
+          <span>one scroll read</span><i></i><span>zero dependencies</span><i></i>
+        </div>
+        <div class="marquee-row is-loud" data-rm-marquee data-rm-speed="72" data-rm-gap="34" data-rm-fade="9" data-rm-lean="1.6">
+          <span>SOYRAGE</span><i></i><span>RAGE MOTION</span><i></i>
+          <span>MIT</span><i></i><span>205 COMPONENTS</span><i></i>
         </div>
       </div>
       <button class="cell-copy" data-copy='<div data-rm-marquee data-rm-speed="80">…</div>'>copy</button>
@@ -1132,6 +1140,284 @@
   <!-- Card looks -->
 
   <!-- Text boxes -->
+
+  <!-- Galleries, the twenty -->
+  <div class="shell rail"><span class="rail-name">Twenty galleries</span></div>
+  <div class="shell cells">
+
+    <article class="cell">
+      <p class="cell-name">masonry <span class="cell-hint">resize the window</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-masonry" data-rm-masonry data-rm-columns="3" data-rm-min="90">
+          <img src="./assets/tiles/01.svg" alt="Plate 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="Plate 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="Plate 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Plate 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="Plate 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Plate 6" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-masonry data-rm-columns=&quot;3&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">swipeStack <span class="cell-hint">drag · arrow keys</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-swipe" data-rm-swipe-stack>
+          <article><img src="./assets/tiles/01.svg" alt="First card" loading="lazy"></article>
+          <article><img src="./assets/tiles/03.svg" alt="Second card" loading="lazy"></article>
+          <article><img src="./assets/tiles/05.svg" alt="Third card" loading="lazy"></article>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-swipe-stack&gt;&lt;article&gt;…&lt;/article&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">filmstrip <span class="cell-hint">drag it</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-film" data-rm-filmstrip>
+          <img src="./assets/tiles/01.svg" alt="Frame 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="Frame 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="Frame 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Frame 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="Frame 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Frame 6" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-filmstrip&gt;&lt;img&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">hoverPeek <span class="cell-hint">hover the titles</span></p>
+      <div class="cell-body gallery-body">
+        <ul class="gal-peek" data-rm-hover-peek>
+          <li data-rm-peek-src="./assets/tiles/01.svg" tabindex="0">Northern light</li>
+          <li data-rm-peek-src="./assets/tiles/03.svg" tabindex="0">Low tide</li>
+          <li data-rm-peek-src="./assets/tiles/05.svg" tabindex="0">Salt flats</li>
+        </ul>
+      </div>
+      <button class="cell-copy" data-copy="&lt;ul data-rm-hover-peek&gt;&lt;li data-rm-peek-src=&quot;/a.jpg&quot;&gt;Title&lt;/li&gt;&lt;/ul&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">polaroids <span class="cell-hint">hover · tab</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-polaroids" data-rm-polaroids>
+          <figure><img src="./assets/tiles/02.svg" alt="Print one" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/04.svg" alt="Print two" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/06.svg" alt="Print three" loading="lazy"></figure>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-polaroids&gt;&lt;figure&gt;…&lt;/figure&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">foldGallery <span class="cell-hint">hover a panel</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-fold" data-rm-fold>
+          <figure><img src="./assets/tiles/01.svg" alt="Panel one" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/03.svg" alt="Panel two" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/05.svg" alt="Panel three" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/06.svg" alt="Panel four" loading="lazy"></figure>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-fold&gt;&lt;figure&gt;…&lt;/figure&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">gridZoom <span class="cell-hint">click a tile</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-zoomgrid" data-rm-grid-zoom>
+          <button type="button"><img src="./assets/tiles/01.svg" alt="Tile one" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/02.svg" alt="Tile two" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/03.svg" alt="Tile three" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/04.svg" alt="Tile four" loading="lazy"></button>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-grid-zoom&gt;&lt;button&gt;&lt;img&gt;&lt;/button&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">crossfade <span class="cell-hint">arrow keys</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-crossfade" data-rm-crossfade data-rm-interval="2600">
+          <img src="./assets/tiles/02.svg" alt="Slide one" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Slide two" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Slide three" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-crossfade&gt;&lt;img&gt;&lt;img&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">parallaxGrid <span class="cell-hint">scroll</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-parallax" data-rm-parallax-grid data-rm-columns="3">
+          <img src="./assets/tiles/01.svg" alt="Layer 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="Layer 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="Layer 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Layer 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="Layer 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Layer 6" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-parallax-grid&gt;&lt;img&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">tiltGrid <span class="cell-hint">move the pointer</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-tilt" data-rm-tilt-grid>
+          <figure><img src="./assets/tiles/01.svg" alt="Tile one" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/03.svg" alt="Tile two" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/05.svg" alt="Tile three" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/06.svg" alt="Tile four" loading="lazy"></figure>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-tilt-grid&gt;&lt;figure&gt;…&lt;/figure&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">maskReveal <span class="cell-hint">scroll</span></p>
+      <div class="cell-body gallery-body">
+        <figure class="gal-mask" data-rm-mask-reveal="circle">
+          <img src="./assets/tiles/04.svg" alt="Uncovered by a circle" loading="lazy">
+        </figure>
+      </div>
+      <button class="cell-copy" data-copy="&lt;figure data-rm-mask-reveal=&quot;circle&quot;&gt;&lt;img&gt;&lt;/figure&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">slats <span class="cell-hint">scroll</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-slats" data-rm-slats="9" data-rm-src="./assets/tiles/05.svg">
+          <img src="./assets/tiles/05.svg" alt="Assembled from strips" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-slats=&quot;8&quot; data-rm-src=&quot;/photo.jpg&quot;&gt;&lt;img&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">zoomStrip <span class="cell-hint">scroll it sideways</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-zoomstrip" data-rm-zoom-strip>
+          <img src="./assets/tiles/01.svg" alt="Frame 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="Frame 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="Frame 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Frame 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="Frame 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Frame 6" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-zoom-strip&gt;&lt;img&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">spiralGallery <span class="cell-hint">scroll</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-spiral" data-rm-spiral data-rm-radius="96">
+          <img src="./assets/tiles/01.svg" alt="On the spiral 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="On the spiral 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="On the spiral 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="On the spiral 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="On the spiral 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="On the spiral 6" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-spiral&gt;&lt;img&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">imageWall <span class="cell-hint">drag · arrow keys</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-wall" data-rm-image-wall>
+          <div>
+            <img src="./assets/tiles/01.svg" alt="Wall 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="Wall 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="Wall 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Wall 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="Wall 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Wall 6" loading="lazy">
+            <img src="./assets/tiles/01.svg" alt="Wall again 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="Wall again 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="Wall again 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Wall again 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="Wall again 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Wall again 6" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-image-wall&gt;&lt;div&gt;&lt;img&gt;…&lt;/div&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">flipGrid <span class="cell-hint">scroll into view</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-flip" data-rm-flip-grid>
+          <article><div><img src="./assets/tiles/01.svg" alt="Front" loading="lazy"></div><div><b>01</b><span>Plate</span></div></article>
+          <article><div><img src="./assets/tiles/03.svg" alt="Front" loading="lazy"></div><div><b>02</b><span>Plate</span></div></article>
+          <article><div><img src="./assets/tiles/05.svg" alt="Front" loading="lazy"></div><div><b>03</b><span>Plate</span></div></article>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-flip-grid&gt;&lt;article&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/article&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">peelStack <span class="cell-hint">press the button</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-peel" data-rm-peel>
+          <figure><img src="./assets/tiles/02.svg" alt="Print one" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/04.svg" alt="Print two" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/06.svg" alt="Print three" loading="lazy"></figure>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-peel&gt;&lt;figure&gt;…&lt;/figure&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">focusGrid <span class="cell-hint">hover · tab</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-focus" data-rm-focus-grid>
+          <figure><img src="./assets/tiles/01.svg" alt="One" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/02.svg" alt="Two" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/03.svg" alt="Three" loading="lazy"></figure>
+          <figure><img src="./assets/tiles/04.svg" alt="Four" loading="lazy"></figure>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-focus-grid&gt;&lt;figure&gt;…&lt;/figure&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">ribbon <span class="cell-hint">scroll</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-ribbon" data-rm-ribbon>
+          <img src="./assets/tiles/01.svg" alt="Along the curve 1" loading="lazy">
+          <img src="./assets/tiles/02.svg" alt="Along the curve 2" loading="lazy">
+          <img src="./assets/tiles/03.svg" alt="Along the curve 3" loading="lazy">
+          <img src="./assets/tiles/04.svg" alt="Along the curve 4" loading="lazy">
+          <img src="./assets/tiles/05.svg" alt="Along the curve 5" loading="lazy">
+          <img src="./assets/tiles/06.svg" alt="Along the curve 6" loading="lazy">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-ribbon&gt;&lt;img&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">contactSheet <span class="cell-hint">click a frame</span></p>
+      <div class="cell-body gallery-body">
+        <div class="gal-contact" data-rm-contact-sheet>
+          <button type="button"><img src="./assets/tiles/01.svg" alt="Frame one" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/02.svg" alt="Frame two" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/03.svg" alt="Frame three" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/04.svg" alt="Frame four" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/05.svg" alt="Frame five" loading="lazy"></button>
+          <button type="button"><img src="./assets/tiles/06.svg" alt="Frame six" loading="lazy"></button>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-contact-sheet&gt;&lt;button&gt;&lt;img&gt;&lt;/button&gt;&lt;/div&gt;">copy</button>
+    </article>
+  </div>
+
   <div class="shell rail"><span class="rail-name">Text boxes</span></div>
   <div class="shell cells">
     <article class="cell">

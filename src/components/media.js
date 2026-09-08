@@ -241,27 +241,64 @@ export function hoverPreview(target = "[data-rm-preview]", options = {}) {
 }
 
 /**
- * An infinite marquee.
+ * A strip that moves, and knows what you are doing to it.
  *
- * The content is duplicated until it comfortably exceeds the viewport, then
- * translated by exactly one copy's width and reset. Animating to `-100%` of a
- * single copy is the common shortcut and it visibly jumps whenever the content
- * is narrower than the screen.
+ * Most marquees are one CSS animation on a duplicated row. That version cannot
+ * be dragged, cannot respond to the page, snaps between moving and stopped,
+ * and has a hard edge where the content is guillotined at the container. This
+ * one is built around a single velocity that everything writes to and that
+ * eases toward what it is asked for, so the influences compose instead of
+ * fighting:
+ *
+ *   • the resting speed
+ *   • the page's own scrolling, which speeds the strip up and — going back up
+ *     the page — reverses it, so the two motions read as one system
+ *   • the pointer resting on it, which slows it almost to a stop rather than
+ *     freezing it dead
+ *   • a finger or a mouse dragging it, which hands over its own velocity on
+ *     release, so a flick keeps going
+ *
+ * The strip skews with its velocity and straightens as it settles, which is
+ * inertia rendered rather than described, and it fades at both edges instead
+ * of cutting the content off at a hard boundary.
+ *
+ * Two details that decide whether it is usable: `touch-action: pan-y` means a
+ * vertical swipe still scrolls the page — a horizontal strip that eats the
+ * page scroll is the commonest way this component ruins a phone — and a drag
+ * that actually travelled swallows the click at the end of it, so dragging
+ * past a link does not open it.
+ *
+ * Under reduced motion it stops entirely and becomes a plain scrollable row,
+ * because the content was always the point.
+ *
+ *   <div data-rm-marquee data-rm-speed="80">…</div>
  */
 export function marquee(target = "[data-rm-marquee]", options = {}) {
   const elements = resolveElements(target);
   if (!elements.length) return () => {};
 
-  const { speed = 60, direction = "left", pauseOnHover = true, gap = 48 } = options;
+  const {
+    speed = 60,
+    direction = "left",
+    gap = 48,
+    fade = 12,
+    drag = true,
+    scrollBoost = 2.2,
+    scrollFlip = true,
+    skew = 0.9,
+    hoverSlow = 0.15,
+  } = options;
   const cleanups = [];
 
   for (const element of elements) {
     const original = element.innerHTML;
     const space = dataNumber(element, "rmGap", gap);
-    const pxPerSecond = dataNumber(element, "rmSpeed", speed);
-    const dir = dataString(element, "rmDirection", direction) === "right" ? 1 : -1;
+    const base = dataNumber(element, "rmSpeed", speed);
+    const facing = dataString(element, "rmDirection", direction) === "right" ? 1 : -1;
 
     element.classList.add("rm-marquee");
+    element.style.setProperty("--rm-marquee-fade", `${dataNumber(element, "rmFade", fade)}%`);
+
     const track = document.createElement("div");
     track.className = "rm-marquee-track";
     track.style.gap = `${space}px`;
@@ -288,44 +325,157 @@ export function marquee(target = "[data-rm-marquee]", options = {}) {
       }
     };
     fill();
-    addEventListener("resize", fill);
+    const onResize = () => fill();
+    addEventListener("resize", onResize);
 
-    let offset = dir === -1 ? 0 : -copyWidth;
-    let last = 0;
-    let paused = false;
-
-    if (pauseOnHover) {
-      element.addEventListener("pointerenter", () => { paused = true; });
-      element.addEventListener("pointerleave", () => { paused = false; });
-    }
-
-    // Reduced motion leaves the content in place and scrollable, rather than
-    // an endlessly moving strip that cannot be read.
+    /*
+     * Reduced motion leaves the content in place and scrollable, rather than
+     * an endlessly moving strip that cannot be read.
+     */
     if (prefersReducedMotion()) {
       element.classList.add("is-static");
-      cleanups.push(() => { removeEventListener("resize", fill); element.innerHTML = original; });
+      cleanups.push(() => {
+        removeEventListener("resize", onResize);
+        element.classList.remove("rm-marquee", "is-static");
+        element.innerHTML = original;
+      });
       continue;
     }
 
-    const stopFrame = onFrame((now) => {
-      const delta = last ? (now - last) / 1000 : 0;
-      last = now;
-      if (!paused && copyWidth > 0) {
-        offset += dir * pxPerSecond * delta;
-        // Wrap by exactly one copy, so the seam always lands on identical content.
-        if (offset <= -copyWidth) offset += copyWidth;
-        if (offset >= 0 && dir === 1) offset -= copyWidth;
+    let offset = facing === -1 ? 0 : -copyWidth;
+    let last = 0;
+
+    /*
+     * One velocity, eased.
+     *
+     * Everything that can influence the strip — the resting speed, the page's
+     * scrolling, the pointer resting on it, a finger dragging it — writes to
+     * `wanted`, and the actual velocity chases it. That is what makes it stop
+     * and start like something with weight instead of snapping between
+     * states, and it means the inputs compose instead of fighting.
+     */
+    let velocity = base * facing;
+    let hovering = false;
+
+    // How fast the page itself is moving, in pixels per second.
+    let scrollWas = scrollY;
+    let scrollRate = 0;
+    const onScroll = () => {
+      const now = scrollY;
+      scrollRate = now - scrollWas;
+      scrollWas = now;
+    };
+    addEventListener("scroll", onScroll, { passive: true });
+
+    const onEnter = () => { hovering = true; };
+    const onLeave = () => { hovering = false; };
+    element.addEventListener("pointerenter", onEnter);
+    element.addEventListener("pointerleave", onLeave);
+    element.addEventListener("focusin", onEnter);
+    element.addEventListener("focusout", onLeave);
+
+    /*
+     * Dragging.
+     *
+     * Pointer events rather than mouse and touch separately, and the strip is
+     * released with whatever velocity the hand had, so a flick keeps going.
+     * `touch-action: pan-y` in the stylesheet means a vertical swipe still
+     * scrolls the page — a horizontal strip that eats the page scroll is the
+     * commonest way this component ruins a phone.
+     */
+    let dragging = false;
+    let dragFrom = 0;
+    let dragAt = 0;
+    let flung = 0;
+
+    const onDown = (event) => {
+      if (!drag || event.button > 0) return;
+      dragging = true;
+      dragFrom = event.clientX;
+      dragAt = event.clientX;
+      flung = 0;
+      element.classList.add("is-dragging");
+      element.setPointerCapture?.(event.pointerId);
+    };
+    const onMove = (event) => {
+      if (!dragging) return;
+      const moved = event.clientX - dragAt;
+      dragAt = event.clientX;
+      offset += moved;
+      flung = moved;
+    };
+    const onUp = (event) => {
+      if (!dragging) return;
+      dragging = false;
+      element.classList.remove("is-dragging");
+      element.releasePointerCapture?.(event.pointerId);
+      // A flick hands its speed to the strip; a slow drag hands over nothing.
+      velocity += flung * 18;
+      // A drag that went nowhere was a click, and a click on a link is a link.
+      if (Math.abs(event.clientX - dragFrom) > 6) {
+        const swallow = (click) => { click.preventDefault(); click.stopPropagation(); };
+        element.addEventListener("click", swallow, { capture: true, once: true });
+        setTimeout(() => element.removeEventListener("click", swallow, { capture: true }), 0);
       }
-      track.style.transform = `translate3d(${offset.toFixed(2)}px,0,0)`;
+    };
+
+    if (drag) {
+      element.addEventListener("pointerdown", onDown);
+      element.addEventListener("pointermove", onMove);
+      element.addEventListener("pointerup", onUp);
+      element.addEventListener("pointercancel", onUp);
+    }
+
+    const boost = dataNumber(element, "rmBoost", scrollBoost);
+    const lean = dataNumber(element, "rmLean", skew);
+
+    const stopFrame = onFrame((now) => {
+      const delta = last ? Math.min((now - last) / 1000, 0.05) : 0;
+      last = now;
+      if (copyWidth <= 0) return;
+
+      // The page's own scrolling drives the strip: faster while you move, and
+      // reversed when you go back up, so the two motions read as one system
+      // rather than two things happening at once.
+      const pushed = scrollRate * boost * 60;
+      const heading = scrollFlip && scrollRate !== 0 ? (scrollRate > 0 ? facing : -facing) : facing;
+      const wanted = dragging ? 0 : (base * heading) + (pushed * heading * (heading === facing ? 1 : -1));
+      const target = hovering && !dragging ? wanted * hoverSlow : wanted;
+
+      velocity = lerp(velocity, target, dragging ? 0.4 : 0.06);
+      scrollRate *= 0.86;
+
+      if (!dragging) offset += velocity * delta;
+
+      // Wrap by exactly one copy, so the seam always lands on identical
+      // content — in both directions, because the strip can now reverse.
+      while (offset <= -copyWidth) offset += copyWidth;
+      while (offset > 0) offset -= copyWidth;
+
+      // Skew with the velocity: the strip leans into its own movement and
+      // straightens as it settles. It is a transform, so it costs nothing.
+      const tilt = clamp((velocity / 900) * lean, -6, 6);
+      track.style.transform =
+        `translate3d(${offset.toFixed(2)}px, 0, 0) skewX(${tilt.toFixed(2)}deg)`;
     });
 
     cleanups.push(() => {
       stopFrame();
-      removeEventListener("resize", fill);
-      element.classList.remove("rm-marquee");
+      removeEventListener("resize", onResize);
+      removeEventListener("scroll", onScroll);
+      element.removeEventListener("pointerenter", onEnter);
+      element.removeEventListener("pointerleave", onLeave);
+      element.removeEventListener("focusin", onEnter);
+      element.removeEventListener("focusout", onLeave);
+      element.removeEventListener("pointerdown", onDown);
+      element.removeEventListener("pointermove", onMove);
+      element.removeEventListener("pointerup", onUp);
+      element.removeEventListener("pointercancel", onUp);
+      element.classList.remove("rm-marquee", "is-dragging");
       element.innerHTML = original;
     });
   }
 
   return () => cleanups.forEach((stop) => stop());
 }
+
