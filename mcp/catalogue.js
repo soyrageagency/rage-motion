@@ -590,7 +590,7 @@ export const CATALOGUE = [
       "The offset is zero when the element is centred in the viewport, not at " +
       "page top — which is what stops a layer being visibly displaced the " +
       "moment it appears. Every scroll component shares one read per frame.",
-    example: '<img data-rm-parallax="0.25" src="…" alt="">',
+    example: '<img data-rm-parallax="0.25" src="/plate-01.jpg" alt="Plate one">',
     usage: 'import { parallax } from "@soyrageagency/rage-motion";\nparallax();',
     options: [option("speed", "number", "0.18", "Multiplier. Keep it small.")],
   },
@@ -667,7 +667,7 @@ export const CATALOGUE = [
       "Tied to how far the panel has crossed the viewport rather than to a " +
       "timer, so scrolling back up puts it back. An animation that only plays " +
       "forwards feels broken the moment anyone scrolls the other way.",
-    example: '<div data-rm-flatten><img src="…" alt=""></div>',
+    example: '<div data-rm-flatten><img src="/plate-01.jpg" alt="Plate one"></div>',
     usage: 'import { flatten } from "@soyrageagency/rage-motion";\nflatten();',
     options: [option("angle", "number", "32", "Starting tilt, in degrees.")],
   },
@@ -683,7 +683,7 @@ export const CATALOGUE = [
       "and it degrades to a normal article — no second code path.",
     example:
       "<section data-rm-sticky>\n" +
-      '  <div data-rm-sticky-media><img data-rm-sticky-frame src="…" alt=""></div>\n' +
+      '  <div data-rm-sticky-media><img data-rm-sticky-frame src="/plate-01.jpg" alt="Plate one"></div>\n' +
       "  <div data-rm-sticky-panel>…</div>\n" +
       "</section>",
     usage: 'import { sticky } from "@soyrageagency/rage-motion";\nsticky();',
@@ -712,7 +712,7 @@ export const CATALOGUE = [
     attribute: "data-rm-image-reveal",
     summary: "A curtain wipes away to uncover an image.",
     notes: "The image also scales and settles back, or it reads as a rectangle sliding off a static picture.",
-    example: '<figure data-rm-image-reveal="left"><img src="…" alt=""></figure>',
+    example: '<figure data-rm-image-reveal="left"><img src="/plate-01.jpg" alt="Plate one"></figure>',
     usage: 'import { imageReveal } from "@soyrageagency/rage-motion";\nimageReveal();',
     options: [option("direction", "left | right | up | down", '"left"', "Where the curtain exits.")],
   },
@@ -795,7 +795,7 @@ export const CATALOGUE = [
       "Items sit around a circle in 3D; the ones at the back dim and stay " +
       "behind. Drag has momentum and the arrow keys step one item, so it is " +
       "not a mouse-only toy.",
-    example: '<div data-rm-ring data-rm-radius="380"><img src="…" alt=""></div>',
+    example: '<div data-rm-ring data-rm-radius="380"><img src="/plate-01.jpg" alt="Plate one"></div>',
     usage: 'import { ring } from "@soyrageagency/rage-motion";\nring();',
     options: [option("radius", "number", "340", "How far out the items sit.")],
   },
@@ -837,7 +837,7 @@ export const CATALOGUE = [
       "A canvas erased with `destination-out`, which is the only way to get a " +
       "real brush edge. There is a button underneath for anyone who cannot " +
       "drag — a reveal reachable only by scrubbing is one some people never see.",
-    example: "<div data-rm-scratch><img src=\"…\" alt=\"\"></div>",
+    example: "<div data-rm-scratch><img src=\"/plate-01.jpg\" alt=\"Plate one\"></div>",
     usage: 'import { scratch } from "@soyrageagency/rage-motion";\nscratch();',
     options: [option("threshold", "number", "0.5", "How much must be cleared before the rest fades.")],
   },
@@ -865,7 +865,7 @@ export const CATALOGUE = [
       "Nearly every version of this is pointer-only, which makes it useless on " +
       "a keyboard and invisible to a screen reader. This is a real " +
       '`role="slider"` with arrows, Home and End and an announced value.',
-    example: '<div data-rm-compare><img data-rm-before src="…" alt=""><img data-rm-after src="…" alt=""></div>',
+    example: '<div data-rm-compare><img data-rm-before src="/plate-01.jpg" alt="Plate one"><img data-rm-after src="/plate-01.jpg" alt="Plate one"></div>',
     usage: 'import { compare } from "@soyrageagency/rage-motion";\ncompare();',
     options: [option("start", "number", "50", "Opening position, 0–100.")],
   },
@@ -1940,7 +1940,7 @@ export const CATALOGUE = [
       "Depth is a multiplier rather than a pixel value, so the effect is the " +
       "same on a small card and a large one — a fixed offset looks right on " +
       "exactly one size and wrong on every other.",
-    example: '<article data-rm-layers><img data-rm-depth="0.2" src="…" alt=""><h3 data-rm-depth="0.6">Title</h3></article>',
+    example: '<article data-rm-layers><img data-rm-depth="0.2" src="/plate-01.jpg" alt="Plate one"><h3 data-rm-depth="0.6">Title</h3></article>',
     usage: 'import { layers } from "@soyrageagency/rage-motion";\nlayers();',
     options: [option("travel", "number", "18", "How far the deepest layer moves.")],
   },
@@ -1982,7 +1982,7 @@ export const CATALOGUE = [
     notes:
       "Bound to how far the card has crossed the viewport, so it runs backwards " +
       "on the way up, and it only computes for cards actually on screen.",
-    example: '<article data-rm-card-parallax><img src="…" alt=""></article>',
+    example: '<article data-rm-card-parallax><img src="/plate-01.jpg" alt="Plate one"></article>',
     usage: 'import { cardParallax } from "@soyrageagency/rage-motion";\ncardParallax();',
     options: [option("travel", "number", "28", "How far the media drifts.")],
   },
@@ -1999,7 +1999,7 @@ export const CATALOGUE = [
       "relative to the middle of the grid — measured, not counted, so it stays " +
       "right at every column count. That is what makes it read as a mosaic " +
       "coming together rather than a set of cards fading in.",
-    example: '<div data-rm-mosaic><img src="…" alt=""><img src="…" alt=""></div>',
+    example: '<div data-rm-mosaic><img src="/plate-01.jpg" alt="Plate one"><img src="/plate-01.jpg" alt="Plate one"></div>',
     usage: 'import { mosaic } from "@soyrageagency/rage-motion";\nmosaic();',
     options: [option("travel", "number", "60", "How far the outer tiles start from."), option("stagger", "number", "45", "Between tiles.")],
   },
@@ -2100,7 +2100,7 @@ export const CATALOGUE = [
       "Close cousin of `sticky`, different in one way that matters: the frames " +
       "cross-fade and scale together, so the change reads as a cut in a film " +
       "rather than an image swap. The pinning is still CSS.",
-    example: "<section data-rm-pinned><img data-rm-pinned-frame src=\"…\" alt=\"\"><div data-rm-pinned-chapter>…</div></section>",
+    example: "<section data-rm-pinned><img data-rm-pinned-frame src=\"/plate-01.jpg\" alt=\"Plate one\"><div data-rm-pinned-chapter>…</div></section>",
     usage: 'import { pinnedGallery } from "@soyrageagency/rage-motion";\npinnedGallery();',
     options: [option("line", "number", "0.5", "Where the reading line sits, 0-1.")],
   },
@@ -2746,7 +2746,7 @@ export const CATALOGUE = [
     summary: "Who is in this, and how many more.",
     notes:
       "The overflow count is real text inside the list, so \"and four others\" is something a screen reader says rather than a circle it skips. The avatars fan apart when reached, which is a transform on each rather than a change in the row's width.",
-    example: "<ul data-rm-stacked-avatars><li><img></li></ul>",
+    example: "<ul data-rm-stacked-avatars><li><img src=\"/faces/ana.jpg\" alt=\"Ana Ruiz\"></li></ul>",
     usage: "import { stackedAvatars } from \"@soyrageagency/rage-motion\";\nstackedAvatars();",
     options: [
 
@@ -3714,7 +3714,7 @@ export const CATALOGUE = [
     summary: "A cover that drifts on scroll behind an avatar that barely moves.",
     notes:
       "Two layers on one scroll position at different rates, both driven by transform, which is the whole of what parallax honestly is. The cover is overscaled by exactly the distance it will travel before it moves at all, so no empty strip can appear at its edge — that flickering line is the giveaway of every banner built by transforming an image that fits its frame exactly. The per-frame work goes through the shared rAF loop and only runs while the header is on screen, so scrolling to the bottom of a long profile costs nothing. Under reduced motion no listener is attached at all and both layers sit exactly where they belong, fully visible.",
-    example: "<header data-rm-profile-header data-rm-name=\"Nora Vale\" data-rm-depth=\"56\">\n  <img data-rm-header-cover src=\"/covers/river.jpg\" alt=\"\">\n  <span data-rm-avatar=\"/faces/nora.jpg\" data-rm-name=\"Nora Vale\"></span>\n</header>",
+    example: "<header data-rm-profile-header data-rm-name=\"Nora Vale\" data-rm-depth=\"56\">\n  <img data-rm-header-cover src=\"/covers/river.jpg\" alt=\"Plate one\">\n  <span data-rm-avatar=\"/faces/nora.jpg\" data-rm-name=\"Nora Vale\"></span>\n</header>",
     usage: "import { profileHeader } from \"@soyrageagency/rage-motion\";\nprofileHeader();",
     options: [
       option("cover", "string", "\"[data-rm-header-cover]\"", "Selector for the image behind everything."),
@@ -3882,7 +3882,7 @@ export const CATALOGUE = [
     summary: "A cover image with depth and no edge ever exposed.",
     notes:
       "The image is scaled by precisely the distance it is going to travel before it moves at all, which is the whole trick — a cover transformed at its natural size slides a strip of background in at one edge, and every parallax banner that flashes a pale line as you scroll past it has skipped this arithmetic. There is no scroll listener: the box is read once per frame inside the shared rAF loop, and that loop only runs while the frame is on screen and the tab is in front, so a page of covers does not burn a battery in the background. The write is a single translate3d, so the browser composites it without touching layout. Under reduced motion nothing is attached at all and the cover sits still and fully visible, which is the finished state rather than a suppressed one.",
-    example: "<div data-rm-cover data-rm-depth=\"60\"><img src=\"/covers/river.jpg\" alt=\"\"></div>",
+    example: "<div data-rm-cover data-rm-depth=\"60\"><img src=\"/covers/river.jpg\" alt=\"Plate one\"></div>",
     usage: "import { coverParallax } from \"@soyrageagency/rage-motion\";\ncoverParallax();",
     options: [
       option("image", "string", "\"img\"", "Selector for the image inside the frame."),
@@ -3970,7 +3970,7 @@ export const CATALOGUE = [
     summary: "Focus pulled into sharpness as an image arrives on screen.",
     notes:
       "A filter on the element itself, ending at zero blur. Two things usually go wrong: reaching for backdrop-filter, which blurs everything painted behind the element and costs far more than blurring the element alone, and applying it to text, which is unreadable rather than atmospheric — so this is meant for media and the radius is capped where it stays cheap. Below a twentieth of a pixel the filter is dropped entirely rather than left at zero, because a filter that is doing nothing still keeps the element on its own compositing layer for the rest of the session. Remember that a filtered element becomes a containing block for fixed descendants, so nothing sticky should live inside one.",
-    example: "<img data-rm-scroll-blur data-rm-blur=\"14\" src=\"…\" alt=\"…\">",
+    example: "<img data-rm-scroll-blur data-rm-blur=\"14\" src=\"/plate-01.jpg\" alt=\"…\">",
     usage: "import { scrollBlur } from \"@soyrageagency/rage-motion\";\nscrollBlur();",
     options: [
       option("blur", "number", "12", "Blur radius in pixels at the start, capped at 40 (data-rm-blur)."),
@@ -4036,7 +4036,7 @@ export const CATALOGUE = [
     summary: "Several layers drifting at different rates from a single scroll measurement.",
     notes:
       "The whole point is the arithmetic: one getBoundingClientRect on the frame per frame, then a transform written to each child at its own rate. The version that goes wrong gives every layer its own scroll listener and its own measurement, so six layers mean six forced layouts inside a handler that fires more often than the screen refreshes — the classic parallax page that scrolls at fifteen frames a second. Rates default to the child's index so a stack works with no configuration at all, and data-rm-rate on any layer overrides it. Progress is measured from the middle of the pass rather than the start, so every layer is at rest when the frame is centred and the drift is symmetric either side; that is also the state reduced motion draws, since jumping to the end of the pass would leave the stack visibly offset.",
-    example: "<div data-rm-scroll-depth data-rm-travel=\"120\"><img data-rm-rate=\"0.2\" src=\"…\" alt=\"\"><img data-rm-rate=\"0.7\" src=\"…\" alt=\"\"></div>",
+    example: "<div data-rm-scroll-depth data-rm-travel=\"120\"><img data-rm-rate=\"0.2\" src=\"/plate-01.jpg\" alt=\"Plate one\"><img data-rm-rate=\"0.7\" src=\"/plate-01.jpg\" alt=\"Plate one\"></div>",
     usage: "import { depthLayers } from \"@soyrageagency/rage-motion\";\ndepthLayers();",
     options: [
       option("travel", "number", "90", "Pixels either side of rest that a layer at rate 1 drifts, so 90 is 180px of travel across the whole pass (data-rm-travel)."),
@@ -4133,7 +4133,7 @@ export const CATALOGUE = [
     summary: "A pinned figure that settles out of an over-scale as the section passes.",
     notes:
       "The section is tall, the frame inside it is sticky, and the artwork starts larger than its frame and comes to rest at its natural size. Ending at scale 1 rather than zoomed in matters more than it sounds: the last frame of the effect is the state a visitor sits and looks at, and it should be the composition the designer actually chose rather than an arbitrary crop of it. The pin is position: sticky, so the page is never hijacked and there is no placeholder to keep in sync — maintaining that placeholder is most of the code in a position: fixed implementation and it is what always breaks on a resize or an orientation change. One rect read per frame drives the scale, and reduced motion draws the settled frame at mount.",
-    example: "<section data-rm-scroll-zoom data-rm-from=\"1.4\"><div><img src=\"…\" alt=\"…\"></div></section>",
+    example: "<section data-rm-scroll-zoom data-rm-from=\"1.4\"><div><img src=\"/plate-01.jpg\" alt=\"…\"></div></section>",
     usage: "import { scrollZoomPin } from \"@soyrageagency/rage-motion\";\nscrollZoomPin();",
     options: [
       option("from", "number", "1.35", "Scale at the start of the pin, never below 1 (data-rm-from)."),
@@ -4790,7 +4790,7 @@ export const CATALOGUE = [
     summary: "A horizontal rail of recent products that scrolls itself and nothing else.",
     notes:
       "Tabbing to a card off the right-hand edge has to bring it into view, and scrollIntoView does that by scrolling every scrollable ancestor including the page — so focusing a thumbnail throws the whole document to wherever the rail happens to be. keepInView does the arithmetic on the one box that should move, which is the difference between a rail that behaves and a page that jumps under the visitor. The arrow buttons are real buttons with real labels, and their disabled state and the edge fades are read from scrollLeft on the shared frame loop inside whileVisible, so a rail below the fold costs nothing at all. The fades are a mask whose length is a 0/1 flag rather than an overlay element, because an overlay sits on top of the links and eats their clicks.",
-    example: "<ul data-rm-recently-viewed data-rm-label=\"Recently viewed\">\n  <li><a href=\"#\"><img src=\"/demo-1.jpg\" alt=\"\"> Invented Mug</a></li>\n  <li><a href=\"#\"><img src=\"/demo-2.jpg\" alt=\"\"> Very Loud Tote</a></li>\n</ul>",
+    example: "<ul data-rm-recently-viewed data-rm-label=\"Recently viewed\">\n  <li><a href=\"#\"><img src=\"/demo-1.jpg\" alt=\"Plate one\"> Invented Mug</a></li>\n  <li><a href=\"#\"><img src=\"/demo-2.jpg\" alt=\"Plate one\"> Very Loud Tote</a></li>\n</ul>",
     usage: "import { recentlyViewed } from \"@soyrageagency/rage-motion\";\nrecentlyViewed();",
     options: [
       option("label", "string", "\"Recently viewed\"", "Names the region. data-rm-label."),

@@ -112,3 +112,33 @@ test("the counts the README claims are the counts that exist", () => {
     `the component section does not say ${CATALOGUE.length}`,
   );
 });
+
+test("every image in an example has a source and a description", () => {
+  /*
+   * The generic HTML scanner cannot read this file — it is a JavaScript module
+   * of documentation strings, and it flags the prose as markup: a note
+   * explaining that a component deliberately does *not* animate height reads,
+   * to a regex, exactly like one that does. So that scanner is switched off for
+   * this file and the check it was doing lives here instead, where it can tell
+   * an example from a sentence about one.
+   *
+   * It matters because an example is what an assistant copies into somebody's
+   * page. A bare <img> there ships as a broken-image box, and alt="" tells a
+   * screen reader that a gallery photograph is decoration.
+   */
+  const bad = [];
+  for (const component of CATALOGUE) {
+    for (const [tag] of component.example.matchAll(/<img\b[^>]*>/g)) {
+      if (!/\bsrc="[^"]+"/.test(tag)) bad.push(`${component.name}: no src — ${tag}`);
+      else if (!/\balt="[^"]+"/.test(tag)) bad.push(`${component.name}: no alt text — ${tag}`);
+    }
+  }
+  assert.deepEqual(bad, [], `images in examples:\n  ${bad.join("\n  ")}`);
+});
+
+test("an example is markup, and the JavaScript lives in usage", () => {
+  // A <script> inside an example refers to variables the snippet never
+  // declares, so copying it pastes code that throws on its first line.
+  const scripted = CATALOGUE.filter((c) => /<script[\s>]/.test(c.example)).map((c) => c.name);
+  assert.deepEqual(scripted, [], `examples containing a script: ${scripted.join(", ")}`);
+});
