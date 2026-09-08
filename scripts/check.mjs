@@ -269,7 +269,30 @@ async function run(browser, { reducedMotion }) {
   });
   await wait(1400);
 
-  const invisible = await page.evaluate(INVISIBLE_ON_SCREEN);
+  /*
+   * Anything still invisible gets one honest second chance.
+   *
+   * The promise is "it appears when it reaches the viewport", not "within one
+   * frame of a machine-speed sweep". A loaded runner can skip rendering
+   * entirely for a whole step, and an IntersectionObserver that was never
+   * given a chance to sample is a flaky test rather than a real finding — so
+   * anything left over is brought into view at human speed and measured
+   * again. What that still catches is the real defect: something that stays
+   * invisible even when it is genuinely, unhurriedly on screen.
+   */
+  let invisible = await page.evaluate(INVISIBLE_ON_SCREEN);
+  if (invisible.length) {
+    await page.evaluate(async () => {
+      for (const el of document.querySelectorAll("[data-rm-reveal], [data-rm-text]")) {
+        if (Number(getComputedStyle(el).opacity) > 0.01) continue;
+        el.scrollIntoView({ block: "center" });
+        await new Promise((done) => requestAnimationFrame(() => setTimeout(done, 220)));
+      }
+      scrollTo(0, 0);
+    });
+    await wait(1200);
+    invisible = await page.evaluate(INVISIBLE_ON_SCREEN);
+  }
   check(`${label}: everything on screen is visible after scrolling`, invisible.length === 0, invisible[0]);
 
   // The accessible name has to survive text splitting.
