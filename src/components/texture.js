@@ -64,7 +64,7 @@ export function rings(target = "[data-rm-rings]", options = {}) {
   for (const element of elements) {
     const still = prefersReducedMotion();
     const layer = layerFor(element, "rm-rings", still);
-    const many = clamp(dataNumber(element, "rmCount", count), 1, 8);
+    const many = clamp(dataNumber(element, "rmRings", count), 1, 8);
     const beat = dataNumber(element, "rmSpeed", speed);
 
     layer.style.setProperty("--rm-rings-size", `${dataNumber(element, "rmSize", size)}px`);

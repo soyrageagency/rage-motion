@@ -53,6 +53,12 @@ export {
   circleNav, curtainNav, hoverSpread, breadcrumbs, treeNav, splitNav, stackNav, dotNav,
 } from "./components/menus.js";
 export {
+  INPUT_LOOKS, inputKit, searchField, tagsField, selectField, clearable, maskField, inlineEdit,
+} from "./components/inputs.js";
+export {
+  cartoonCursor, blobCursor, trailCursor, sayCursor, spotlightCursor, arrowCursor, lensCursor,
+} from "./components/cursors.js";
+export {
   rings, hexGrid, plusGrid, diagonals, topography, circuit, vignette, halftone,
 } from "./components/texture.js";
 export {
@@ -100,6 +106,9 @@ import { sparkline, bars, donut, gauge, stat, stars } from "./components/data.js
 import {
   circleNav, curtainNav, hoverSpread, breadcrumbs, treeNav, splitNav, stackNav, dotNav,
 } from "./components/menus.js";
+import {
+  inputKit, searchField, tagsField, selectField, clearable, maskField, inlineEdit,
+} from "./components/inputs.js";
 import {
   rings, hexGrid, plusGrid, diagonals, topography, circuit, vignette, halftone,
 } from "./components/texture.js";
@@ -242,6 +251,14 @@ export function init(options = {}) {
     gauge("[data-rm-gauge]", options.gauge),
     stat("[data-rm-stat]", options.stat),
     stars("[data-rm-rating]", options.stars),
+
+    inputKit("[data-rm-input]", options.inputKit),
+    searchField("[data-rm-search]", options.searchField),
+    tagsField("[data-rm-tags]", options.tagsField),
+    selectField("[data-rm-select]", options.selectField),
+    clearable("[data-rm-clearable]", options.clearable),
+    maskField("[data-rm-mask]", options.maskField),
+    inlineEdit("[data-rm-inline-edit]", options.inlineEdit),
 
     circleNav("[data-rm-circle-nav]", options.circleNav),
     curtainNav("[data-rm-curtain-nav]", options.curtainNav),

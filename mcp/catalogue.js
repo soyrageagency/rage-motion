@@ -74,6 +74,8 @@ const CHROME = "src/components/chrome.js";
 const DECOR = "src/components/decor.js";
 const TRANSITIONS = "src/components/transitions.js";
 const MENUS = "src/components/menus.js";
+const INPUTS = "src/components/inputs.js";
+const CURSORS2 = "src/components/cursors.js";
 const TEXTURE = "src/components/texture.js";
 
 const option = (name, type, dflt, about) => ({ name, type, default: dflt, about });
@@ -2526,7 +2528,286 @@ export const CATALOGUE = [
       "CSS on top of that, not instead of it.",
     example: "<fieldset data-rm-rating><legend>Rating</legend></fieldset>",
     usage: 'import { stars } from "@soyrageagency/rage-motion";\nstars();',
-    options: [option("count", "number", "5", "Clamped to 10.")],
+    options: [option("out-of", "number", "5", "Clamped to 10.")],
+  },
+
+  // ── Playful cursors ──────────────────────────────────────────────────────
+  {
+    name: "cartoonCursor",
+    category: "cursor",
+    file: CURSORS2,
+    attribute: null,
+    summary: "A gloved cartoon hand that points, grabs and squashes.",
+    notes:
+      "Drawn once as SVG and then only ever transformed: it leans into the " +
+      "direction of travel, squashes and stretches along that direction when " +
+      "it moves fast, and curls into a fist while the button is down. Squash " +
+      "and stretch is the oldest trick in hand-drawn animation and here it is " +
+      "two scales and a rotation, which costs nothing. Like every cursor in " +
+      "the kit it leaves touch devices alone and only takes the real pointer " +
+      "away once the hand is on screen and moving.",
+    example: 'import { cartoonCursor } from "@soyrageagency/rage-motion";\ncartoonCursor();',
+    usage: 'import { cartoonCursor } from "@soyrageagency/rage-motion";\ncartoonCursor({ size: 42 });',
+    options: [
+      option("size", "number", "42", "How big the hand is, in pixels."),
+      option("ease", "number", "0.24", "How closely it follows; lower lags more."),
+      option("squash", "number", "0.3", "How much it deforms at speed."),
+    ],
+  },
+  {
+    name: "blobCursor",
+    category: "cursor",
+    file: CURSORS2,
+    attribute: null,
+    summary: "A blob that lags, stretches along its velocity and settles.",
+    notes:
+      "The stretch is computed from how far the blob itself moved this frame " +
+      "rather than from the pointer's speed, so it eases out on its own after " +
+      "the hand stops — the shape is the physics rather than an imitation of " +
+      "it. It is one element with `mix-blend-mode: difference`, so it stays " +
+      "legible over any colour without knowing what is underneath.",
+    example: 'import { blobCursor } from "@soyrageagency/rage-motion";\nblobCursor();',
+    usage: 'import { blobCursor } from "@soyrageagency/rage-motion";\nblobCursor({ size: 34 });',
+    options: [
+      option("size", "number", "34", "Diameter at rest, in pixels."),
+      option("ease", "number", "0.15", "How closely it follows."),
+      option("stretch", "number", "0.55", "How far it deforms at speed."),
+    ],
+  },
+  {
+    name: "trailCursor",
+    category: "cursor",
+    file: CURSORS2,
+    attribute: null,
+    summary: "A comet of dots, each chasing the one in front.",
+    notes:
+      "A chain rather than a history buffer: the first dot follows the " +
+      "pointer, the second follows the first, and so on. That is a handful of " +
+      "numbers a frame instead of a queue of past positions, and it keeps its " +
+      "shape at any frame rate — a recorded trail bunches up the moment a " +
+      "frame is dropped. The real cursor is kept, because the trail is an " +
+      "ornament beside it rather than a replacement for it.",
+    example: 'import { trailCursor } from "@soyrageagency/rage-motion";\ntrailCursor();',
+    usage: 'import { trailCursor } from "@soyrageagency/rage-motion";\ntrailCursor({ count: 8 });',
+    options: [
+      option("count", "number", "8", "Clamped to 2–24."),
+      option("size", "number", "14", "The leading dot; the rest taper."),
+      option("ease", "number", "0.32", "How tightly each link follows."),
+    ],
+  },
+  {
+    name: "sayCursor",
+    category: "cursor",
+    file: CURSORS2,
+    attribute: "data-rm-say",
+    summary: "The cursor becomes a word over anything that has one.",
+    notes:
+      "A pill reading \"drag\", \"play\", \"open\" — whatever the element says in " +
+      "data-rm-say. The word is read from the markup rather than configured " +
+      "in a script, and the element keeps whatever accessible name it already " +
+      "had: this is a flourish for people using a pointer, never the only " +
+      "place an affordance is stated. The real cursor stays.",
+    example: '<figure data-rm-say="drag">…</figure>',
+    usage: 'import { sayCursor } from "@soyrageagency/rage-motion";\nsayCursor();',
+    options: [
+      option("attribute", "string", '"data-rm-say"', "Where the word is read from."),
+      option("ease", "number", "0.2", "How closely the pill follows."),
+    ],
+  },
+  {
+    name: "spotlightCursor",
+    category: "cursor",
+    file: CURSORS2,
+    attribute: null,
+    summary: "The page dims except where you are pointing.",
+    notes:
+      "One fixed layer with a radial-gradient mask following two custom " +
+      "properties, so the whole effect is two numbers a frame over a single " +
+      "composited layer — no canvas, and no hole punched by redrawing " +
+      "anything. It never reaches full opacity, because a spotlight that hides " +
+      "the page is a page nobody can read while they hunt for the switch.",
+    example: 'import { spotlightCursor } from "@soyrageagency/rage-motion";\nspotlightCursor();',
+    usage: 'import { spotlightCursor } from "@soyrageagency/rage-motion";\nspotlightCursor({ radius: 190 });',
+    options: [
+      option("radius", "number", "190", "The lit circle, in pixels."),
+      option("dim", "number", "0.62", "Darkness outside it, capped at 0.85."),
+    ],
+  },
+  {
+    name: "arrowCursor",
+    category: "cursor",
+    file: CURSORS2,
+    attribute: null,
+    summary: "A sharp arrow that points the way you are moving.",
+    notes:
+      "The heading is smoothed across frames and held below a minimum speed, " +
+      "because a raw angle from a nearly-still pointer is noise and the arrow " +
+      "spins. It also turns the short way round, so it never unwinds through " +
+      "350 degrees to travel ten. Those two details are the difference between " +
+      "an arrow that feels deliberate and one that looks nervous.",
+    example: 'import { arrowCursor } from "@soyrageagency/rage-motion";\narrowCursor();',
+    usage: 'import { arrowCursor } from "@soyrageagency/rage-motion";\narrowCursor({ size: 26 });',
+    options: [
+      option("size", "number", "26", "The arrow, in pixels."),
+      option("turn", "number", "0.2", "How quickly the heading catches up."),
+    ],
+  },
+  {
+    name: "lensCursor",
+    category: "cursor",
+    file: CURSORS2,
+    attribute: null,
+    summary: "A circle that magnifies whatever is under it.",
+    notes:
+      "backdrop-filter over the real page, so it magnifies live text and live " +
+      "video rather than a second copy — there is no duplicate DOM to keep in " +
+      "sync and nothing to go stale. The zoom is modest on purpose: a lens " +
+      "that magnifies heavily has to be placed precisely, and a lens attached " +
+      "to the pointer never can be.",
+    example: 'import { lensCursor } from "@soyrageagency/rage-motion";\nlensCursor();',
+    usage: 'import { lensCursor } from "@soyrageagency/rage-motion";\nlensCursor({ zoom: 1.35 });',
+    options: [
+      option("size", "number", "120", "The lens, in pixels."),
+      option("zoom", "number", "1.35", "Clamped to 1–2."),
+    ],
+  },
+
+  // ── Text boxes ───────────────────────────────────────────────────────────
+  {
+    name: "inputKit",
+    category: "form",
+    file: INPUTS,
+    attribute: "data-rm-input",
+    summary: "Twenty-four named looks for a text field.",
+    notes:
+      "One component with a named look rather than twenty-four components, so " +
+      "they share their guarantees. None replaces the control, intercepts a " +
+      "keystroke or rewrites a value, which is why autofill, paste, undo, " +
+      "spellcheck, a password manager and the native validation bubble all " +
+      "still work — most of what a text box is for. Every look moves a colour, " +
+      "a shadow, a transform or a clip-path; none animates padding, width or " +
+      "font size, so a field cannot reflow the text being typed into it or " +
+      "shove the rest of the form around. All of them answer :focus-within as " +
+      "well as :hover.\n\n" +
+      "The looks: outline · underline · filled · soft · glass · inset · " +
+      "brutal · notch · bracket · terminal · glow · gradient · dashed · lift · " +
+      "slot · pill · sweep · corner · shadow · ghost · stamp · rail · frame · " +
+      "caret. Import INPUT_LOOKS for the list.",
+    example: '<label data-rm-input="terminal"><span>Command</span><input></label>',
+    usage:
+      'import { inputKit, INPUT_LOOKS } from "@soyrageagency/rage-motion";\n' +
+      "inputKit();",
+    options: [option("look", "string", '"outline"', "The look when the markup does not name one.")],
+  },
+  {
+    name: "searchField",
+    category: "form",
+    file: INPUTS,
+    attribute: "data-rm-search",
+    summary: "A search that opens out of its own icon.",
+    notes:
+      "The field is always present at its full width; what moves is a " +
+      "clip-path over it and a transform on the icon. So the header never " +
+      "reflows when the search opens, nothing beside it jumps, and the input " +
+      "can be typed into the instant it is reachable rather than after a width " +
+      "transition finishes. It stays open while it holds a value — closing a " +
+      "search that found something throws away the visitor's work — and Escape " +
+      "clears it and closes it. Shut, the field leaves the tab order.",
+    example: "<form data-rm-search><button type=\"button\">Search</button><input></form>",
+    usage: 'import { searchField } from "@soyrageagency/rage-motion";\nsearchField();',
+    options: [option("label", "string", '"Search"', "The accessible name for both parts.")],
+  },
+  {
+    name: "tagsField",
+    category: "form",
+    file: INPUTS,
+    attribute: "data-rm-tags",
+    summary: "Chips you can add and remove from the keyboard.",
+    notes:
+      "Enter or a comma commits, Backspace in an empty field removes the last " +
+      "chip, and every chip has a real remove button. The chips are not " +
+      "decoration around a hidden value: they are kept in sync with a real " +
+      "hidden input, so the form submits what is on the screen. Additions and " +
+      "removals go through a polite live region — a tag that only appears " +
+      "visually is a tag some of your visitors just lost. Anything already in " +
+      "the field at load becomes chips, so a server-filled form works.",
+    example: '<div data-rm-tags data-rm-name="topics"><input></div>',
+    usage: 'import { tagsField } from "@soyrageagency/rage-motion";\ntagsField();',
+    options: [
+      option("name", "string", '"tags"', "The name the hidden input submits under."),
+      option("separator", "string", '","', "Commits a chip, and joins the value."),
+      option("max", "number", "12", "How many chips are allowed."),
+    ],
+  },
+  {
+    name: "selectField",
+    category: "form",
+    file: INPUTS,
+    attribute: "data-rm-select",
+    summary: "A listbox drawn over a real select.",
+    notes:
+      "The select stays, keeps the value and submits with the form; what is " +
+      "drawn is a face showing the current option. Clicking it opens the " +
+      "native menu, so a phone gets its own wheel and a screen reader gets the " +
+      "control it already knows — the drawn part is only ever the part you " +
+      "could safely lose. This is the opposite of the usual custom select, " +
+      "which reimplements the whole thing in divs and then spends a thousand " +
+      "lines failing to be a select.",
+    example: "<label data-rm-select><span>Plan</span><select><option>Studio</option></select></label>",
+    usage: 'import { selectField } from "@soyrageagency/rage-motion";\nselectField();',
+    options: [option("placeholder", "string", '"Choose"', "Shown until something is chosen.")],
+  },
+  {
+    name: "clearable",
+    category: "form",
+    file: INPUTS,
+    attribute: "data-rm-clearable",
+    summary: "A clear button that is there only when it can do something.",
+    notes:
+      "It appears when the field has a value and goes when it does not, so it " +
+      "never offers to undo nothing, and it leaves the tab order while it is " +
+      "hidden. Clearing dispatches input and change, because a programmatic " +
+      "change fires neither and everything else watching the field — a " +
+      "counter, a validator, a filter — is waiting for them. The button is " +
+      "type=\"button\", which is the whole bug in most hand-rolled versions: " +
+      "inside a form, a button without a type submits it.",
+    example: "<div data-rm-clearable><input></div>",
+    usage: 'import { clearable } from "@soyrageagency/rage-motion";\nclearable();',
+    options: [option("label", "string", '"Clear"', "The button's accessible name.")],
+  },
+  {
+    name: "maskField",
+    category: "form",
+    file: INPUTS,
+    attribute: "data-rm-mask",
+    summary: "Formatting that does not fight the caret.",
+    notes:
+      "Grouped numbers are far easier to check, and every naive version makes " +
+      "them impossible to edit: it rewrites the value and the caret jumps to " +
+      "the end, so correcting the second digit of a card number means retyping " +
+      "the rest. This counts the real characters before the caret, reformats, " +
+      "then puts the caret back after that many real characters — so typing in " +
+      "the middle, deleting in the middle and pasting all keep their place.",
+    example: '<input data-rm-mask="#### #### #### ####" inputmode="numeric">',
+    usage: 'import { maskField } from "@soyrageagency/rage-motion";\nmaskField();',
+    options: [option("pattern", "string", '"#### #### #### ####"', "# is a character slot; anything else is literal.")],
+  },
+  {
+    name: "inlineEdit",
+    category: "form",
+    file: INPUTS,
+    attribute: "data-rm-inline-edit",
+    summary: "Text that becomes a field where it stands.",
+    notes:
+      "The field takes the text's own typeface and box, so nothing moves when " +
+      "editing begins — the word you clicked stays exactly where you clicked " +
+      "it, which is the entire point of editing in place and the thing the " +
+      "differently-sized-input version loses. Enter commits, Escape restores, " +
+      "blur commits. What starts it is a real button, so it is reachable and " +
+      "announced rather than being a div waiting for a click.",
+    example: "<div data-rm-inline-edit><button>Untitled project</button></div>",
+    usage: 'import { inlineEdit } from "@soyrageagency/rage-motion";\ninlineEdit();',
+    options: [option("label", "string", '"Edit"', "Prefixes the accessible name.")],
   },
 
   // ── Menu shapes ──────────────────────────────────────────────────────────
@@ -2732,10 +3013,10 @@ export const CATALOGUE = [
       "keyframes, and the field is full on the first frame instead of filling " +
       "up. They scale rather than change radius, which keeps the whole thing " +
       "on the compositor; animating width would repaint the parent every frame.",
-    example: '<section data-rm-rings data-rm-count="4">…</section>',
+    example: '<section data-rm-rings="4">…</section>',
     usage: 'import { rings } from "@soyrageagency/rage-motion";\nrings();',
     options: [
-      option("count", "number", "4", "Clamped to 8."),
+      option("rings", "number", "4", "Clamped to 8."),
       option("size", "number", "220", "The full radius, in pixels."),
       option("speed", "number", "4200", "One ring's whole journey, in ms."),
       option("color", "string", '"rgba(42,167,228,0.30)"', "The ring stroke."),

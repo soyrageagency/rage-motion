@@ -129,7 +129,7 @@ export function panels(target = "[data-rm-panels]", options = {}) {
     if (!items.length) continue;
 
     container.classList.add("rm-panels");
-    container.style.setProperty("--rm-panels-grow", String(dataNumber(container, "rmGrow", grow)));
+    container.style.setProperty("--rm-panels-grow", String(dataNumber(container, "rmPanels", grow)));
     container.style.setProperty("--rm-panels-duration", `${prefersReducedMotion() ? 0 : duration}ms`);
     items.forEach((item) => item.classList.add("rm-panel"));
 
@@ -238,7 +238,7 @@ export function orbit(target = "[data-rm-orbit]", options = {}) {
     container.classList.add("rm-orbit");
     container.style.setProperty("--rm-orbit-radius", `${r}px`);
     container.style.setProperty("--rm-orbit-duration", `${span}ms`);
-    container.style.setProperty("--rm-orbit-tilt", `${dataNumber(container, "rmTilt", tilt)}deg`);
+    container.style.setProperty("--rm-orbit-tilt", `${dataNumber(container, "rmLean", tilt)}deg`);
     if (backwards) container.classList.add("is-reverse");
     if (prefersReducedMotion()) container.classList.add("is-still");
 

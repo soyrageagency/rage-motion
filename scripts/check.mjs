@@ -184,6 +184,13 @@ async function run(browser, { reducedMotion }) {
     circuitPulses: document.querySelectorAll(".rm-circuit-pulse").length,
     contours: document.querySelectorAll(".rm-topography path").length,
     textureLayers: document.querySelectorAll(".rm-plus, .rm-diagonals, .rm-vignette, .rm-halftone").length,
+    inputLooks: document.querySelectorAll(".input-cell.rm-input").length,
+    inputRules: document.querySelectorAll(".rm-input-rule").length,
+    inputCorners: document.querySelectorAll(".rm-input-corner").length,
+    tagChips: document.querySelectorAll(".rm-tags-tag").length,
+    selectFace: document.querySelectorAll(".rm-select-face").length,
+    clearDrop: document.querySelectorAll(".rm-clearable-drop").length,
+    maskValue: document.querySelector("[data-rm-mask]")?.value ?? "",
   }));
 
   check(`${label}: text was split`, started.split > 0, JSON.stringify(started));
@@ -225,6 +232,13 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: the circuit has a pulse per trace`, started.circuitPulses === 5, String(started.circuitPulses));
   check(`${label}: the contour map drew its lines`, started.contours === 8, String(started.contours));
   check(`${label}: the painted textures all mounted`, started.textureLayers === 4, String(started.textureLayers));
+  check(`${label}: all 24 field looks are on the page`, started.inputLooks === 24, String(started.inputLooks));
+  check(`${label}: the looks that need a rule got one`, started.inputRules === 3, String(started.inputRules));
+  check(`${label}: the bracketed looks got four corners each`, started.inputCorners === 8, String(started.inputCorners));
+  check(`${label}: the tags field turned its value into chips`, started.tagChips === 2, String(started.tagChips));
+  check(`${label}: the select kept a real select under its face`, started.selectFace === 1, String(started.selectFace));
+  check(`${label}: the clear button is there`, started.clearDrop === 1, String(started.clearDrop));
+  check(`${label}: the card number is grouped`, started.maskValue === "4242 4242 4242 4242", started.maskValue);
   check(`${label}: five scrollbars styled, plus the page`, started.scrollbars === 6, String(started.scrollbars));
   check(`${label}: the dropdown is a real menu`, started.dropdown === 1, String(started.dropdown));
   check(`${label}: the tooltip is announced`, started.tooltip === 1, String(started.tooltip));

@@ -113,6 +113,23 @@ export function autoGrow(target = "[data-rm-grow]", options = {}) {
     wrapper.classList.add("rm-grow");
     field.classList.add("rm-grow-field");
 
+    /*
+     * The mirror has to have the field's box, not the other way round.
+     *
+     * Forcing `padding: inherit; border: inherit` onto the field is the usual
+     * shortcut and it silently destroys whatever the page styled the textarea
+     * with — the padding, the border, the rounded corner, all gone, with the
+     * text landing hard against the edge. So the field keeps its own styling
+     * and the mirror is told to match it.
+     */
+    const matchBox = () => {
+      const box = getComputedStyle(field);
+      wrapper.style.setProperty("--rm-grow-pad", box.padding);
+      wrapper.style.setProperty("--rm-grow-border", box.borderWidth);
+      wrapper.style.setProperty("--rm-grow-leading", box.lineHeight);
+    };
+    matchBox();
+
     const sync = () => {
       // The trailing space keeps the mirror a line tall while the last line is
       // still being typed, so the box does not bounce on every word wrap.
@@ -124,6 +141,9 @@ export function autoGrow(target = "[data-rm-grow]", options = {}) {
     cleanups.push(() => {
       field.removeEventListener("input", sync);
       delete wrapper.dataset.rmGrowValue;
+      wrapper.style.removeProperty("--rm-grow-pad");
+      wrapper.style.removeProperty("--rm-grow-border");
+      wrapper.style.removeProperty("--rm-grow-leading");
       field.classList.remove("rm-grow-field");
       wrapper.classList.remove("rm-grow");
     });

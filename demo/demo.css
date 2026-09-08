@@ -49,11 +49,74 @@ img { display: block; max-width: 100%; }
 
 .shell { width: min(var(--shell), calc(100% - 40px)); margin-inline: auto; }
 
+/*
+ * Entrances that arrive from the side are transforms, and a transform still
+ * counts toward the scrollable area even though it changes no layout. On a
+ * wide screen there is room to absorb it; on a phone it is the difference
+ * between a page that sits still and one that slides under your thumb. This is
+ * a decision about the page rather than a patch on the components, which is
+ * why it lives here and not in the library.
+ */
+main { overflow-x: clip; }
+
 /* ── Type scale ──────────────────────────────────────────────────────── */
+
+/*
+ * Section marks.
+ *
+ * The number is the display face at a size you can read across the room, the
+ * name beside it is a sentence rather than a category, and a hairline carries
+ * the eye to the right. Monospace is kept for what monospace is for — code and
+ * attribute names — and stays out of the headings.
+ */
+.section-mark {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 22px;
+  font-family: var(--rm-display);
+  font-size: clamp(14px, 1.7vw, 17px);
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.section-mark em {
+  flex: none;
+  font-style: normal;
+  font-family: var(--rm-display);
+  font-size: clamp(30px, 5.4vw, 46px);
+  line-height: 0.78;
+  letter-spacing: -0.05em;
+  color: var(--accent);
+}
+.section-mark::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+.pair-mark {
+  margin: 0 0 12px;
+  font-family: var(--rm-display);
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--dim);
+}
+.pair-mark.is-on { color: var(--accent); }
+
+.hero-readout {
+  margin: 0 0 18px;
+  font-family: var(--rm-display);
+  font-size: clamp(13px, 1.5vw, 15px);
+  letter-spacing: 0.01em;
+  color: var(--dim);
+  /* The scramble changes every glyph; tabular figures keep it from jittering. */
+  font-variant-numeric: tabular-nums;
+}
 
 .mono-label {
   margin: 0 0 18px;
-  font-family: var(--rm-mono);
+  font-family: var(--rm-display);
   font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -152,7 +215,7 @@ code { font-size: 0.9em; }
 .big code { font-size: 13.5px; }
 
 .mono-hint {
-  font-family: var(--rm-mono);
+  font-family: var(--rm-display);
   font-size: 10.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -219,12 +282,11 @@ code { font-size: 0.9em; }
 .index-family { break-inside: avoid; margin-bottom: 28px; }
 .index-family h3 {
   margin: 0 0 12px;
-  font-family: var(--rm-mono);
-  font-size: 11.5px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-family: var(--rm-display);
+  font-size: 14px;
+  letter-spacing: -0.01em;
   color: var(--accent);
-  font-weight: 500;
+  font-weight: 600;
 }
 .index-family h3:not(:first-child) { margin-top: 26px; }
 .index-family ul { margin: 0; padding: 0; list-style: none; }
@@ -248,11 +310,10 @@ code { font-size: 0.9em; }
   margin: clamp(40px, 5vw, 64px) auto 18px;
 }
 .rail-name {
-  font-family: var(--rm-mono);
-  font-size: 11.5px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--dim);
+  font-family: var(--rm-display);
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--text);
   white-space: nowrap;
 }
 .rail::after { content: ""; flex: 1; height: 1px; background: var(--line); }
@@ -283,8 +344,10 @@ code { font-size: 0.9em; }
   align-items: baseline;
   gap: 10px;
   margin: 0;
-  font-family: var(--rm-mono);
-  font-size: 12px;
+  font-family: var(--rm-display);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
   color: var(--text);
 }
 .cell-hint {
@@ -391,10 +454,6 @@ code { font-size: 0.9em; }
 .blur-scroll p { margin: 0 0 10px; }
 .blur-cap { position: absolute; inset: auto 0 0 0; height: 62%; pointer-events: none; }
 
-/* ── Field cells ─────────────────────────────────────────────────────── */
-
-.field { position: relative; padding: 0; background: #0e0e0e; min-height: 176px; }
-
 /* ── Buttons and cursor cells ────────────────────────────────────────── */
 
 .button-body { display: flex; flex-wrap: wrap; gap: 10px; align-content: center; justify-content: center; }
@@ -407,7 +466,7 @@ code { font-size: 0.9em; }
   border-radius: var(--rm-radius-pill);
   background: transparent;
   color: var(--dim);
-  font-family: var(--rm-mono);
+  font-family: var(--rm-display);
   font-size: 11px;
   cursor: pointer;
 }
@@ -869,10 +928,9 @@ code { font-size: 0.9em; }
   backdrop-filter: blur(12px);
 }
 .cursor-dock-label {
-  font-family: var(--rm-mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-family: var(--rm-display);
+  font-size: 12px;
+  letter-spacing: -0.005em;
   color: #5f5b54;
   padding-left: 4px;
 }
@@ -949,8 +1007,8 @@ code { font-size: 0.9em; }
   text-align: center;
 }
 .effect-tile b {
-  font-family: var(--rm-mono);
-  font-size: 10.5px;
+  font-family: var(--rm-display);
+  font-size: 12px;
   font-weight: 400;
   color: #cfcac2;
   word-break: break-word;
@@ -995,9 +1053,9 @@ code { font-size: 0.9em; }
 }
 .button-cell :where(.is-corner-cut, .is-notch) { border-radius: 0; }
 .button-cell-name {
-  font-family: var(--rm-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-family: var(--rm-display);
+  font-size: 11.5px;
+  letter-spacing: -0.005em;
   color: #5f5b54;
 }
 
@@ -1117,8 +1175,8 @@ code { font-size: 0.9em; }
   border-radius: 9px;
   background: linear-gradient(140deg, #1b2a3c, #241c2e 60%, #2b2318);
 }
-.look-card h4 { margin: 0; font-family: var(--rm-mono); font-size: 11.5px; font-weight: 400; color: #cfcac2; }
-.look-meta { font-family: var(--rm-mono); font-size: 10px; color: #5f5b54; }
+.look-card h4 { margin: 0; font-family: var(--rm-display); font-size: 13px; font-weight: 500; color: #cfcac2; }
+.look-meta { font-family: var(--rm-display); font-size: 11px; color: #5f5b54; }
 
 /* ── Page set pieces ─────────────────────────────────────────────────── */
 
@@ -1423,10 +1481,9 @@ code { font-size: 0.9em; }
 .curtain-col { border-right-color: var(--line-soft); }
 .curtain-head {
   margin: 0 0 6px;
-  font-family: var(--rm-mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-family: var(--rm-display);
+  font-size: 12px;
+  letter-spacing: -0.005em;
   color: var(--dim);
 }
 .curtain-col a {
@@ -1445,9 +1502,89 @@ code { font-size: 0.9em; }
 .texture-label {
   position: relative;
   z-index: 1;
-  font-family: var(--rm-mono);
+  font-family: var(--rm-display);
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--dim);
+}
+
+/* ── Text box cells ──────────────────────────────────────────────────────── */
+
+.search-line { width: min(320px, 100%); }
+.search-line .icon-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 17px;
+  cursor: pointer;
+}
+.search-line .icon-button:hover { border-color: var(--accent); }
+.input.is-pill { border-radius: 999px; padding-inline: 18px; }
+
+.tags-holder, .select-holder, .clear-holder, .mask-holder, .inline-holder {
+  width: min(300px, 100%);
+}
+.inline-holder { justify-self: center; font-family: var(--rm-display); font-size: 19px; }
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.input-cell {
+  padding: 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.input-cell > span:first-child {
+  font-family: var(--rm-display);
+  font-size: 12px;
+  letter-spacing: -0.005em;
+  color: var(--dim);
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────── */
+
+/*
+ * Everything here is a size, not a different design. The catalogue reads the
+ * same on a phone as on a desk — one column instead of four, a tighter shell,
+ * and the pieces that only mean something with a pointer stood down.
+ */
+@media (max-width: 560px) {
+  .shell { width: calc(100% - 28px); }
+
+  .bar { gap: 10px; padding: 10px 14px; }
+  .bar-end { gap: 8px; }
+  .bar .solid, .bar .ghost { padding: 8px 13px; font-size: 13px; }
+  /* The star count is a nicety; the button it sits beside is the point. */
+  .bar .stars-link { display: none; }
+
+  .cells { grid-template-columns: 1fr; gap: 12px; }
+  .effect-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+  .button-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .card-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .input-grid { grid-template-columns: 1fr; }
+  .mosaic-grid { grid-template-columns: repeat(2, 1fr); }
+  .index-families { grid-template-columns: 1fr; }
+
+  .cell-body { min-height: 118px; padding: 14px; }
+  .stage-display { font-size: clamp(26px, 9vw, 40px); }
+
+  /* A hover-only control on a touch screen is a control nobody can reach. */
+  .cursor-dock { display: none; }
+}
+
+@media (max-width: 400px) {
+  .shell { width: calc(100% - 20px); }
+  .effect-grid { grid-template-columns: repeat(2, 1fr); }
+  .button-grid { grid-template-columns: repeat(2, 1fr); }
+  .card-grid { grid-template-columns: 1fr; }
 }

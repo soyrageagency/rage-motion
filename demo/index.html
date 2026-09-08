@@ -53,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">155 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
+    <p class="hero-readout"><span data-rm-decrypt data-rm-loop="6000">185 components · 0 dependencies · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">171</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">185</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">34</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">36</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -84,7 +84,7 @@
 <section class="section" id="index">
   <div class="shell">
     <header class="head">
-      <p class="mono-label accent">01 — Index</p>
+      <p class="section-mark"><em>01</em><span>Everything, listed</span></p>
       <h2 class="h2">Everything, on one screen.</h2>
       <p class="lede">
         Every component and the attribute that drives it. Most of the kit needs
@@ -184,6 +184,17 @@
           <li><b>gauge</b><code>data-rm-gauge</code></li>
           <li><b>stat</b><code>data-rm-stat</code></li>
           <li><b>stars</b><code>data-rm-rating</code></li>
+        </ul>
+
+        <h3>Text boxes</h3>
+        <ul>
+          <li><b>inputKit</b><code>data-rm-input</code></li>
+          <li><b>searchField</b><code>data-rm-search</code></li>
+          <li><b>tagsField</b><code>data-rm-tags</code></li>
+          <li><b>selectField</b><code>data-rm-select</code></li>
+          <li><b>clearable</b><code>data-rm-clearable</code></li>
+          <li><b>maskField</b><code>data-rm-mask</code></li>
+          <li><b>inlineEdit</b><code>data-rm-inline-edit</code></li>
         </ul>
 
         <h3>Menu shapes</h3>
@@ -356,7 +367,7 @@
 <section class="section" id="gallery">
   <div class="shell">
     <header class="head">
-      <p class="mono-label accent">02 — Live</p>
+      <p class="section-mark"><em>02</em><span>Everything, running</span></p>
       <h2 class="h2">Every cell is the shipped component, looping.</h2>
       <p class="lede">
         Nothing here is a recording. Hover, press, drag. The ones that normally
@@ -577,6 +588,13 @@
           <button data-cursor="target" aria-pressed="false">target</button>
           <button data-cursor="crosshair" aria-pressed="false">cross</button>
           <button data-cursor="splash" aria-pressed="false">splash</button>
+          <button data-cursor="cartoonCursor" aria-pressed="false">cartoon</button>
+          <button data-cursor="blobCursor" aria-pressed="false">blob</button>
+          <button data-cursor="trailCursor" aria-pressed="false">comet</button>
+          <button data-cursor="arrowCursor" aria-pressed="false">arrow</button>
+          <button data-cursor="spotlightCursor" aria-pressed="false">spotlight</button>
+          <button data-cursor="lensCursor" aria-pressed="false">lens</button>
+          <button data-cursor="sayCursor" aria-pressed="false">words</button>
         </div>
       </div>
       <button class="cell-copy" data-copy='import { target } from "@soyrageagency/rage-motion"; target();'>copy</button>
@@ -626,7 +644,7 @@
 
     <article class="cell cell-tall">
       <p class="cell-name">panels <span class="cell-hint">hover · tab</span></p>
-      <div class="cell-body panels-body" data-rm-panels data-rm-grow="4">
+      <div class="cell-body panels-body" data-rm-panels="4">
         <a class="panel" data-rm-panel href="#gallery"><img src="./assets/tiles/02.svg" alt="Panel two"></a>
         <a class="panel" data-rm-panel href="#gallery"><img src="./assets/tiles/04.svg" alt="Panel four"></a>
         <a class="panel" data-rm-panel href="#gallery"><img src="./assets/tiles/06.svg" alt="Panel six"></a>
@@ -1112,6 +1130,87 @@
   </div>
 
   <!-- Card looks -->
+
+  <!-- Text boxes -->
+  <div class="shell rail"><span class="rail-name">Text boxes</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">searchField <span class="cell-hint">press the icon</span></p>
+      <div class="cell-body form-body">
+        <form class="search-line" data-rm-search onsubmit="return false">
+          <button class="icon-button" type="button" aria-label="Search">⌕</button>
+          <input class="input is-pill" type="search" placeholder="Search the kit">
+        </form>
+      </div>
+      <button class="cell-copy" data-copy="&lt;form data-rm-search&gt;&lt;button type=&quot;button&quot;&gt;Search&lt;/button&gt;&lt;input&gt;&lt;/form&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">tagsField <span class="cell-hint">Enter · Backspace</span></p>
+      <div class="cell-body form-body">
+        <div class="tags-holder" data-rm-tags data-rm-name="topics">
+          <input type="text" value="motion,scroll" aria-label="Topics" placeholder="Add a topic">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-tags data-rm-name=&quot;topics&quot;&gt;&lt;input&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">selectField · clearable</p>
+      <div class="cell-body form-body">
+        <label class="select-holder" data-rm-select>
+          <span>Plan</span>
+          <select>
+            <option value="">Choose</option>
+            <option>Studio</option>
+            <option>Agency</option>
+            <option>Enterprise</option>
+          </select>
+        </label>
+        <div class="clear-holder" data-rm-clearable>
+          <input class="input" type="text" value="Delete me" aria-label="Clearable field">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;label data-rm-select&gt;&lt;select&gt;…&lt;/select&gt;&lt;/label&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">maskField <span class="cell-hint">edit the middle</span></p>
+      <div class="cell-body form-body">
+        <label class="mask-holder" data-rm-input="slot">
+          <span>Card number</span>
+          <input data-rm-mask="#### #### #### ####" inputmode="numeric" value="4242424242424242" aria-label="Card number">
+        </label>
+      </div>
+      <button class="cell-copy" data-copy="&lt;input data-rm-mask=&quot;#### #### #### ####&quot;&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">inlineEdit <span class="cell-hint">click the title</span></p>
+      <div class="cell-body form-body">
+        <div class="inline-holder" data-rm-inline-edit>
+          <button type="button">Untitled project</button>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-inline-edit&gt;&lt;button&gt;Untitled&lt;/button&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">inputKit <span class="cell-hint">three of twenty-four</span></p>
+      <div class="cell-body form-body">
+        <label data-rm-input="terminal"><span>Command</span><input placeholder="build --watch" aria-label="Command"></label>
+        <label data-rm-input="brutal"><span>Project</span><input placeholder="rage-motion" aria-label="Project"></label>
+      </div>
+      <button class="cell-copy" data-copy="&lt;label data-rm-input=&quot;terminal&quot;&gt;&lt;span&gt;Command&lt;/span&gt;&lt;input&gt;&lt;/label&gt;">copy</button>
+    </article>
+  </div>
+
+  <div class="shell rail"><span class="rail-name">All 24 field looks</span></div>
+  <div class="shell">
+    <p class="lede rail-note">One component, twenty-four named looks. Type in them, reach them with Tab. Every one keeps the real input underneath, so autofill, paste, undo and your password manager all still work.</p>
+    <div class="input-grid" id="input-grid"></div>
+  </div>
+
   <div class="shell rail"><span class="rail-name">All 24 card looks</span></div>
   <div class="shell">
     <p class="lede rail-note">One component, twenty-four named looks. None of them animates a width or a height, so a grid of cards never reflows while you move across it.</p>
@@ -1401,7 +1500,7 @@
       <p class="cell-name">stat · stars</p>
       <div class="cell-body form-body">
         <div class="stat-card" data-rm-stat data-rm-delta="-4.2"><strong>1,204</strong><span>Visitors</span></div>
-        <fieldset class="stars-holder" data-rm-rating data-rm-count="5"><legend class="visually-hidden">Rating</legend></fieldset>
+        <fieldset class="stars-holder" data-rm-rating data-rm-out-of="5"><legend class="visually-hidden">Rating</legend></fieldset>
       </div>
       <button class="cell-copy" data-copy="&lt;div data-rm-stat data-rm-delta=&quot;-4.2&quot;&gt;&lt;strong&gt;1,204&lt;/strong&gt;&lt;/div&gt;">copy</button>
     </article>
@@ -1588,10 +1687,10 @@
   <div class="shell cells">
     <article class="cell">
       <p class="cell-name">rings</p>
-      <div class="cell-body texture-body" data-rm-rings data-rm-count="4" data-rm-size="150">
+      <div class="cell-body texture-body" data-rm-rings="4" data-rm-size="150">
         <span class="texture-label">expanding</span>
       </div>
-      <button class="cell-copy" data-copy="&lt;section data-rm-rings data-rm-count=&quot;4&quot;&gt;…&lt;/section&gt;">copy</button>
+      <button class="cell-copy" data-copy="&lt;section data-rm-rings=&quot;4&quot;&gt;…&lt;/section&gt;">copy</button>
     </article>
 
     <article class="cell">
@@ -1657,7 +1756,7 @@
 <section class="section" id="scroll">
   <div class="shell">
     <header class="head">
-      <p class="mono-label accent">03 — Scroll</p>
+      <p class="section-mark"><em>03</em><span>Made of scrolling</span></p>
       <h2 class="h2">Tied to position, never to a timer.</h2>
       <p class="lede">
         Which means every one of these runs backwards too. An animation that
@@ -1750,7 +1849,7 @@
 <section class="section" id="compare">
   <div class="shell split">
     <div>
-      <p class="mono-label accent">04 — compare</p>
+      <p class="section-mark"><em>04</em><span>Two states, one handle</span></p>
       <h2 class="h2">Before and after, with the keyboard too.</h2>
       <p class="lede">
         Almost every before/after slider on the web is pointer-only, which
@@ -1777,7 +1876,7 @@
 <section class="section section-accent" id="mcp">
   <div class="shell">
     <header class="head">
-      <p class="mono-label accent">05 — MCP</p>
+      <p class="section-mark"><em>05</em><span>Hand it to your assistant</span></p>
       <h2 class="h2">Teach these components to your AI.</h2>
       <p class="lede">
         Ask any assistant for a scroll reveal and it writes the same snippet it
@@ -1789,7 +1888,7 @@
 
     <div class="mcp-pair">
       <div class="mcp-card is-bad">
-        <p class="mono-label">Without MCP</p>
+        <p class="pair-mark">Without MCP</p>
 <pre><code>window.addEventListener("scroll", () =&gt; {
   document.querySelectorAll(".fade").forEach((el) =&gt; {
     if (el.getBoundingClientRect().top &lt; innerHeight)
@@ -1800,7 +1899,7 @@
       </div>
 
       <div class="mcp-card is-good">
-        <p class="mono-label accent">With MCP</p>
+        <p class="pair-mark is-on">With MCP</p>
 <pre><code>&lt;div data-rm-reveal="up" data-rm-delay="120"&gt;…&lt;/div&gt;</code></pre>
         <p class="note">It looks before it writes, finds the component you already have, and tells you why it chose it — because the reasoning travels with the component.</p>
       </div>
@@ -1824,7 +1923,7 @@
 <section class="section" id="start">
   <div class="shell">
     <header class="head">
-      <p class="mono-label accent">06 — Start</p>
+      <p class="section-mark"><em>06</em><span>Take it with you</span></p>
       <h2 class="h2">Three ways in.</h2>
     </header>
 
@@ -1893,6 +1992,13 @@ init();</code></pre>
     <button data-cursor="target" aria-pressed="false">target</button>
     <button data-cursor="crosshair" aria-pressed="false">cross</button>
     <button data-cursor="splash" aria-pressed="false">splash</button>
+          <button data-cursor="cartoonCursor" aria-pressed="false">cartoon</button>
+          <button data-cursor="blobCursor" aria-pressed="false">blob</button>
+          <button data-cursor="trailCursor" aria-pressed="false">comet</button>
+          <button data-cursor="arrowCursor" aria-pressed="false">arrow</button>
+          <button data-cursor="spotlightCursor" aria-pressed="false">spotlight</button>
+          <button data-cursor="lensCursor" aria-pressed="false">lens</button>
+          <button data-cursor="sayCursor" aria-pressed="false">words</button>
   </div>
 </aside>
 
@@ -1911,7 +2017,7 @@ init();</code></pre>
 </div>
 
 <aside id="drawer" class="drawer" data-rm-sidebar="left" hidden>
-  <p class="mono-label">Drawer</p>
+  <p class="pair-mark">Drawer</p>
   <nav aria-label="Drawer menu">
     <a href="#index">Index</a><a href="#gallery">Gallery</a>
     <a href="#scroll">Scroll</a><a href="#mcp">MCP</a>

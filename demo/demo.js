@@ -14,7 +14,8 @@
 
 import {
   init, cursor, target, crosshair, splash, waves, retroGrid, dotGrid, confetti,
-  REVEAL_EFFECTS, BUTTON_STYLES, CARD_LOOKS, toast,
+  cartoonCursor, blobCursor, trailCursor, sayCursor, spotlightCursor, arrowCursor, lensCursor,
+  REVEAL_EFFECTS, BUTTON_STYLES, CARD_LOOKS, INPUT_LOOKS, toast,
 } from "../src/index.js";
 
 /* ── The two big grids ─────────────────────────────────────────────────── */
@@ -63,6 +64,20 @@ fillGrid("#button-grid", BUTTON_STYLES, (name) => {
   label.textContent = name;
   cell.append(button, label);
   return cell;
+});
+
+fillGrid("#input-grid", INPUT_LOOKS, (name) => {
+  const holder = document.createElement("label");
+  holder.className = "input-cell";
+  holder.dataset.rmInput = name;
+  const caption = document.createElement("span");
+  caption.textContent = name;
+  const field = document.createElement("input");
+  field.type = "text";
+  field.placeholder = "Type here";
+  field.setAttribute("aria-label", name);
+  holder.append(caption, field);
+  return holder;
 });
 
 init();
@@ -144,7 +159,10 @@ document.querySelector("#confetti-button")?.addEventListener("click", (event) =>
 
 // A custom cursor is a page-level decision, so init() does not make it. This
 // page makes it, and lets you change your mind.
-const CURSORS = { cursor, target, crosshair, splash };
+const CURSORS = {
+  cursor, target, crosshair, splash,
+  cartoonCursor, blobCursor, trailCursor, sayCursor, spotlightCursor, arrowCursor, lensCursor,
+};
 // The page starts on the system cursor. Replacing someone pointer before they
 // have asked is the fastest way to make a site feel broken, and half the point
 // of shipping four of these is that a site should pick one deliberately.

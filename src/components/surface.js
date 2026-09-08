@@ -295,7 +295,7 @@ export function blurEdge(target = "[data-rm-blur-edge]", options = {}) {
   const cleanups = [];
 
   for (const element of elements) {
-    const count = Math.min(8, dataNumber(element, "rmLayers", layers));
+    const count = Math.min(8, dataNumber(element, "rmDepthLayers", layers));
     const side = dataString(element, "rmBlurEdge", position);
     element.classList.add("rm-blur-edge", `is-${side === "top" ? "top" : "bottom"}`);
 

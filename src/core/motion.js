@@ -93,10 +93,32 @@ export function watch(target, enter, options = {}) {
     return () => {};
   }
 
+  /*
+   * A fractional threshold is a trap on a small screen.
+   *
+   * `threshold: 0.35` means 35% *of the element*, so anything taller than
+   * about three viewports can never reach it — 35% of three screens is more
+   * than one screen, and the browser is right to never fire. On a phone that
+   * is most long text blocks and most full-width sections, and the symptom is
+   * exactly what it sounds like: you scroll past and nothing plays.
+   *
+   * So an element also counts as arrived once it covers enough of the screen.
+   * Short elements are governed by the ratio as before; tall ones by how much
+   * of the viewport they fill, which is what the ratio was standing in for.
+   */
+  const wanted = Array.isArray(threshold) ? Math.max(...threshold) : threshold;
+  const arrived = (entry) => {
+    if (!entry.isIntersecting) return false;
+    if (entry.intersectionRatio >= wanted) return true;
+    const shown = entry.intersectionRect.height;
+    const root = entry.rootBounds?.height || (typeof innerHeight === "number" ? innerHeight : 0);
+    return root > 0 && shown >= root * 0.4;
+  };
+
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) {
+        if (arrived(entry)) {
           enter(entry.target);
           if (once) observer.unobserve(entry.target);
         } else if (once && entry.boundingClientRect.bottom <= 0) {
@@ -116,7 +138,9 @@ export function watch(target, enter, options = {}) {
         }
       }
     },
-    { threshold, rootMargin: margin },
+    // Sampled at both ends: the ratio the caller asked for, and the moment the
+    // element first touches the viewport, which is when a tall one qualifies.
+    { threshold: [0, wanted], rootMargin: margin },
   );
 
   elements.forEach((el) => observer.observe(el));

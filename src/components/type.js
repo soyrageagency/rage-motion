@@ -483,7 +483,7 @@ export function outline(target = "[data-rm-outline]", options = {}) {
   for (const element of elements) {
     element.classList.add("rm-outline");
     element.style.setProperty("--rm-outline-color", dataString(element, "rmColor", color));
-    element.style.setProperty("--rm-outline-stroke", dataString(element, "rmStroke", stroke));
+    element.style.setProperty("--rm-outline-stroke", dataString(element, "rmWeight", stroke));
     element.style.setProperty("--rm-outline-width", `${width}px`);
   }
 

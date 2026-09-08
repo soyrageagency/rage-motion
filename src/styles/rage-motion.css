@@ -258,7 +258,17 @@ html.rm-cursor-active * { cursor: none !important; }
   @keyframes rm-progress-grow { to { transform: scaleX(1); } }
 }
 
-.rm-horizontal { position: relative; }
+/*
+ * The track is wider than the screen by design — that is the whole component —
+ * so the section has to clip it. Without this the track adds its full width to
+ * the document and the entire page scrolls sideways, which on a phone is the
+ * difference between a working site and one that wobbles under a thumb.
+ *
+ * `clip` rather than `hidden`: `hidden` on an ancestor makes it a scroll
+ * container, and the track's `position: sticky` then pins to that instead of
+ * to the viewport, which quietly breaks the whole effect.
+ */
+.rm-horizontal { position: relative; overflow-x: clip; }
 .rm-horizontal .rm-horizontal-track {
   position: sticky;
   top: 0;
@@ -673,7 +683,8 @@ html.rm-cursor-active * { cursor: none !important; }
   transition: transform 0.45s var(--rm-ease-out);
 }
 
-.rm-image-trail { position: relative; }
+/* Trailing images are thrown outward, so the frame has to clip them. */
+.rm-image-trail { position: relative; overflow: clip; }
 .rm-image-trail-item {
   position: absolute;
   top: 0;
@@ -1942,12 +1953,14 @@ html.rm-cursor-active * { cursor: none !important; }
   content: attr(data-rm-grow-value) " ";
   white-space: pre-wrap;
   visibility: hidden;
+  /* Measured off the field itself, so the page keeps its own field styling. */
+  padding: var(--rm-grow-pad, 0);
+  border: var(--rm-grow-border, 0) solid transparent;
+  line-height: var(--rm-grow-leading, normal);
 }
 .rm-grow > .rm-grow-field, .rm-grow::after {
   grid-area: 1 / 1;
   font: inherit;
-  padding: inherit;
-  border: inherit;
   overflow: hidden;
 }
 .rm-grow-field { resize: none; }
@@ -2365,7 +2378,8 @@ html.rm-cursor-active * { cursor: none !important; }
 
 .rm-mosaic-tile { will-change: transform, opacity; }
 
-.rm-zoom-out { position: relative; }
+/* Starts larger than its frame; without clipping the page scrolls sideways. */
+.rm-zoom-out { position: relative; overflow: clip; }
 .rm-zoom-out [data-rm-zoom-hero] { transform-origin: center; will-change: transform; }
 .rm-zoom-out [data-rm-zoom-rest] { opacity: 0; }
 
@@ -3306,6 +3320,660 @@ html.rm-cursor-active * { cursor: none !important; }
     rgba(0, 0, 0, 0.4) 60%,
     rgba(0, 0, 0, 0.15) 100%
   );
+}
+
+/* ── Field looks ────────────────────────────────────────────────────────── */
+
+/*
+ * The field keeps its own box; the look is applied around it.
+ *
+ * Everything below moves a colour, a shadow, a transform, a clip-path or a
+ * decoration element. Nothing animates padding, width or font-size, so a
+ * field never reflows the text being typed into it, and no look can push the
+ * rest of the form around while someone is filling it in.
+ */
+:where(.rm-input) {
+  --rm-input-line: rgba(255, 255, 255, 0.16);
+  --rm-input-line-on: var(--rm-accent);
+  --rm-input-ground: rgba(255, 255, 255, 0.03);
+  --rm-input-radius: 10px;
+  --rm-input-ease: var(--rm-ease-out);
+
+  position: relative;
+  display: grid;
+  gap: 6px;
+  isolation: isolate;
+}
+
+:where(.rm-input) > span,
+:where(.rm-input) > label {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--rm-muted);
+}
+
+/*
+ * :where() so the whole base carries no specificity: a page that styles its
+ * own fields keeps winning, and the look classes below still apply on top.
+ */
+:where(.rm-input-field) {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--rm-input-line);
+  border-radius: var(--rm-input-radius);
+  background: var(--rm-input-ground);
+  color: inherit;
+  font: inherit;
+  transition:
+    border-color 0.22s var(--rm-input-ease),
+    background 0.22s var(--rm-input-ease),
+    box-shadow 0.22s var(--rm-input-ease),
+    transform 0.22s var(--rm-input-ease);
+}
+:where(.rm-input-field)::placeholder { color: var(--rm-muted); opacity: 0.7; }
+:where(.rm-input-field):focus { outline: none; }
+:where(.rm-input-field):focus-visible { outline: none; }
+
+/* Keyboard focus must never be less visible than pointer focus. */
+.rm-input:focus-within .rm-input-field { border-color: var(--rm-input-line-on); }
+
+.rm-input-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--rm-input-line-on);
+  transform: scaleX(0);
+  transform-origin: 50% 50%;
+  transition: transform 0.32s var(--rm-input-ease);
+  pointer-events: none;
+}
+
+.rm-input-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--rm-input-line-on);
+  opacity: 0;
+  transition: opacity 0.24s var(--rm-input-ease), transform 0.32s var(--rm-input-ease);
+  pointer-events: none;
+}
+.rm-input-corner.is-tl { top: -3px; left: -3px; border-right: 0; border-bottom: 0; transform: translate(6px, 6px); }
+.rm-input-corner.is-tr { top: -3px; right: -3px; border-left: 0; border-bottom: 0; transform: translate(-6px, 6px); }
+.rm-input-corner.is-bl { bottom: -3px; left: -3px; border-right: 0; border-top: 0; transform: translate(6px, -6px); }
+.rm-input-corner.is-br { bottom: -3px; right: -3px; border-left: 0; border-top: 0; transform: translate(-6px, -6px); }
+.rm-input:focus-within .rm-input-corner { opacity: 1; transform: translate(0, 0); }
+
+/* outline — the border simply answers, which is the honest default. */
+.rm-input.is-outline:focus-within .rm-input-field {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rm-input-line-on) 22%, transparent);
+}
+
+/* underline — no box at all until the rule grows from the middle. */
+.rm-input.is-underline .rm-input-field {
+  border: 0;
+  border-bottom: 1px solid var(--rm-input-line);
+  border-radius: 0;
+  background: none;
+  padding-inline: 2px;
+}
+.rm-input.is-underline:focus-within .rm-input-rule { transform: scaleX(1); }
+
+/* filled — the ground lifts rather than the border changing. */
+.rm-input.is-filled .rm-input-field {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.06);
+}
+.rm-input.is-filled:focus-within .rm-input-field {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: var(--rm-input-line-on);
+}
+
+/* soft — no border, a gentle ground. */
+.rm-input.is-soft .rm-input-field {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.05);
+}
+.rm-input.is-soft:focus-within .rm-input-field { background: rgba(255, 255, 255, 0.09); }
+
+/* glass — frosted, for a field over an image. */
+.rm-input.is-glass .rm-input-field {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* inset — sunken, the way a slot looks. */
+.rm-input.is-inset .rm-input-field {
+  border-color: transparent;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.55);
+}
+
+/* brutal — a hard shadow that snaps home on focus. */
+.rm-input.is-brutal .rm-input-field {
+  border: 2px solid currentColor;
+  border-radius: 2px;
+  background: none;
+  box-shadow: 4px 4px 0 currentColor;
+}
+.rm-input.is-brutal:focus-within .rm-input-field {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 currentColor;
+}
+
+/* notch — a cut corner, drawn by clip-path so the box is unchanged. */
+.rm-input.is-notch .rm-input-field {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+/* bracket — four marks close in; a border would move the text. */
+.rm-input.is-bracket .rm-input-field { border-color: transparent; background: rgba(255, 255, 255, 0.04); }
+
+/* terminal — mono, a caret block, a prompt. */
+.rm-input.is-terminal .rm-input-field {
+  font-family: var(--rm-mono);
+  border-color: rgba(120, 255, 170, 0.35);
+  background: rgba(0, 20, 10, 0.5);
+  color: #b8ffd4;
+  border-radius: 3px;
+  padding-left: 26px;
+}
+.rm-input.is-terminal::before {
+  content: "›";
+  position: absolute;
+  left: 11px;
+  bottom: 12px;
+  color: rgba(120, 255, 170, 0.7);
+  font-family: var(--rm-mono);
+  pointer-events: none;
+}
+
+/* glow — a ring that blooms outward. */
+.rm-input.is-glow:focus-within .rm-input-field {
+  border-color: var(--rm-input-line-on);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rm-input-line-on) 18%, transparent),
+    0 8px 30px color-mix(in srgb, var(--rm-input-line-on) 22%, transparent);
+}
+
+/*
+ * gradient — a lit border, drawn behind the field so the box never moves.
+ *
+ * The angle has to be registered, or it is a string as far as the animation is
+ * concerned and the gradient jumps from 0 to 360 instead of turning.
+ */
+@property --rm-input-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.rm-input.is-gradient .rm-input-field { border-color: transparent; background: rgba(0, 0, 0, 0.4); }
+.rm-input.is-gradient::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: calc(100% - 0px);
+  border-radius: var(--rm-input-radius);
+  padding: 1px;
+  background: conic-gradient(from var(--rm-input-angle, 0deg), var(--rm-accent), var(--rm-terracotta), var(--rm-yellow), var(--rm-accent));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.24s var(--rm-input-ease);
+  pointer-events: none;
+  z-index: -1;
+}
+.rm-input.is-gradient:focus-within::before {
+  opacity: 1;
+  animation: rm-input-turn 4s linear infinite;
+}
+.rm-input.is-gradient.is-still:focus-within::before { animation: none; }
+@keyframes rm-input-turn { to { --rm-input-angle: 360deg; } }
+
+/* dashed — a sketched box that firms up. */
+.rm-input.is-dashed .rm-input-field {
+  border-style: dashed;
+  background: none;
+}
+.rm-input.is-dashed:focus-within .rm-input-field { border-style: solid; }
+
+/* lift — the field rises off the page. */
+.rm-input.is-lift:focus-within .rm-input-field {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+}
+
+/* slot — a machined groove. */
+.rm-input.is-slot .rm-input-field {
+  border: 0;
+  border-radius: 4px;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 8px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+
+/* pill — round, for a search or a filter. */
+.rm-input.is-pill .rm-input-field { border-radius: var(--rm-radius-pill); padding-inline: 18px; }
+
+/* sweep — the rule runs left to right. */
+.rm-input.is-sweep .rm-input-rule { transform-origin: 0 50%; }
+.rm-input.is-sweep:focus-within .rm-input-rule { transform: scaleX(1); }
+
+/* corner — one accent, top left. */
+.rm-input.is-corner .rm-input-field { border-radius: 2px 10px 10px 10px; }
+.rm-input.is-corner::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  height: 100%;
+  max-height: 46px;
+  background: var(--rm-input-line-on);
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+  transition: transform 0.3s var(--rm-input-ease);
+  pointer-events: none;
+}
+.rm-input.is-corner:focus-within::after { transform: scaleY(1); }
+
+/* shadow — a soft pool underneath. */
+.rm-input.is-shadow .rm-input-field {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+.rm-input.is-shadow:focus-within .rm-input-field { box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55); }
+
+/* ghost — nothing until you reach it. */
+.rm-input.is-ghost .rm-input-field {
+  border-color: transparent;
+  background: none;
+  padding-inline: 4px;
+}
+.rm-input.is-ghost:hover .rm-input-field,
+.rm-input.is-ghost:focus-within .rm-input-field {
+  border-color: var(--rm-input-line);
+  background: rgba(255, 255, 255, 0.04);
+  padding-inline: 14px;
+}
+
+/* stamp — an offset second edge. */
+.rm-input.is-stamp .rm-input-field { border-radius: 4px; }
+.rm-input.is-stamp::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 100%;
+  border: 1px solid var(--rm-input-line);
+  border-radius: 4px;
+  transform: translate(5px, 5px);
+  transition: transform 0.26s var(--rm-input-ease), border-color 0.26s;
+  pointer-events: none;
+  z-index: -1;
+}
+.rm-input.is-stamp:focus-within::before { transform: translate(0, 0); border-color: var(--rm-input-line-on); }
+
+/* rail — a thin bar that fills from the left, under a borderless field. */
+.rm-input.is-rail .rm-input-field {
+  border: 0;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.04);
+  padding-inline: 12px;
+}
+.rm-input.is-rail .rm-input-rule { height: 3px; transform-origin: 0 50%; }
+.rm-input.is-rail:focus-within .rm-input-rule { transform: scaleX(1); }
+
+/* frame — the four marks sit outside the box. */
+.rm-input.is-frame .rm-input-field { border-color: rgba(255, 255, 255, 0.10); }
+.rm-input.is-frame .rm-input-corner { width: 16px; height: 16px; }
+
+/* caret — a blinking block beside the text, for a fake console. */
+.rm-input.is-caret .rm-input-field { font-family: var(--rm-mono); letter-spacing: 0.04em; }
+.rm-input.is-caret::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  bottom: 16px;
+  width: 8px;
+  height: 15px;
+  background: var(--rm-input-line-on);
+  opacity: 0;
+  pointer-events: none;
+}
+.rm-input.is-caret:focus-within::after { animation: rm-input-blink 1.05s steps(2, start) infinite; }
+.rm-input.is-caret.is-still:focus-within::after { animation: none; opacity: 1; }
+@keyframes rm-input-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Under reduced motion the looks still change; they just arrive at once. */
+.rm-input.is-still .rm-input-field,
+.rm-input.is-still .rm-input-rule,
+.rm-input.is-still .rm-input-corner,
+.rm-input.is-still::before,
+.rm-input.is-still::after { transition-duration: 0s; }
+
+/* ── Fields that do something ───────────────────────────────────────────── */
+
+/*
+ * The search is always at its full width; only the clip and the icon move, so
+ * the header it sits in never reflows and the input can be typed into the
+ * moment it is reachable.
+ */
+.rm-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rm-search > input {
+  clip-path: inset(0 0 0 100% round var(--rm-radius-pill));
+  opacity: 0;
+  transition: clip-path 0.42s var(--rm-ease-out), opacity 0.28s var(--rm-ease-out);
+}
+.rm-search.is-open > input { clip-path: inset(0 0 0 0 round var(--rm-radius-pill)); opacity: 1; }
+.rm-search > button { flex: none; transition: transform 0.32s var(--rm-ease-out); }
+.rm-search.is-open > button { transform: rotate(90deg); }
+
+.rm-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--rm-input-line, rgba(255, 255, 255, 0.16));
+  border-radius: 10px;
+}
+.rm-tags:focus-within { border-color: var(--rm-accent); }
+.rm-tags-list {
+  display: contents;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rm-tags-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 4px 3px 9px;
+  border-radius: var(--rm-radius-pill);
+  background: rgba(255, 255, 255, 0.09);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.rm-tags-drop {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s var(--rm-ease-out);
+}
+.rm-tags-drop:hover { background: var(--rm-terracotta); transform: scale(1.12); }
+.rm-tags > input {
+  flex: 1;
+  min-width: 90px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 4px;
+}
+.rm-tags > input:focus { outline: none; }
+/* Announced, never shown: the chips are already on the screen. */
+.rm-tags-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * The native select is kept, full size and on top, and made invisible. It
+ * takes every click and keystroke; the face underneath is only drawn.
+ */
+.rm-select { position: relative; display: grid; gap: 6px; }
+.rm-select-native {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 44px;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+  font: inherit;
+}
+.rm-select-face {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--rm-input-line, rgba(255, 255, 255, 0.16));
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--rm-muted);
+  transition: border-color 0.2s var(--rm-ease-out), color 0.2s;
+}
+.rm-select.is-chosen .rm-select-face { color: inherit; }
+.rm-select-native:focus-visible + .rm-select-face,
+.rm-select:hover .rm-select-face { border-color: var(--rm-accent); }
+.rm-select-caret {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  transition: transform 0.24s var(--rm-ease-out);
+}
+.rm-select:hover .rm-select-caret { transform: translateY(2px); }
+
+.rm-clearable { position: relative; display: grid; }
+.rm-clearable-drop {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.7);
+  transition: opacity 0.2s var(--rm-ease-out), transform 0.2s var(--rm-ease-out);
+  pointer-events: none;
+}
+.rm-clearable.is-clearable .rm-clearable-drop {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  pointer-events: auto;
+}
+.rm-clearable.is-clearable input { padding-right: 38px; }
+
+.rm-mask { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+
+/*
+ * Editing in place: the field is given the text's own typeface and box, so the
+ * word does not move, change size or change weight at the moment it becomes
+ * editable.
+ */
+.rm-inline-edit { display: inline-grid; }
+.rm-inline-edit-text {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  padding: 3px 6px;
+  cursor: text;
+  transition: background 0.18s, border-color 0.18s;
+}
+.rm-inline-edit-text:hover { background: rgba(255, 255, 255, 0.06); }
+.rm-inline-edit-field {
+  border: 1px solid var(--rm-accent);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  padding: 3px 6px;
+  width: 100%;
+}
+.rm-inline-edit-field:focus { outline: none; }
+
+
+/* ── Playful cursors ────────────────────────────────────────────────────── */
+
+/*
+ * All seven are a fixed layer moved by transform alone. Each is centred on its
+ * own origin so the transform is the pointer position and nothing else, and
+ * every one of them is out of the way of hit testing.
+ */
+.rm-cartoon-cursor,
+.rm-blob-cursor,
+.rm-trail-cursor,
+.rm-say-cursor,
+.rm-spotlight-cursor,
+.rm-arrow-cursor,
+.rm-lens-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.rm-cartoon-cursor.is-visible,
+.rm-blob-cursor.is-visible,
+.rm-trail-cursor.is-visible,
+.rm-say-cursor.is-visible,
+.rm-spotlight-cursor.is-visible,
+.rm-arrow-cursor.is-visible,
+.rm-lens-cursor.is-visible { opacity: 1; }
+
+/* The trail and the spotlight are full-screen layers; their parts move. */
+.rm-trail-cursor,
+.rm-spotlight-cursor { inset: 0; transform: none !important; }
+
+.rm-cartoon-hand {
+  display: block;
+  width: var(--rm-cartoon-size, 42px);
+  height: auto;
+  /* Held at the fingertip, the way a pointing hand is. */
+  margin: -6px 0 0 -12px;
+  transform-origin: 40% 12%;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.45));
+}
+.rm-cartoon-glove {
+  fill: #f6f2ea;
+  stroke: #101010;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+.rm-cartoon-cuff { fill: #2aa7e4; }
+.rm-cartoon-cursor.is-grabbing .rm-cartoon-glove { fill: #ffe9c9; }
+
+.rm-blob-cursor-body {
+  display: block;
+  width: var(--rm-blob-size, 34px);
+  height: var(--rm-blob-size, 34px);
+  margin: calc(var(--rm-blob-size, 34px) / -2) 0 0 calc(var(--rm-blob-size, 34px) / -2);
+  border-radius: 50%;
+  background: rgba(241, 238, 233, 0.9);
+  mix-blend-mode: difference;
+}
+
+.rm-trail-cursor-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--rm-trail-cursor-size, 14px) * var(--rm-trail-cursor-share, 1));
+  height: calc(var(--rm-trail-cursor-size, 14px) * var(--rm-trail-cursor-share, 1));
+  margin: calc(var(--rm-trail-cursor-size, 14px) / -2) 0 0 calc(var(--rm-trail-cursor-size, 14px) / -2);
+  border-radius: 50%;
+  background: var(--rm-trail-cursor-color, #2aa7e4);
+  opacity: calc(var(--rm-trail-cursor-share, 1) * 0.85);
+}
+
+.rm-say-cursor-word {
+  display: block;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--rm-accent);
+  color: #06121a;
+  font-family: var(--rm-body);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: 50% 50%;
+  transition: transform 0.26s var(--rm-ease-out);
+}
+.rm-say-cursor.is-saying .rm-say-cursor-word { transform: translate(-50%, -50%) scale(1); }
+
+/* One layer, one mask, two numbers a frame. */
+.rm-spotlight-cursor {
+  background: rgba(0, 0, 0, var(--rm-spotlight-cursor-dim, 0.62));
+  mask: radial-gradient(
+    circle var(--rm-spotlight-cursor-radius, 190px)
+      at var(--rm-spotlight-cursor-x, 50%) var(--rm-spotlight-cursor-y, 50%),
+    transparent 0%,
+    transparent 55%,
+    #000 100%
+  );
+  z-index: 9997;
+}
+
+.rm-arrow-cursor-mark {
+  display: block;
+  width: var(--rm-arrow-cursor-size, 26px);
+  height: var(--rm-arrow-cursor-size, 26px);
+  margin: calc(var(--rm-arrow-cursor-size, 26px) / -2) 0 0 calc(var(--rm-arrow-cursor-size, 26px) / -2);
+  fill: var(--rm-arrow-cursor-color, #f1eee9);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* backdrop-filter magnifies the real page, so nothing is duplicated. */
+.rm-lens-cursor {
+  width: var(--rm-lens-cursor-size, 120px);
+  height: var(--rm-lens-cursor-size, 120px);
+  margin: calc(var(--rm-lens-cursor-size, 120px) / -2) 0 0 calc(var(--rm-lens-cursor-size, 120px) / -2);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(0px) saturate(115%);
+  scale: 1;
+  overflow: hidden;
+}
+.rm-lens-cursor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  backdrop-filter: blur(0.2px);
+  transform: scale(var(--rm-lens-cursor-zoom, 1.35));
 }
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */

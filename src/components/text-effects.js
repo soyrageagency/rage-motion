@@ -55,7 +55,7 @@ export function decrypt(target = "[data-rm-decrypt]", options = {}) {
       let settled = 0;
       let lastTick = 0;
       const rate = dataNumber(element, "rmSpeed", speed);
-      const perFrame = dataNumber(element, "rmReveal", revealPerFrame);
+      const perFrame = dataNumber(element, "rmRate", revealPerFrame);
 
       const stopFrame = onFrame((now) => {
         if (now - lastTick < rate) return;
@@ -145,7 +145,7 @@ export function shiny(target = "[data-rm-shiny]", options = {}) {
   for (const element of elements) {
     element.classList.add("rm-shiny");
     element.style.setProperty("--rm-shiny-base", dataString(element, "rmBase", base));
-    element.style.setProperty("--rm-shiny-highlight", dataString(element, "rmHighlight", highlight));
+    element.style.setProperty("--rm-shiny-highlight", dataString(element, "rmSheen", highlight));
     element.style.setProperty("--rm-shiny-duration", `${dataNumber(element, "rmDuration", duration)}ms`);
     element.style.setProperty("--rm-shiny-width", `${width}%`);
   }

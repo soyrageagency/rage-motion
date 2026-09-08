@@ -146,7 +146,7 @@ export function spark(target = "[data-rm-spark]", options = {}) {
       const box = element.getBoundingClientRect();
       const x = event.clientX - box.left;
       const y = event.clientY - box.top;
-      const many = dataNumber(element, "rmCount", count);
+      const many = dataNumber(element, "rmPieces", count);
 
       for (let i = 0; i < many; i++) {
         const particle = document.createElement("i");

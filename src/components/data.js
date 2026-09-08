@@ -360,7 +360,7 @@ export function stars(target = "[data-rm-rating]", options = {}) {
   const cleanups = [];
 
   for (const group of groups) {
-    const many = Math.max(2, Math.min(10, dataNumber(group, "rmCount", count)));
+    const many = Math.max(2, Math.min(10, dataNumber(group, "rmOutOf", count)));
     const field = dataString(group, "rmName", name);
     group.classList.add("rm-rating");
 
