@@ -1,0 +1,76 @@
+{
+  "name": "@soyrageagency/rage-motion",
+  "version": "0.1.0",
+  "description": "Award-grade motion for the web, with no dependencies: scroll-driven reveals, text animations, page transitions and a magnetic cursor. Copy one file or install the lot.",
+  "type": "module",
+  "license": "MIT",
+  "author": "SoyRage Agency (https://soyrage.es/)",
+  "homepage": "https://soyrageagency.github.io/rage-motion/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soyrageagency/rage-motion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soyrageagency/rage-motion/issues"
+  },
+  "funding": {
+    "type": "paypal",
+    "url": "https://www.paypal.com/paypalme/soyrageagency"
+  },
+  "keywords": [
+    "animation",
+    "motion",
+    "scroll-animation",
+    "scroll-driven-animations",
+    "text-animation",
+    "page-transitions",
+    "view-transitions",
+    "custom-cursor",
+    "parallax",
+    "marquee",
+    "awwwards",
+    "css-animation",
+    "web-animations-api",
+    "intersection-observer",
+    "reduced-motion",
+    "zero-dependencies"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./css": "./src/styles/rage-motion.css",
+    "./components/*": "./src/components/*.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.js",
+    "README.md",
+    "ROADMAP.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "./src/styles/*.css"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test \"src/**/*.test.js\"",
+    "test:mcp": "node --test mcp/*.test.js",
+    "demo": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs",
+    "build:demo": "node scripts/build-demo.mjs",
+    "check:dist": "node scripts/build-demo.mjs && node scripts/check.mjs --dist",
+    "mcp": "node mcp/server.js",
+    "assets": "node scripts/assets.mjs"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "playwright": "^1.63.0",
+    "zod": "^3.25.0"
+  }
+}

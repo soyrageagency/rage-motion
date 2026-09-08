@@ -1,0 +1,34 @@
+{
+  "name": "@soyrageagency/rage-motion-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for rage-motion: lets Claude, Cursor and other AI assistants read and use the real components instead of improvising generic animation code.",
+  "type": "module",
+  "license": "MIT",
+  "author": "SoyRage Agency (https://soyrage.es/)",
+  "homepage": "https://soyrageagency.github.io/rage-motion/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soyrageagency/rage-motion.git",
+    "directory": "mcp"
+  },
+  "bugs": { "url": "https://github.com/soyrageagency/rage-motion/issues" },
+  "keywords": [
+    "mcp", "model-context-protocol", "mcp-server", "claude", "cursor",
+    "animation", "motion", "design-system", "components", "rage-motion"
+  ],
+  "mcpName": "io.github.soyrageagency/rage-motion-mcp",
+  "publishConfig": { "access": "public" },
+  "bin": { "rage-motion-mcp": "./server.js" },
+  "main": "./server.js",
+  "files": ["server.js", "catalogue.js", "server.json", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test *.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@soyrageagency/rage-motion": "^0.1.0",
+    "zod": "^3.25.0"
+  }
+}

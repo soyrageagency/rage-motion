@@ -1,0 +1,535 @@
+/*
+ * rage-motion — stylesheet.
+ *
+ * Every component's static styling lives here so the JavaScript only ever
+ * writes values, never rules. That split is what keeps the effects cheap: the
+ * browser can composite a transform or a custom property without recalculating
+ * a stylesheet.
+ *
+ * The palette defaults to the SoyRage line — cream, ink, and a blue that does
+ * the pointing — but every value is a custom property, so overriding
+ * `--rm-accent` once re-themes the whole kit.
+ *
+ * Crafted by SoyRage Agency — https://soyrage.es/
+ * MIT licensed (see LICENSE).
+ */
+
+:root {
+  /* SoyRage palette */
+  --rm-ink: #0e0e0e;
+  --rm-cream: #f1eee9;
+  --rm-muted: #6c695f;
+  --rm-accent: #2aa7e4;
+  --rm-terracotta: #d28c65;
+  --rm-yellow: #f4d738;
+
+  /* Type */
+  --rm-display: "Bricolage Grotesque", "Archivo Expanded", system-ui, sans-serif;
+  --rm-body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --rm-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Shape */
+  --rm-radius-sm: 4px;
+  --rm-radius: 24px;
+  --rm-radius-lg: 36px;
+  --rm-radius-pill: 999px;
+
+  /* Motion */
+  --rm-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --rm-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ── Text splitting ─────────────────────────────────────────────────────── */
+
+.rm-split .rm-word {
+  display: inline-block;
+  white-space: nowrap; /* a split word must never break mid-word */
+}
+.rm-split .rm-char { display: inline-block; }
+.rm-split-lines .rm-line { display: block; }
+
+/* A mask reveal needs the wrapper to clip, and the piece to move inside it. */
+.rm-text-clip .rm-word,
+.rm-text-clip .rm-line { overflow: hidden; }
+.rm-text-clip .rm-char { will-change: transform; }
+/* Descenders (g, y, p) are cut by a tight overflow, so give the box room. */
+.rm-text-clip .rm-word,
+.rm-text-clip .rm-line { padding-bottom: 0.12em; margin-bottom: -0.12em; }
+
+/* ── Cursor ─────────────────────────────────────────────────────────────── */
+
+.rm-cursor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483000; /* above anything a page is likely to stack */
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.rm-cursor.is-visible { opacity: 1; }
+.rm-cursor-dot,
+.rm-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  will-change: transform;
+}
+.rm-cursor-dot {
+  width: var(--rm-cursor-size, 10px);
+  height: var(--rm-cursor-size, 10px);
+  background: var(--rm-cursor-color, #fff);
+}
+.rm-cursor-ring {
+  width: var(--rm-cursor-ring, 38px);
+  height: var(--rm-cursor-ring, 38px);
+  border: 1px solid var(--rm-cursor-color, #fff);
+}
+/* Only hide the real cursor once the replacement has proved it is moving. */
+html.rm-cursor-active,
+html.rm-cursor-active * { cursor: none !important; }
+
+.rm-splash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147482000;
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+
+.rm-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.rm-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s;
+  background: radial-gradient(
+    var(--rm-spot-size, 320px) circle at var(--rm-spot-x, 50%) var(--rm-spot-y, 50%),
+    var(--rm-spot-color, rgba(42, 167, 228, 0.16)),
+    transparent 70%
+  );
+}
+.rm-spotlight:hover::before { opacity: 1; }
+
+.rm-tilt {
+  transform-style: preserve-3d;
+  will-change: transform;
+  position: relative;
+  isolation: isolate;
+}
+.rm-tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--rm-glare-x, 50%) var(--rm-glare-y, 50%),
+    rgba(255, 255, 255, 0.32),
+    transparent 55%
+  );
+}
+
+/*
+ * An animated conic border needs the angle registered as a real angle type,
+ * or the browser has no way to interpolate it and the gradient jumps.
+ */
+@property --rm-border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.rm-border {
+  position: relative;
+  isolation: isolate;
+}
+.rm-border::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--rm-border-width, 1.5px) * -1);
+  border-radius: inherit;
+  padding: var(--rm-border-width, 1.5px);
+  background: conic-gradient(from var(--rm-border-angle), var(--rm-border-gradient, var(--rm-accent), var(--rm-terracotta), var(--rm-accent)));
+  /* Punch out the middle so only the ring shows. */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rm-border-spin var(--rm-border-duration, 4000ms) linear infinite;
+  pointer-events: none;
+}
+@keyframes rm-border-spin { to { --rm-border-angle: 360deg; } }
+
+/* ── Backgrounds ────────────────────────────────────────────────────────── */
+
+.rm-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--rm-aurora-opacity, 0.55);
+  filter: blur(var(--rm-aurora-blur, 90px));
+}
+.rm-aurora span {
+  position: absolute;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--rm-aurora-color);
+  animation: rm-aurora-drift var(--rm-aurora-speed, 18000ms) ease-in-out infinite alternate;
+  animation-delay: calc(var(--rm-aurora-index) * -4200ms);
+  top: calc(var(--rm-aurora-index) * 18%);
+  left: calc(var(--rm-aurora-index) * 22%);
+}
+.rm-aurora.is-still span { animation: none; }
+@keyframes rm-aurora-drift {
+  from { transform: translate3d(-12%, -8%, 0) scale(1); }
+  to { transform: translate3d(18%, 14%, 0) scale(1.25); }
+}
+
+.rm-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rm-grain {
+  position: fixed;
+  inset: -100%;
+  width: 300%;
+  height: 300%;
+  pointer-events: none;
+  z-index: 2147481000;
+  background-repeat: repeat;
+}
+.rm-grain.is-moving { animation: rm-grain-shift 0.7s steps(4) infinite; }
+@keyframes rm-grain-shift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 1%); }
+  50% { transform: translate(1%, -2%); }
+  75% { transform: translate(-1%, -1%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ── Text effects ───────────────────────────────────────────────────────── */
+
+.rm-glitch { position: relative; display: inline-block; }
+.rm-glitch::before,
+.rm-glitch::after {
+  content: attr(data-rm-glitch-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  clip-path: inset(0);
+}
+.rm-glitch.is-glitching::before {
+  opacity: 0.85;
+  color: var(--rm-accent);
+  animation: rm-glitch-a 0.42s steps(2, end) infinite;
+}
+.rm-glitch.is-glitching::after {
+  opacity: 0.85;
+  color: var(--rm-terracotta);
+  animation: rm-glitch-b 0.42s steps(2, end) infinite;
+}
+@keyframes rm-glitch-a {
+  0% { transform: translate(-2px, 1px); clip-path: inset(12% 0 62% 0); }
+  50% { transform: translate(2px, -1px); clip-path: inset(58% 0 18% 0); }
+  100% { transform: translate(-1px, 0); clip-path: inset(32% 0 44% 0); }
+}
+@keyframes rm-glitch-b {
+  0% { transform: translate(2px, -1px); clip-path: inset(70% 0 8% 0); }
+  50% { transform: translate(-2px, 1px); clip-path: inset(20% 0 55% 0); }
+  100% { transform: translate(1px, 0); clip-path: inset(45% 0 30% 0); }
+}
+
+.rm-shiny {
+  background: linear-gradient(
+      100deg,
+      var(--rm-shiny-base, #6b7280) 40%,
+      var(--rm-shiny-highlight, #fff) 50%,
+      var(--rm-shiny-base, #6b7280) 60%
+    )
+    0 0 / 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rm-shine var(--rm-shiny-duration, 3200ms) linear infinite;
+}
+@keyframes rm-shine { to { background-position: -220% 0; } }
+
+/* ── Scroll ─────────────────────────────────────────────────────────────── */
+
+.rm-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--rm-progress-height, 3px);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--rm-progress-value, 0));
+  background: var(--rm-progress-color, var(--rm-accent));
+  z-index: 2147480000;
+}
+/* Where the browser can drive it natively, hand the whole thing over. */
+@supports (animation-timeline: scroll()) {
+  .rm-progress-native {
+    transform: scaleX(0);
+    animation: rm-progress-grow linear;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes rm-progress-grow { to { transform: scaleX(1); } }
+}
+
+.rm-horizontal { position: relative; }
+.rm-horizontal .rm-horizontal-track {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  will-change: transform;
+}
+/* Reduced motion turns the pin into an ordinary sideways scroll. */
+.rm-horizontal.is-reduced .rm-horizontal-track {
+  position: static;
+  height: auto;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.rm-stack-card {
+  position: sticky;
+  will-change: transform;
+}
+
+/* ── Media ──────────────────────────────────────────────────────────────── */
+
+.rm-image-reveal {
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+.rm-image-reveal .rm-curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  clip-path: inset(0 0 0 0);
+  pointer-events: none;
+}
+.rm-image-reveal img,
+.rm-image-reveal video { display: block; width: 100%; }
+
+.rm-pixel { position: relative; overflow: hidden; isolation: isolate; }
+.rm-pixel-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--rm-pixel-cols, 14), 1fr);
+  grid-template-rows: repeat(var(--rm-pixel-rows, 8), 1fr);
+  pointer-events: none;
+  z-index: 2;
+}
+.rm-pixel-grid i { opacity: 0; display: block; }
+
+.rm-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--rm-preview-width, 300px);
+  aspect-ratio: 4 / 3;
+  border-radius: var(--rm-radius-sm);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.28s var(--rm-ease-out);
+  will-change: transform;
+  z-index: 5;
+}
+.rm-preview.is-visible { opacity: 1; }
+.rm-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.rm-marquee { overflow: hidden; width: 100%; }
+.rm-marquee-track { display: flex; width: max-content; will-change: transform; }
+.rm-marquee-group { display: flex; align-items: center; flex: none; }
+.rm-marquee.is-static { overflow-x: auto; }
+.rm-marquee.is-static .rm-marquee-track { transform: none !important; }
+
+/* ── Showpiece ──────────────────────────────────────────────────────────── */
+
+.rm-type { position: relative; display: inline-block; }
+/* Holds the width of the longest phrase so the line beside it never jitters. */
+.rm-type-sizer {
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+.rm-type-text { display: inline; }
+.rm-type.has-caret .rm-type-text::after {
+  content: "";
+  display: inline-block;
+  width: 0.08em;
+  height: 1em;
+  margin-left: 0.06em;
+  vertical-align: -0.12em;
+  background: var(--rm-accent);
+  animation: rm-caret 1.05s steps(1) infinite;
+}
+@keyframes rm-caret { 0%, 45% { opacity: 1; } 46%, 100% { opacity: 0; } }
+
+.rm-wave .rm-char { will-change: transform; }
+
+.rm-lines {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--rm-lines-cols, 14), 1fr);
+  grid-template-rows: repeat(var(--rm-lines-rows, 9), 1fr);
+  place-items: center;
+  pointer-events: none; /* the field listens on the window, never blocks clicks */
+}
+.rm-lines i {
+  display: block;
+  width: var(--rm-lines-length, 22px);
+  height: var(--rm-lines-thickness, 2px);
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-lines-color, currentColor);
+  transform: rotate(-90deg);
+  will-change: transform;
+}
+
+.rm-ripple { position: relative; overflow: hidden; isolation: isolate; }
+.rm-ripple-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+}
+
+/* ── Interactive ────────────────────────────────────────────────────────── */
+
+.rm-compare {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y; /* let the page scroll vertically over the slider */
+  user-select: none;
+  --rm-compare: 50%;
+}
+.rm-compare img,
+.rm-compare video { display: block; width: 100%; }
+.rm-compare [data-rm-after] {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: cover;
+  clip-path: inset(0 0 0 var(--rm-compare));
+}
+.rm-compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--rm-compare);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--rm-cream);
+  cursor: ew-resize;
+}
+.rm-compare-handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--rm-cream);
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.25);
+  backdrop-filter: blur(4px);
+}
+.rm-compare-handle:focus-visible { outline: none; }
+.rm-compare-handle:focus-visible::after {
+  outline: 3px solid var(--rm-accent);
+  outline-offset: 3px;
+}
+
+.rm-panels { display: flex; gap: 8px; }
+.rm-panel {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--rm-radius);
+  transition: flex-grow var(--rm-panels-duration, 620ms) var(--rm-ease-out);
+}
+.rm-panel.is-open { flex-grow: var(--rm-panels-grow, 3.2); }
+.rm-panel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.rm-orbit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  transform: rotateX(var(--rm-orbit-tilt, 0deg));
+  animation: rm-orbit-spin var(--rm-orbit-duration, 24s) linear infinite;
+}
+.rm-orbit.is-reverse { animation-direction: reverse; }
+.rm-orbit.is-still { animation: none; }
+.rm-orbit-item {
+  grid-area: 1 / 1;
+  /* Place on the ring, then undo the ring's spin so the item stays upright. */
+  transform:
+    rotate(var(--rm-orbit-angle, 0deg))
+    translateX(var(--rm-orbit-radius, 130px))
+    rotate(calc(var(--rm-orbit-angle, 0deg) * -1));
+  animation: rm-orbit-upright var(--rm-orbit-duration, 24s) linear infinite reverse;
+}
+.rm-orbit.is-reverse .rm-orbit-item { animation-direction: normal; }
+.rm-orbit.is-still .rm-orbit-item { animation: none; }
+@keyframes rm-orbit-spin { to { transform: rotateX(var(--rm-orbit-tilt, 0deg)) rotate(360deg); } }
+@keyframes rm-orbit-upright {
+  to {
+    transform:
+      rotate(var(--rm-orbit-angle, 0deg))
+      translateX(var(--rm-orbit-radius, 130px))
+      rotate(calc(var(--rm-orbit-angle, 0deg) * -1))
+      rotate(360deg);
+  }
+}
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/*
+ * A blanket motion kill-switch is deliberately NOT here.
+ *
+ * `* { animation: none !important }` is the usual reduced-motion snippet and
+ * it breaks more than it fixes: any element whose visible state is the end of
+ * an animation stays stuck at its start, invisible. Each component handles the
+ * preference itself, jumping to the finished state instead of skipping it.
+ * The only blanket rule is for decoration that has no end state to preserve.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-aurora span,
+  .rm-grain.is-moving,
+  .rm-shiny,
+  .rm-glitch::before,
+  .rm-glitch::after,
+  .rm-type.has-caret .rm-type-text::after,
+  .rm-orbit,
+  .rm-orbit-item {
+    animation: none !important;
+  }
+  .rm-shiny { color: var(--rm-shiny-highlight, currentColor); background: none; -webkit-text-fill-color: currentColor; }
+}

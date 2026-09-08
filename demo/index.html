@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rage-motion — award-grade motion, sin dependencias</title>
+<meta name="description" content="33 componentes de animación para la web: scroll reveals, texto, cursor, transiciones de página. Cero dependencias, respeta prefers-reduced-motion, y se instala en Claude o Cursor por MCP.">
+<meta name="color-scheme" content="light dark">
+
+<meta property="og:title" content="rage-motion — award-grade motion, sin dependencias">
+<meta property="og:description" content="33 componentes de animación para la web. Cero dependencias. Y un servidor MCP para que tu IA use estos y no los suyos.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
+<meta property="og:image" content="https://soyrageagency.github.io/rage-motion/assets/social.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../src/styles/rage-motion.css">
+<link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+
+<div data-rm-progress></div>
+
+<!-- ── Nav ──────────────────────────────────────────────────────────────── -->
+<header class="nav">
+  <a class="nav-brand" href="#top">
+    <span class="dot" aria-hidden="true"></span>
+    rage-motion
+  </a>
+  <nav class="nav-links">
+    <a href="#componentes">Componentes</a>
+    <a href="#mcp">Para tu IA</a>
+    <a href="https://github.com/soyrageagency/rage-motion">GitHub</a>
+    <a class="nav-cta" href="https://soyrage.es/" data-rm-magnetic data-rm-ripple>SoyRage</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <p class="eyebrow" data-rm-reveal="fade">
+      <span data-rm-decrypt>33 componentes · 0 dependencias</span>
+    </p>
+
+    <h1 class="display" data-rm-text="chars" data-rm-effect="rise">
+      Movimiento de premio
+    </h1>
+
+    <p class="lede" data-rm-reveal="up" data-rm-delay="240">
+      Animación para la web que no arrastra un runtime, no rompe el layout y no
+      se olvida de quien pidió menos movimiento.
+      <br>
+      Cópiate un archivo o instálate el paquete —
+      <strong data-rm-shiny data-rm-base="#0e0e0e" data-rm-highlight="#2aa7e4">y enséñaselo a tu IA</strong>.
+    </p>
+
+    <div class="hero-cta" data-rm-reveal="up" data-rm-delay="360">
+      <button class="btn btn-primary" data-copy="npm i @soyrageagency/rage-motion" data-rm-magnetic data-rm-ripple>
+        <code>npm i @soyrageagency/rage-motion</code>
+        <span class="btn-hint">copiar</span>
+      </button>
+      <a class="btn btn-ghost" href="#componentes" data-rm-magnetic>Ver los 33 ↓</a>
+    </div>
+
+    <p class="hero-note" data-rm-reveal="fade" data-rm-delay="520">
+      <span data-rm-type="scroll reveals|texto que se parte|cursor magnético|transiciones de página|marquesinas|antes y después"></span>
+    </p>
+  </div>
+
+  <div class="hero-lines" data-rm-lines data-rm-columns="18" data-rm-rows="7"></div>
+</section>
+
+<!-- ── Band ─────────────────────────────────────────────────────────────── -->
+<div class="band" data-rm-marquee data-rm-speed="70">
+  <span>Sin dependencias</span><span aria-hidden="true">✦</span>
+  <span>Respeta prefers-reduced-motion</span><span aria-hidden="true">✦</span>
+  <span>Solo transform y opacity</span><span aria-hidden="true">✦</span>
+  <span>MIT</span><span aria-hidden="true">✦</span>
+  <span>4 KB por componente</span><span aria-hidden="true">✦</span>
+  <span>Servidor MCP incluido</span><span aria-hidden="true">✦</span>
+</div>
+
+<!-- ── Por qué ──────────────────────────────────────────────────────────── -->
+<section class="section" id="porque">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">Por qué existe</p>
+    <div class="two-col">
+      <div data-rm-reveal="up">
+        <h2 class="h2">Casi toda la animación web está rota de la misma forma.</h2>
+        <p class="body">
+          Un <code>opacity: 0</code> en el CSS y un <em>listener</em> de scroll
+          por elemento. El día que el script no carga, la página no aparece
+          <em>quieta</em>: aparece <em>en blanco</em>. Y en un móvil de gama
+          media cada scroll son cuatro <em>layouts</em> forzados por fotograma.
+        </p>
+        <p class="body">
+          Aquí el estado inicial lo pone JavaScript, nunca el CSS. Si el script
+          falla, la página se ve — sin animar, pero se ve. Y todos los efectos de
+          scroll comparten una sola lectura por fotograma.
+        </p>
+      </div>
+      <ul class="facts">
+        <li data-rm-reveal="up" data-rm-delay="60">
+          <strong data-rm-count>0</strong>
+          <span>dependencias, hoy y siempre</span>
+        </li>
+        <li data-rm-reveal="up" data-rm-delay="140">
+          <strong data-rm-count>33</strong>
+          <span>componentes, cada uno en su archivo</span>
+        </li>
+        <li data-rm-reveal="up" data-rm-delay="220">
+          <strong data-rm-count>1</strong>
+          <span>lectura de scroll por fotograma, la compartan los que la compartan</span>
+        </li>
+        <li data-rm-reveal="up" data-rm-delay="300">
+          <strong data-rm-count>100%</strong>
+          <span>honra <code>prefers-reduced-motion</code> sin esconder contenido</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Componentes ──────────────────────────────────────────────────────── -->
+<section class="section" id="componentes">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">La colección</p>
+    <h2 class="h2 big" data-rm-text="words" data-rm-effect="rise">Míralos funcionando</h2>
+    <p class="body wide" data-rm-reveal="up">
+      Todo lo de abajo está corriendo ahora mismo en esta página, con el mismo
+      código que te llevas. Pasa el ratón, haz clic, arrastra.
+    </p>
+
+    <div class="grid">
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>reveal</h3><code>data-rm-reveal</code></header>
+        <div class="stage stage-reveal">
+          <div class="chip" data-rm-reveal="up">up</div>
+          <div class="chip" data-rm-reveal="left">left</div>
+          <div class="chip" data-rm-reveal="scale">scale</div>
+        </div>
+        <p>Entra al aparecer. El estado inicial lo pone JS, no el CSS.</p>
+        <button class="copy" data-copy='<div data-rm-reveal="up">…</div>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>textReveal</h3><code>data-rm-text</code></header>
+        <div class="stage">
+          <p class="stage-display" data-rm-text="chars" data-rm-effect="flip">Letra a letra</p>
+        </div>
+        <p>Parte el titular sin destrozar el nombre accesible ni el copiar-pegar.</p>
+        <button class="copy" data-copy='<h1 data-rm-text="chars" data-rm-effect="rise">…</h1>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>waveText</h3><code>data-rm-wave</code></header>
+        <div class="stage">
+          <p class="stage-display" data-rm-wave data-rm-lift="22">Pasa el ratón</p>
+        </div>
+        <p>La ola cae en coseno sobre un radio, por eso se lee como ola.</p>
+        <button class="copy" data-copy='<h2 data-rm-wave>…</h2>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>decrypt</h3><code>data-rm-decrypt</code></header>
+        <div class="stage">
+          <p class="stage-mono" data-rm-decrypt>SOYRAGE AGENCY</p>
+        </div>
+        <p>Reserva el ancho final, así la línea no se mueve mientras cuaja.</p>
+        <button class="copy" data-copy='<span data-rm-decrypt>…</span>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>glitch</h3><code>data-rm-glitch</code></header>
+        <div class="stage">
+          <p class="stage-display" data-rm-glitch="hover">404</p>
+        </div>
+        <p>Separación RGB con pseudo-elementos: cero nodos extra.</p>
+        <button class="copy" data-copy='<h2 data-rm-glitch="hover">…</h2>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>countUp</h3><code>data-rm-count</code></header>
+        <div class="stage">
+          <p class="stage-display"><span data-rm-count>1.250</span></p>
+        </div>
+        <p>Lee el valor <em>y</em> el formato del texto que ya hay. «1.250» cuenta en español.</p>
+        <button class="copy" data-copy='<strong data-rm-count>1.250</strong>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>typewriter</h3><code>data-rm-type</code></header>
+        <div class="stage">
+          <p class="stage-display small"><span data-rm-type="Diseño|Desarrollo|Motion|Marca"></span></p>
+        </div>
+        <p>Reserva la frase más larga; el nombre accesible es la lista entera.</p>
+        <button class="copy" data-copy='<span data-rm-type="Uno|Dos|Tres"></span>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-tilt="9">
+        <header><h3>tilt</h3><code>data-rm-tilt</code></header>
+        <div class="stage stage-tilt">
+          <span class="badge">3D</span>
+        </div>
+        <p>Tope en 10 grados: pasados doce el texto de dentro deja de leerse.</p>
+        <button class="copy" data-copy='<article data-rm-tilt="8">…</article>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card demo-card-bare" data-rm-reveal="up" data-rm-border>
+        <header><h3>border</h3><code>data-rm-border</code></header>
+        <div class="stage stage-border"><span class="badge">@property</span></div>
+        <p>El ángulo se registra con <code>@property</code>: barre en vez de saltar.</p>
+        <button class="copy" data-copy='<article data-rm-border>…</article>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>magnetLines</h3><code>data-rm-lines</code></header>
+        <div class="stage stage-lines" data-rm-lines data-rm-columns="10" data-rm-rows="5"></div>
+        <p>Giran por el camino corto; si no, el campo se desboca al cruzar por detrás.</p>
+        <button class="copy" data-copy='<div data-rm-lines data-rm-columns="16"></div>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>orbit</h3><code>data-rm-orbit</code></header>
+        <div class="stage stage-orbit">
+          <div data-rm-orbit data-rm-radius="62" data-rm-duration="16000">
+            <span class="pill">JS</span><span class="pill">CSS</span>
+            <span class="pill">WAAPI</span><span class="pill">MCP</span>
+          </div>
+        </div>
+        <p>El anillo gira y cada pieza contragira, así los logos no dan volteretas.</p>
+        <button class="copy" data-copy='<div data-rm-orbit data-rm-radius="140">…</div>'>copiar markup</button>
+      </article>
+
+      <article class="demo-card" data-rm-reveal="up" data-rm-spotlight>
+        <header><h3>ripple</h3><code>data-rm-ripple</code></header>
+        <div class="stage stage-ripple">
+          <button class="btn btn-primary wide-btn" data-rm-ripple>Haz clic</button>
+        </div>
+        <p>El anillo llega a la esquina más lejana, sea cual sea la proporción.</p>
+        <button class="copy" data-copy='<button data-rm-ripple>…</button>'>copiar markup</button>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Compare ──────────────────────────────────────────────────────────── -->
+<section class="section section-tight">
+  <div class="wrap">
+    <div class="split">
+      <div data-rm-reveal="up">
+        <p class="kicker">compare</p>
+        <h2 class="h2">Antes y después, también con el teclado.</h2>
+        <p class="body">
+          Casi todos los <em>sliders</em> de antes/después de la web sólo
+          funcionan con puntero, lo que los deja inservibles con teclado e
+          invisibles para un lector de pantalla. Este es un
+          <code>role="slider"</code> de verdad: flechas, Home, End y valor
+          anunciado. Arrastrar es el extra, no la única puerta.
+        </p>
+        <button class="copy" data-copy='<div data-rm-compare><img data-rm-before …><img data-rm-after …></div>'>copiar markup</button>
+      </div>
+      <div class="compare-holder" data-rm-reveal="up" data-rm-delay="120">
+        <div data-rm-compare data-rm-label="Comparar antes y después">
+          <img data-rm-before src="./assets/before.svg" alt="Sin animación">
+          <img data-rm-after src="./assets/after.svg" alt="Con rage-motion">
+        </div>
+        <p class="hint">Arrastra, o enfoca el tirador y usa ← →</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MCP ──────────────────────────────────────────────────────────────── -->
+<section class="section section-dark" id="mcp">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">Lo que nadie más trae</p>
+    <h2 class="h2 big" data-rm-text="words" data-rm-effect="rise">
+      Enséñale estos componentes a tu IA
+    </h2>
+    <p class="body wide" data-rm-reveal="up">
+      Le pides a cualquier asistente «un scroll reveal» y te escribe el mismo
+      recorte de siempre: un <em>listener</em> de scroll, sin
+      <code>prefers-reduced-motion</code>, con el contenido escondido en el CSS.
+      No es que sea descuidado — es que no sabe qué tienes en el proyecto, así
+      que escribe lo más promedio que podría funcionar.
+    </p>
+
+    <div class="mcp-grid">
+      <div class="mcp-before" data-rm-reveal="up">
+        <p class="tag tag-bad">Sin MCP</p>
+<pre><code>window.addEventListener("scroll", () =&gt; {
+  document.querySelectorAll(".fade").forEach((el) =&gt; {
+    if (el.getBoundingClientRect().top &lt; innerHeight)
+      el.classList.add("show");
+  });
+});</code></pre>
+        <p class="tag-note">Una lectura de layout por elemento y por evento. Y un <code>.fade { opacity: 0 }</code> esperando a que el script no cargue.</p>
+      </div>
+
+      <div class="mcp-after" data-rm-reveal="up" data-rm-delay="120">
+        <p class="tag tag-good">Con MCP</p>
+<pre><code>&lt;div data-rm-reveal="up" data-rm-delay="120"&gt;…&lt;/div&gt;</code></pre>
+        <p class="tag-note">Mira antes de escribir, encuentra el componente que ya tienes, y te cuenta por qué lo eligió — porque el razonamiento viaja con el componente.</p>
+      </div>
+    </div>
+
+    <div class="install" data-rm-reveal="up">
+      <h3>Instalar en 10 segundos</h3>
+      <div class="install-row">
+        <span>Claude Code</span>
+        <button class="copy mono" data-copy="claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp">claude mcp add rage-motion -- npx -y @soyrageagency/rage-motion-mcp</button>
+      </div>
+      <div class="install-row">
+        <span>Cursor / Claude Desktop</span>
+        <button class="copy mono" data-copy='{"mcpServers":{"rage-motion":{"command":"npx","args":["-y","@soyrageagency/rage-motion-mcp"]}}}'>{"mcpServers": {"rage-motion": {"command": "npx", …}}}</button>
+      </div>
+      <p class="hint">Sin claves, sin cuenta, sin red. El servidor sólo lee archivos del paquete instalado.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Empezar ──────────────────────────────────────────────────────────── -->
+<section class="section" id="empezar">
+  <div class="wrap">
+    <p class="kicker" data-rm-reveal="up">Empezar</p>
+    <div class="start">
+      <div class="start-card" data-rm-reveal="up" data-rm-spotlight>
+        <h3>Un archivo</h3>
+        <p>Cada componente depende sólo de <code>core/motion.js</code>. Copia los dos y ya está — así lo va a usar casi todo el mundo, y está pensado para eso.</p>
+      </div>
+      <div class="start-card" data-rm-reveal="up" data-rm-delay="90" data-rm-spotlight>
+        <h3>El paquete</h3>
+<pre><code>npm i @soyrageagency/rage-motion</code></pre>
+<pre><code>import { init } from "@soyrageagency/rage-motion";
+import "@soyrageagency/rage-motion/css";
+init();</code></pre>
+      </div>
+      <div class="start-card" data-rm-reveal="up" data-rm-delay="180" data-rm-spotlight>
+        <h3>Sin build</h3>
+<pre><code>&lt;link rel="stylesheet" href="…/rage-motion.css"&gt;
+&lt;script type="module"&gt;
+  import { init } from "…/index.js";
+  init();
+&lt;/script&gt;</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div>
+      <p class="footer-brand">rage-motion</p>
+      <p class="footer-note">
+        Hecho por <a href="https://soyrage.es/">SoyRage Agency</a> — diseño,
+        desarrollo y motion. MIT: llévatelo y véndelo si quieres.
+      </p>
+    </div>
+    <nav class="footer-links">
+      <a href="https://github.com/soyrageagency/rage-motion">GitHub</a>
+      <a href="https://www.npmjs.com/package/@soyrageagency/rage-motion">npm</a>
+      <a href="https://github.com/soyrageagency/rage-motion/blob/main/ROADMAP.md">Roadmap</a>
+      <a href="https://soyrage.es/">soyrage.es</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="toast" role="status" aria-live="polite" hidden></div>
+
+<script type="module" src="./demo.js"></script>
+</body>
+</html>

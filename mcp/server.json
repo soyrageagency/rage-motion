@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.soyrageagency/rage-motion-mcp",
+  "description": "Award-grade web animation, served to your assistant. Gives Claude, Cursor and friends the real rage-motion components — source, markup and design tokens — so they stop improvising generic scroll listeners and keyframes.",
+  "status": "active",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/soyrageagency/rage-motion",
+    "source": "github",
+    "subfolder": "mcp"
+  },
+  "websiteUrl": "https://soyrageagency.github.io/rage-motion/",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@soyrageagency/rage-motion-mcp",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}

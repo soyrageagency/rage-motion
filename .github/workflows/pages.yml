@@ -1,0 +1,54 @@
+name: Demo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, and never cancel one halfway: an interrupted
+# deploy would leave the published site in whatever state it got to.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and publish
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build the demo
+        run: npm run build:demo
+
+      # The demo is the documentation, so a broken one is a broken manual.
+      # Verify the built output before it goes anywhere.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Check the built demo
+        run: node scripts/check.mjs --dist
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

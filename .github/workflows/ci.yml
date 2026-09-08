@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests · Node ${{ matrix.node }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests
+        run: npm test
+
+      - name: MCP server, over the real protocol
+        run: npm run test:mcp
+
+  browser:
+    name: The demo, in a real browser
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # Only Chromium: this checks that the components run and leave nothing
+      # invisible, which is not a rendering-engine question.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Check the demo
+        run: npm run check
+
+      - name: Check what actually gets published
+        run: npm run check:dist
+
+  package:
+    name: The published package
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # A file missing from `files` is invisible until someone installs the
+      # package and it fails for them. Pack both, install them into an empty
+      # project, and run the MCP server the way a user would.
+      - name: Pack and install into a clean project
+        run: |
+          mkdir -p /tmp/probe
+          npm pack --pack-destination /tmp/probe
+          npm pack ./mcp --pack-destination /tmp/probe
+          cd /tmp/probe
+          npm init -y > /dev/null
+          npm install ./soyrageagency-rage-motion-*.tgz ./soyrageagency-rage-motion-mcp-*.tgz
+
+      - name: The installed server serves the real source
+        run: node scripts/probe-install.mjs /tmp/probe
