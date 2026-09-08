@@ -15,7 +15,7 @@
   </picture>
 </a>
 
-**Award-grade motion for the web, with zero dependencies.** 100 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
+**Award-grade motion for the web, with zero dependencies.** 127 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
 
 *"A headline that reacts to the cursor." · "A carousel that works with a keyboard." · "A menu that traps focus properly." · "A counter that rolls like an odometer."*
 
@@ -132,7 +132,7 @@ stop();   // puts everything back exactly as it was
 
 ---
 
-## The 100 components
+## The 127 components
 
 **Entrances** — `reveal`, with **50 named start states**: up · down · left · right and their `-far` variants · glide · fade · scale · zoom · shrink · pop · rise · drop · spring-up · spring-left · blur · blur-only · blur-up · blur-scale · drift-left · drift-right · tilt-left · tilt-right · roll-left · roll-right · swing · twist · spin · skew-x · skew-y · flip-x · flip-y · unfold · fold-up · door · door-right · corner · lift-3d · curtain-up · curtain-down · curtain-left · curtain-right · iris · wipe-diagonal · mask · slat · none
 
@@ -144,7 +144,7 @@ stop();   // puts everything back exactly as it was
 
 **Cursors** — `cursor` · `target` · `crosshair` · `splash` · `magnetic`
 
-**Cards** — `spotlight` · `tilt` · `border`
+**Cards** — `spotlight` · `tilt` · `border` · `layers` · `edgeLight` · `fan` · `cardParallax`, plus `cardKit` with **24 named looks**
 
 **Surfaces** — `beam` · `trail` · `glare` · `electric` · `blurEdge`
 
@@ -154,13 +154,15 @@ stop();   // puts everything back exactly as it was
 
 **Page chrome** — `scrollbar` · `dropdown` · `tooltip` · `toggle`
 
+**Forms** — `floatLabel` · `autoGrow` · `charCount` · `passwordToggle` · `validate` · `rangeFill` · `fileDrop` · `stepper` · `fieldFocus` · `submitState` · `mascot` · `successButton` · `otp` · `padlock`
+
 **Things that open** — `accordion` · `flip` · `expand` · `lightbox`
 
 **Fields** — `waves` · `retroGrid` · `dotGrid` · `grain`
 
 **Scroll** — `parallax` · `progress` · `horizontal` · `stack` · `scrub` · `skew`
 
-**Scroll set pieces** — `tracing` · `flatten` · `sticky`
+**Scroll set pieces** — `tracing` · `flatten` · `sticky` · `mosaic` · `zoomOut` · `lineByLine` · `textMask` · `timeline` · `splitScroll` · `revealGrid` · `pinnedGallery`
 
 **Media** — `imageReveal` · `pixelate` · `hoverPreview` · `marquee`
 

@@ -39,6 +39,14 @@ export { scrollbar, dropdown, tooltip, toggle } from "./components/chrome.js";
 export { dots, stripes, corners, scanline, mesh, starfield } from "./components/decor.js";
 export { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 export { command, sidebar, rail, bottomNav, mega } from "./components/navbars.js";
+export {
+  floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
+  stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
+} from "./components/forms.js";
+export { cardKit, CARD_LOOKS, layers, edgeLight, fan, cardParallax } from "./components/card-kit.js";
+export {
+  mosaic, zoomOut, lineByLine, textMask, timeline, splitScroll, revealGrid, pinnedGallery,
+} from "./components/pagefx.js";
 export { pageTransition, transitionTo } from "./components/transitions.js";
 
 import { reveal } from "./components/reveal.js";
@@ -63,6 +71,15 @@ import { scrollbar, dropdown, tooltip, toggle } from "./components/chrome.js";
 import { dots, stripes, corners, scanline, mesh, starfield } from "./components/decor.js";
 import { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 import { command, sidebar, rail, bottomNav, mega } from "./components/navbars.js";
+import {
+  floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
+  stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
+} from "./components/forms.js";
+import { cardKit, layers, edgeLight, fan, cardParallax } from "./components/card-kit.js";
+import {
+  mosaic, zoomOut, lineByLine, textMask, timeline, splitScroll, revealGrid, pinnedGallery,
+} from "./components/pagefx.js";
+
 
 /**
  * Start every component that is driven purely by markup.
@@ -166,6 +183,33 @@ export function init(options = {}) {
     rail("[data-rm-rail]", options.rail),
     bottomNav("[data-rm-bottom]", options.bottomNav),
     mega("[data-rm-mega]", options.mega),
+    floatLabel("[data-rm-float]", options.floatLabel),
+    autoGrow("[data-rm-grow]", options.autoGrow),
+    charCount("[data-rm-count-chars]", options.charCount),
+    passwordToggle("[data-rm-password]", options.passwordToggle),
+    validate("[data-rm-validate]", options.validate),
+    rangeFill("[data-rm-range]", options.rangeFill),
+    fileDrop("[data-rm-drop]", options.fileDrop),
+    stepper("[data-rm-steps]", options.stepper),
+    fieldFocus("[data-rm-field-focus]", options.fieldFocus),
+    submitState("[data-rm-submit]", options.submitState),
+    mascot("[data-rm-mascot]", options.mascot),
+    successButton("[data-rm-success]", options.successButton),
+    otp("[data-rm-otp]", options.otp),
+    padlock("[data-rm-lock]", options.padlock),
+    cardKit("[data-rm-card-kit]", options.cardKit),
+    layers("[data-rm-layers]", options.layers),
+    edgeLight("[data-rm-edge]", options.edgeLight),
+    fan("[data-rm-fan]", options.fan),
+    cardParallax("[data-rm-card-parallax]", options.cardParallax),
+    mosaic("[data-rm-mosaic]", options.mosaic),
+    zoomOut("[data-rm-zoom-out]", options.zoomOut),
+    lineByLine("[data-rm-lines-in]", options.lineByLine),
+    textMask("[data-rm-text-mask]", options.textMask),
+    timeline("[data-rm-timeline]", options.timeline),
+    splitScroll("[data-rm-split-scroll]", options.splitScroll),
+    revealGrid("[data-rm-reveal-grid]", options.revealGrid),
+    pinnedGallery("[data-rm-pinned]", options.pinnedGallery),
   ];
   return () => stops.forEach((stop) => stop?.());
 }

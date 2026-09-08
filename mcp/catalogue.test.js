@@ -24,8 +24,14 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // scope, so reading the barrel as text is enough — and avoids needing a DOM.
 const barrel = readFileSync(resolve(root, "src/index.js"), "utf8");
 
-/** Component names the barrel re-exports from `components/`. */
-const exported = [...barrel.matchAll(/^export \{ ([^}]+) \} from "\.\/components\//gm)]
+/**
+ * Component names the barrel re-exports from `components/`.
+ *
+ * The pattern has to span lines: a long export list gets wrapped, and a
+ * single-line regex silently reports those files as exporting nothing — which
+ * would let this guard pass by seeing less rather than by finding less.
+ */
+const exported = [...barrel.matchAll(/export \{([^}]*)\} from "\.\/components\/[^"]+";/g)]
   .flatMap((match) => match[1].split(",").map((name) => name.trim()))
   .filter(Boolean);
 
@@ -37,7 +43,7 @@ test("every exported component is in the catalogue", () => {
   // Not components: `transitionTo` is a helper documented with
   // `pageTransition`, and the two SHOUTING exports are the lists of named
   // variants that `reveal` and `buttonKit` document in their own entries.
-  const helpers = new Set(["transitionTo", "REVEAL_EFFECTS", "BUTTON_STYLES"]);
+  const helpers = new Set(["transitionTo", "REVEAL_EFFECTS", "BUTTON_STYLES", "CARD_LOOKS"]);
   const missing = exported.filter((name) => !helpers.has(name) && !findComponent(name));
   assert.deepEqual(missing, [], `not served over MCP: ${missing.join(", ")}`);
 });

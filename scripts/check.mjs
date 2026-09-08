@@ -149,6 +149,15 @@ async function run(browser, { reducedMotion }) {
     mesh: document.querySelectorAll(".rm-mesh i").length,
     stroke: document.querySelectorAll(".rm-stroke-svg rect").length,
     effectTiles: document.querySelectorAll(".effect-tile[data-rm-reveal]").length,
+    cardLooks: document.querySelectorAll(".look-card.rm-card").length,
+    floatLabels: document.querySelectorAll(".rm-float-label").length,
+    otpBoxes: document.querySelectorAll(".rm-otp-box").length,
+    mascotFace: document.querySelectorAll(".rm-mascot").length,
+    lockBody: document.querySelectorAll(".rm-lock-body").length,
+    successMark: document.querySelectorAll(".rm-success-mark").length,
+    mosaicTiles: document.querySelectorAll(".rm-mosaic-tile").length,
+    timelineItems: document.querySelectorAll(".rm-timeline-item").length,
+    linesIn: document.querySelectorAll(".rm-lines-in .rm-line").length,
     buttonLooks: document.querySelectorAll(".button-cell .rm-btn").length,
     railMarker: document.querySelectorAll(".rm-rail-marker").length,
     bottomPip: document.querySelectorAll(".rm-bottom-pip").length,
@@ -185,12 +194,21 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: five scrollbars styled, plus the page`, started.scrollbars === 6, String(started.scrollbars));
   check(`${label}: the dropdown is a real menu`, started.dropdown === 1, String(started.dropdown));
   check(`${label}: the tooltip is announced`, started.tooltip === 1, String(started.tooltip));
-  check(`${label}: the toggle kept its checkbox`, started.toggle === 1, String(started.toggle));
+  check(`${label}: the toggles kept their checkboxes`, started.toggle === 2, String(started.toggle));
   check(`${label}: the starfield is drawing`, started.stars === 1, String(started.stars));
   check(`${label}: mesh built its stops`, started.mesh === 4, String(started.mesh));
   check(`${label}: strokeDraw measured its rectangle`, started.stroke === 1, String(started.stroke));
   check(`${label}: all 50 reveal entrances are on the page`, started.effectTiles === 50, String(started.effectTiles));
   check(`${label}: all 52 button looks are on the page`, started.buttonLooks === 52, String(started.buttonLooks));
+  check(`${label}: all 24 card looks are on the page`, started.cardLooks === 24, String(started.cardLooks));
+  check(`${label}: floating labels mounted`, started.floatLabels >= 2, String(started.floatLabels));
+  check(`${label}: the code field built six boxes`, started.otpBoxes === 6, String(started.otpBoxes));
+  check(`${label}: the mascot is drawn`, started.mascotFace === 1, String(started.mascotFace));
+  check(`${label}: the padlock is drawn`, started.lockBody === 1, String(started.lockBody));
+  check(`${label}: the success tick is ready`, started.successMark === 1, String(started.successMark));
+  check(`${label}: the mosaic took its tiles`, started.mosaicTiles === 6, String(started.mosaicTiles));
+  check(`${label}: the timeline took its entries`, started.timelineItems === 3, String(started.timelineItems));
+  check(`${label}: the paragraph was split into lines`, started.linesIn >= 2, String(started.linesIn));
   check(`${label}: the rail placed its marker`, started.railMarker === 1, String(started.railMarker));
   check(`${label}: the bottom bar placed its indicator`, started.bottomPip === 1, String(started.bottomPip));
   check(`${label}: the mega panel mounted`, started.megaPanels === 1, String(started.megaPanels));
@@ -235,7 +253,7 @@ async function run(browser, { reducedMotion }) {
   const counted = await page.evaluate(
     () => document.querySelector("[data-rm-odometer]")?.getAttribute("aria-label") ?? "",
   );
-  check(`${label}: the counter still announces its value`, counted === "100", counted);
+  check(`${label}: the counter still announces its value`, counted === "127", counted);
 
   // The rotating words are decoration; the list of them is the content.
   const morphLabel = await page.evaluate(

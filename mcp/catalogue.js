@@ -63,6 +63,9 @@ const DISCLOSE = "src/components/disclose.js";
 const MOTIONFX = "src/components/motionfx.js";
 const BUTTONKIT = "src/components/button-kit.js";
 const NAVBARS = "src/components/navbars.js";
+const FORMS = "src/components/forms.js";
+const CARDKIT = "src/components/card-kit.js";
+const PAGEFX = "src/components/pagefx.js";
 const CHROME = "src/components/chrome.js";
 const DECOR = "src/components/decor.js";
 const TRANSITIONS = "src/components/transitions.js";
@@ -1661,6 +1664,427 @@ export const CATALOGUE = [
       "</nav>",
     usage: 'import { mega } from "@soyrageagency/rage-motion";\nmega();',
     options: [option("openDelay", "number", "90", "Hover intent in."), option("closeDelay", "number", "260", "Hover intent out.")],
+  },
+
+  // ── Forms ────────────────────────────────────────────────────────────────
+  {
+    name: "floatLabel",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-float",
+    summary: "A label that rises out of the field and stays up.",
+    notes:
+      "Staying up while there is a value is the whole difficulty — a label that " +
+      "drops back over typed text is the version everyone ships. The `<label>` " +
+      "is untouched, so clicking it still focuses the field and it is still the " +
+      "field's accessible name. `:placeholder-shown` answers \"is this empty?\" " +
+      "in CSS, so the raised state needs no JavaScript.",
+    example: '<div data-rm-float><input id="email" type="email" placeholder=" "><label for="email">Email</label></div>',
+    usage: 'import { floatLabel } from "@soyrageagency/rage-motion";\nfloatLabel();',
+    options: [option("duration", "number", "220", "The rise.")],
+  },
+  {
+    name: "autoGrow",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-grow",
+    summary: "A textarea that grows with its content, measuring nothing.",
+    notes:
+      "The wrapper is a grid sized by an invisible copy of the text and the " +
+      "textarea fills it. Nothing is measured, so it is correct on the first " +
+      "paint, after a font swap, after a paste and at every width — where the " +
+      "`scrollHeight` version is a frame late on all four.",
+    example: '<div data-rm-grow><textarea rows="2"></textarea></div>',
+    usage: 'import { autoGrow } from "@soyrageagency/rage-motion";\nautoGrow();',
+    options: [],
+  },
+  {
+    name: "charCount",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-count-chars",
+    summary: "A live character counter that is announced, not only shown.",
+    notes:
+      "It stays silent until the field is near its limit and only then starts " +
+      "speaking, because a counter that announces every keystroke is unusable " +
+      "with a screen reader on.",
+    example: '<textarea maxlength="280" data-rm-count-chars></textarea>',
+    usage: 'import { charCount } from "@soyrageagency/rage-motion";\ncharCount();',
+    options: [option("warnAt", "number", "0.8", "Share of the limit before it warns.")],
+  },
+  {
+    name: "passwordToggle",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-password",
+    summary: "Show and hide a password, as a real pressed button.",
+    notes:
+      "`aria-pressed`, so the state is announced rather than implied by an " +
+      "icon. Focus and the caret position are restored after the type changes, " +
+      "because switching `type` resets the selection and losing your place " +
+      "mid-password is exactly the moment you did not want it.",
+    example: '<div data-rm-password><input type="password"></div>',
+    usage: 'import { passwordToggle } from "@soyrageagency/rage-motion";\npasswordToggle();',
+    options: [option("show", "string", '"Show password"', "The label when hidden.")],
+  },
+  {
+    name: "validate",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-validate",
+    summary: "Inline validation wired into the field itself.",
+    notes:
+      "It uses the browser's own constraint validation rather than a second set " +
+      "of rules that will drift from the ones the server enforces. The message " +
+      "is linked with `aria-describedby` and the field marked `aria-invalid`, " +
+      "so the error is part of the field rather than red text near it. It waits " +
+      "for blur before the first complaint: telling someone their email is " +
+      "invalid after one letter is true and useless.",
+    example: '<form data-rm-validate><input type="email" required></form>',
+    usage: 'import { validate } from "@soyrageagency/rage-motion";\nvalidate();',
+    options: [],
+  },
+  {
+    name: "rangeFill",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-range",
+    summary: "A range input with a filled track.",
+    notes:
+      "The input is untouched: still a range, still keyboard-operable, still " +
+      "announced with its value. A custom property carries the position and the " +
+      "stylesheet paints the fill, so there is no second element pretending to " +
+      "be a slider and no drag handling to get wrong.",
+    example: '<input type="range" data-rm-range min="0" max="100">',
+    usage: 'import { rangeFill } from "@soyrageagency/rage-motion";\nrangeFill();',
+    options: [option("output", "boolean", "true", "Show the value beside it.")],
+  },
+  {
+    name: "fileDrop",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-drop",
+    summary: "A drop zone that is still a file input.",
+    notes:
+      "Dragging is added on top and the input keeps its own button, so the " +
+      "field can be reached with a keyboard. A drop zone with the input hidden " +
+      "behind `display: none` is a control nobody can use without a mouse, and " +
+      "it is the usual shape of this component.",
+    example: '<label data-rm-drop><input type="file"> Drop a file</label>',
+    usage: 'import { fileDrop } from "@soyrageagency/rage-motion";\nfileDrop();',
+    options: [option("empty", "string", '"No file chosen"', "Shown before a choice.")],
+  },
+  {
+    name: "stepper",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-steps",
+    summary: "A multi-step form with a progress line.",
+    notes:
+      "Each step is genuinely hidden when inactive, so a screen reader cannot " +
+      "wander into step three from step one and the browser will not try to " +
+      "validate a field nobody can see. Moving forward runs the browser's own " +
+      "validation on the current step only.",
+    example: "<form data-rm-steps><fieldset data-rm-step>…</fieldset><button data-rm-step-next>Next</button></form>",
+    usage: 'import { stepper } from "@soyrageagency/rage-motion";\nstepper();',
+    options: [option("duration", "number", "320", "The slide between steps.")],
+  },
+  {
+    name: "fieldFocus",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-field-focus",
+    summary: "A focus ring that draws itself around the field.",
+    notes:
+      "Decoration on top of the real focus outline, never instead of it: it is " +
+      "drawn on `:focus-visible`, so it appears for the keyboard and stays out " +
+      "of the mouse's way, and removing the component leaves the field's own " +
+      "focus style intact.",
+    example: "<input data-rm-field-focus>",
+    usage: 'import { fieldFocus } from "@soyrageagency/rage-motion";\nfieldFocus();',
+    options: [option("color", "colour", '"#2aa7e4"', "The ring.")],
+  },
+  {
+    name: "submitState",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-submit",
+    summary: "A submit button that shows it is working.",
+    notes:
+      "`aria-busy` and a disabled state while the form is in flight, so a " +
+      "second click cannot double-submit and the wait is announced rather than " +
+      "only spinning. Call `button.rmSettle(ok)` when your request finishes.",
+    example: "<button data-rm-submit>Send</button>",
+    usage: 'import { submitState } from "@soyrageagency/rage-motion";\nsubmitState();',
+    options: [option("busy", "string", '"Working…"', "The label while it waits.")],
+  },
+  {
+    name: "mascot",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-mascot",
+    summary: "A face that covers its eyes while you type your password.",
+    notes:
+      "The one everybody knows, and it earns its place: it makes the most " +
+      "anxious field on any form say, in a way you feel rather than read, that " +
+      "nobody is looking. It watches while you type your email, hides when the " +
+      "password takes focus, and peeks when you press show — so the animation " +
+      "is telling you the truth about the field's state rather than playing a " +
+      "loop. Inline SVG, so it inherits the page's colour and needs no asset.",
+    example: '<div data-rm-mascot><input type="email"><input type="password"></div>',
+    usage: 'import { mascot } from "@soyrageagency/rage-motion";\nmascot();',
+    options: [option("size", "number", "96", "How big the face is.")],
+  },
+  {
+    name: "successButton",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-success",
+    summary: "A submit button that collapses into a drawn tick.",
+    notes:
+      "The label goes, the button pulls into a circle, and the tick draws " +
+      "itself with `stroke-dashoffset` — a real path being drawn rather than an " +
+      "icon fading in, which is the difference between the moment landing and " +
+      "it merely happening. It stays a real button: `aria-busy` while it works, " +
+      "the result announced, and reversible, because a dead circle after a " +
+      "failure is worse than no feedback. Call `rmSuccess()` or `rmFail()`.",
+    example: "<button data-rm-success>Create account</button>",
+    usage:
+      'import { successButton } from "@soyrageagency/rage-motion";\n' +
+      "successButton();\n" +
+      "// then, when your request settles:\nbutton.rmSuccess();",
+    options: [option("hold", "number", "1800", "How long the tick stays before it resets.")],
+  },
+  {
+    name: "otp",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-otp",
+    summary: "A one-time code, one box per digit.",
+    notes:
+      "Typing advances, Backspace on an empty box steps back, arrows move, and " +
+      "pasting a whole code fills every box at once — which is what people " +
+      "actually do with a code and what almost every version of this drops. The " +
+      "first box carries `autocomplete=\"one-time-code\"`, so a phone offers the " +
+      "code straight from the message.",
+    example: '<div data-rm-otp data-rm-length="6"></div>',
+    usage: 'import { otp } from "@soyrageagency/rage-motion";\notp();',
+    options: [option("length", "number", "6", "Boxes, clamped to 10.")],
+  },
+  {
+    name: "padlock",
+    category: "form",
+    file: FORMS,
+    attribute: "data-rm-lock",
+    summary: "A padlock that opens when the answer is right and slams when it is not.",
+    notes:
+      "The shackle lifts and swings about its hinge, the body kicks, and the " +
+      "whole thing settles — or it slams and the field shakes. Two states, both " +
+      "physical, because right and wrong are the two things this control has to " +
+      "say and a colour change says neither loudly enough. The lock is " +
+      "`aria-hidden` and the result is announced, so it is never the only way " +
+      "to know. Call `wrapper.rmUnlock()` or `wrapper.rmDeny()`.",
+    example: '<div data-rm-lock><input type="password"></div>',
+    usage: 'import { padlock } from "@soyrageagency/rage-motion";\npadlock();\n// wrapper.rmUnlock();',
+    options: [option("size", "number", "68", "How big the lock is.")],
+  },
+
+  // ── Cards ────────────────────────────────────────────────────────────────
+  {
+    name: "cardKit",
+    category: "cards",
+    file: CARDKIT,
+    attribute: "data-rm-card-kit",
+    summary: "Twenty-four named card looks, on one component.",
+    notes:
+      "The same bargain the button kit makes: one component with a named look, " +
+      "so all twenty-four share the guarantees rather than each re-earning " +
+      "them. None animates a width, a height, a padding or a margin, which is " +
+      "what stops a grid of cards reflowing every time the pointer crosses one " +
+      "— the commonest way a nice card hover ruins a page. Every look answers " +
+      "to `:hover` and `:focus-within`.\n\n" +
+      "Raise: lift, lift-glow, lift-shadow, float, press-in, settle. Edge: " +
+      "edge-line, edge-grow, corner-fold, notch, frame, outline-draw. Light: " +
+      "sheen, gradient-edge, glow-ring, spot, beam-top, vignette. Content: " +
+      "zoom-media, pan-media, reveal-meta, slide-title, blur-out, split. " +
+      "CARD_LOOKS exports the list.",
+    example: '<article data-rm-card-kit="lift-glow">…</article>',
+    usage: 'import { cardKit, CARD_LOOKS } from "@soyrageagency/rage-motion";\ncardKit();',
+    options: [option("look", "one of CARD_LOOKS", '"lift"', "The fallback for an unknown name.")],
+  },
+  {
+    name: "layers",
+    category: "cards",
+    file: CARDKIT,
+    attribute: "data-rm-layers",
+    summary: "A card whose layers move against each other.",
+    notes:
+      "Depth is a multiplier rather than a pixel value, so the effect is the " +
+      "same on a small card and a large one — a fixed offset looks right on " +
+      "exactly one size and wrong on every other.",
+    example: '<article data-rm-layers><img data-rm-depth="0.2" src="…" alt=""><h3 data-rm-depth="0.6">Title</h3></article>',
+    usage: 'import { layers } from "@soyrageagency/rage-motion";\nlayers();',
+    options: [option("travel", "number", "18", "How far the deepest layer moves.")],
+  },
+  {
+    name: "edgeLight",
+    category: "cards",
+    file: CARDKIT,
+    attribute: "data-rm-edge",
+    summary: "A border highlight that follows the pointer around the edge.",
+    notes:
+      "The angle from the card's centre to the pointer is written to a custom " +
+      "property and a conic gradient points at it. One listener for the set, " +
+      "one property write per card per frame, and the gradient composites — " +
+      "which is why a grid of twenty costs about what one does.",
+    example: "<article data-rm-edge>…</article>",
+    usage: 'import { edgeLight } from "@soyrageagency/rage-motion";\nedgeLight();',
+    options: [option("spread", "number", "60", "How wide the lit arc is, in degrees.")],
+  },
+  {
+    name: "fan",
+    category: "cards",
+    file: CARDKIT,
+    attribute: "data-rm-fan",
+    summary: "A stack of cards that fans out.",
+    notes:
+      "The fan is computed from the number of cards and measured from the " +
+      "middle, so three cards and seven cards both open evenly and both look " +
+      "deliberate.",
+    example: "<div data-rm-fan><article>…</article><article>…</article></div>",
+    usage: 'import { fan } from "@soyrageagency/rage-motion";\nfan();',
+    options: [option("angle", "number", "7", "Degrees between cards.")],
+  },
+  {
+    name: "cardParallax",
+    category: "cards",
+    file: CARDKIT,
+    attribute: "data-rm-card-parallax",
+    summary: "A card whose media drifts as the page scrolls.",
+    notes:
+      "Bound to how far the card has crossed the viewport, so it runs backwards " +
+      "on the way up, and it only computes for cards actually on screen.",
+    example: '<article data-rm-card-parallax><img src="…" alt=""></article>',
+    usage: 'import { cardParallax } from "@soyrageagency/rage-motion";\ncardParallax();',
+    options: [option("travel", "number", "28", "How far the media drifts.")],
+  },
+
+  // ── Page set pieces ──────────────────────────────────────────────────────
+  {
+    name: "mosaic",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-mosaic",
+    summary: "A grid of images that assembles as you arrive.",
+    notes:
+      "Each tile comes in from its own direction, worked out from where it sits " +
+      "relative to the middle of the grid — measured, not counted, so it stays " +
+      "right at every column count. That is what makes it read as a mosaic " +
+      "coming together rather than a set of cards fading in.",
+    example: '<div data-rm-mosaic><img src="…" alt=""><img src="…" alt=""></div>',
+    usage: 'import { mosaic } from "@soyrageagency/rage-motion";\nmosaic();',
+    options: [option("travel", "number", "60", "How far the outer tiles start from."), option("stagger", "number", "45", "Between tiles.")],
+  },
+  {
+    name: "zoomOut",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-zoom-out",
+    summary: "One image pulls back to reveal the grid it belongs to.",
+    notes:
+      "The move everybody copied from a keynote. It works because the scale is " +
+      "tied to scroll position rather than a timer, so you can stop halfway and " +
+      "it stays halfway.",
+    example: "<section data-rm-zoom-out><figure data-rm-zoom-hero>…</figure><div data-rm-zoom-rest>…</div></section>",
+    usage: 'import { zoomOut } from "@soyrageagency/rage-motion";\nzoomOut();',
+    options: [option("from", "number", "2.1", "Starting scale of the hero.")],
+  },
+  {
+    name: "lineByLine",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-lines-in",
+    summary: "A paragraph that rises a line at a time.",
+    notes:
+      "Split by line, not by word, because prose read one word at a time is a " +
+      "reading test. Lines are re-split when the width changes, since a line is " +
+      "a layout fact rather than a property of the text — the version that " +
+      "splits once is wrong at every other viewport.",
+    example: "<p data-rm-lines-in>Long copy that arrives line by line…</p>",
+    usage: 'import { lineByLine } from "@soyrageagency/rage-motion";\nlineByLine();',
+    options: [option("stagger", "number", "90", "Between lines.")],
+  },
+  {
+    name: "textMask",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-text-mask",
+    summary: "A headline cut out of the picture behind it.",
+    notes:
+      "`background-clip: text` on the real heading, so it is still a heading: " +
+      "selectable, searchable, read aloud and translated. The version made from " +
+      "an SVG mask or a PNG is a picture of a headline, and everything that " +
+      "makes text text is gone. The image drifts inside the letters as you " +
+      "scroll, which stops it looking like a static texture.",
+    example: '<h2 data-rm-text-mask data-rm-image="/hero.jpg">Award-grade</h2>',
+    usage: 'import { textMask } from "@soyrageagency/rage-motion";\ntextMask();',
+    options: [option("drift", "number", "18", "How far the picture moves inside the letters.")],
+  },
+  {
+    name: "timeline",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-timeline",
+    summary: "A spine that draws itself past each entry.",
+    notes:
+      "The line and the dots come from the same measurement, so a dot can never " +
+      "light before the line reaches it — which is the bug in every timeline " +
+      "built from two independent effects.",
+    example: "<ol data-rm-timeline><li data-rm-timeline-item>…</li></ol>",
+    usage: 'import { timeline } from "@soyrageagency/rage-motion";\ntimeline();',
+    options: [option("line", "number", "0.6", "Where the reading line sits, 0-1.")],
+  },
+  {
+    name: "splitScroll",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-split-scroll",
+    summary: "Two columns travelling at different rates.",
+    notes:
+      "Both columns move with `transform`, so they never change height and the " +
+      "page's scroll length is exactly what the content says it is — which the " +
+      "version built with negative margins cannot promise.",
+    example: "<section data-rm-split-scroll><div data-rm-split-a>…</div><div data-rm-split-b>…</div></section>",
+    usage: 'import { splitScroll } from "@soyrageagency/rage-motion";\nsplitScroll();',
+    options: [option("offset", "number", "90", "How far apart they travel.")],
+  },
+  {
+    name: "revealGrid",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-reveal-grid",
+    summary: "A grid that fills in a wave from one corner.",
+    notes:
+      "Each cell's delay comes from its measured distance to the corner, so the " +
+      "wave stays diagonal whatever the column count and however the grid " +
+      "rewraps.",
+    example: '<div data-rm-reveal-grid data-rm-from="top-left">…</div>',
+    usage: 'import { revealGrid } from "@soyrageagency/rage-motion";\nrevealGrid();',
+    options: [option("from", "corner or center", '"top-left"', "Where the wave starts.")],
+  },
+  {
+    name: "pinnedGallery",
+    category: "scroll",
+    file: PAGEFX,
+    attribute: "data-rm-pinned",
+    summary: "A pinned frame whose picture changes as you read.",
+    notes:
+      "Close cousin of `sticky`, different in one way that matters: the frames " +
+      "cross-fade and scale together, so the change reads as a cut in a film " +
+      "rather than an image swap. The pinning is still CSS.",
+    example: "<section data-rm-pinned><img data-rm-pinned-frame src=\"…\" alt=\"\"><div data-rm-pinned-chapter>…</div></section>",
+    usage: 'import { pinnedGallery } from "@soyrageagency/rage-motion";\npinnedGallery();',
+    options: [option("line", "number", "0.5", "Where the reading line sits, 0-1.")],
   },
 
   // ── Pages ────────────────────────────────────────────────────────────────

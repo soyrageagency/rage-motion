@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — 100 web animation components, zero dependencies</title>
-<meta name="description" content="A catalogue of 100 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
+<title>rage-motion — 127 web animation components, zero dependencies</title>
+<meta name="description" content="A catalogue of 127 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="dark">
 
-<meta property="og:title" content="rage-motion — 100 web animation components, zero dependencies">
+<meta property="og:title" content="rage-motion — 127 web animation components, zero dependencies">
 <meta property="og:description" content="A catalogue of components with real technique behind them. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
@@ -53,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">100 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
+    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">127 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">100</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">127</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">25</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">28</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -135,6 +135,24 @@
           <li><b>buttonKit</b><code>data-rm-btn ×52</code></li>
         </ul>
 
+        <h3>Forms</h3>
+        <ul>
+          <li><b>floatLabel</b><code>data-rm-float</code></li>
+          <li><b>autoGrow</b><code>data-rm-grow</code></li>
+          <li><b>charCount</b><code>data-rm-count-chars</code></li>
+          <li><b>passwordToggle</b><code>data-rm-password</code></li>
+          <li><b>validate</b><code>data-rm-validate</code></li>
+          <li><b>rangeFill</b><code>data-rm-range</code></li>
+          <li><b>fileDrop</b><code>data-rm-drop</code></li>
+          <li><b>stepper</b><code>data-rm-steps</code></li>
+          <li><b>fieldFocus</b><code>data-rm-field-focus</code></li>
+          <li><b>submitState</b><code>data-rm-submit</code></li>
+          <li><b>mascot</b><code>data-rm-mascot</code></li>
+          <li><b>successButton</b><code>data-rm-success</code></li>
+          <li><b>otp</b><code>data-rm-otp</code></li>
+          <li><b>padlock</b><code>data-rm-lock</code></li>
+        </ul>
+
         <h3>Chrome</h3>
         <ul>
           <li><b>scrollbar</b><code>data-rm-scrollbar</code></li>
@@ -150,6 +168,11 @@
           <li><b>spotlight</b><code>data-rm-spotlight</code></li>
           <li><b>tilt</b><code>data-rm-tilt</code></li>
           <li><b>border</b><code>data-rm-border</code></li>
+          <li><b>cardKit</b><code>data-rm-card-kit ×24</code></li>
+          <li><b>layers</b><code>data-rm-layers</code></li>
+          <li><b>edgeLight</b><code>data-rm-edge</code></li>
+          <li><b>fan</b><code>data-rm-fan</code></li>
+          <li><b>cardParallax</b><code>data-rm-card-parallax</code></li>
           <li><b>glare</b><code>data-rm-glare</code></li>
           <li><b>trail</b><code>data-rm-trail</code></li>
           <li><b>electric</b><code>data-rm-electric</code></li>
@@ -234,6 +257,14 @@
           <li><b>tracing</b><code>data-rm-tracing</code></li>
           <li><b>flatten</b><code>data-rm-flatten</code></li>
           <li><b>sticky</b><code>data-rm-sticky</code></li>
+          <li><b>mosaic</b><code>data-rm-mosaic</code></li>
+          <li><b>zoomOut</b><code>data-rm-zoom-out</code></li>
+          <li><b>lineByLine</b><code>data-rm-lines-in</code></li>
+          <li><b>textMask</b><code>data-rm-text-mask</code></li>
+          <li><b>timeline</b><code>data-rm-timeline</code></li>
+          <li><b>splitScroll</b><code>data-rm-split-scroll</code></li>
+          <li><b>revealGrid</b><code>data-rm-reveal-grid</code></li>
+          <li><b>pinnedGallery</b><code>data-rm-pinned</code></li>
         </ul>
 
         <h3>Navigation</h3>
@@ -940,6 +971,126 @@
       </div>
       <button class="cell-copy" data-copy="<nav data-rm-mega><div data-rm-mega-item><button data-rm-mega-trigger>Products</button><div data-rm-mega-panel>…</div></div></nav>">copy</button>
     </article>
+  </div>
+
+  <!-- Forms -->
+  <div class="shell rail"><span class="rail-name">Forms</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide cell-tall">
+      <p class="cell-name">mascot · passwordToggle · floatLabel <span class="cell-hint">type in it</span></p>
+      <div class="cell-body form-body">
+        <div class="mascot-form" data-rm-mascot>
+          <div class="field" data-rm-float>
+            <input id="demo-email" class="input" type="email" placeholder=" " data-rm-field-focus>
+            <label for="demo-email">Email</label>
+          </div>
+          <div class="field" data-rm-float data-rm-password>
+            <input id="demo-pass" class="input" type="password" placeholder=" " data-rm-field-focus>
+            <label for="demo-pass">Password</label>
+          </div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-mascot><input type=&quot;email&quot;><input type=&quot;password&quot;></div>">copy</button>
+    </article>
+
+    <article class="cell cell-tall">
+      <p class="cell-name">successButton <span class="cell-hint">press it</span></p>
+      <div class="cell-body">
+        <button class="solid" id="success-demo" data-rm-success>Create account</button>
+      </div>
+      <button class="cell-copy" data-copy="<button data-rm-success>Create account</button>">copy</button>
+    </article>
+
+    <article class="cell cell-tall">
+      <p class="cell-name">padlock <span class="cell-hint">type 1234</span></p>
+      <div class="cell-body form-body">
+        <div class="lock-demo" data-rm-lock data-rm-size="72">
+          <input class="input lock-input" id="lock-input" type="password" placeholder="Passcode" aria-label="Passcode">
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-lock><input type=&quot;password&quot;></div>">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">otp <span class="cell-hint">type · paste a code</span></p>
+      <div class="cell-body"><div data-rm-otp data-rm-length="6"></div></div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-otp data-rm-length=&quot;6&quot;&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">rangeFill</p>
+      <div class="cell-body form-body">
+        <input class="range" type="range" data-rm-range min="0" max="100" value="42" aria-label="Amount">
+      </div>
+      <button class="cell-copy" data-copy="&lt;input type=&quot;range&quot; data-rm-range&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">toggle · charCount</p>
+      <div class="cell-body form-body">
+        <label data-rm-toggle><input type="checkbox" checked> Notify me</label>
+        <textarea class="input" rows="2" maxlength="80" data-rm-count-chars placeholder="Up to eighty" aria-label="Note"></textarea>
+      </div>
+      <button class="cell-copy" data-copy="&lt;textarea maxlength=&quot;280&quot; data-rm-count-chars&gt;&lt;/textarea&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">autoGrow · validate <span class="cell-hint">leave it empty and blur</span></p>
+      <div class="cell-body form-body">
+        <form class="grow-form" data-rm-validate>
+          <div data-rm-grow class="grow-wrap">
+            <textarea class="input" rows="2" data-rm-grow-field placeholder="It grows as you type" aria-label="Message" required></textarea>
+          </div>
+        </form>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-grow&gt;&lt;textarea&gt;&lt;/textarea&gt;&lt;/div&gt;">copy</button>
+    </article>
+  </div>
+
+  <!-- Card looks -->
+  <div class="shell rail"><span class="rail-name">All 24 card looks</span></div>
+  <div class="shell">
+    <p class="lede rail-note">One component, twenty-four named looks. None of them animates a width or a height, so a grid of cards never reflows while you move across it.</p>
+    <div class="card-grid" id="card-grid"></div>
+  </div>
+
+  <!-- Page set pieces -->
+  <div class="shell rail"><span class="rail-name">Page set pieces</span></div>
+  <div class="shell">
+    <div class="page-piece">
+      <p class="cell-name">mosaic <span class="cell-hint">assembles from the middle out</span></p>
+      <div class="mosaic-grid" data-rm-mosaic>
+        <img src="./assets/tiles/01.svg" alt="Plate one">
+        <img src="./assets/tiles/02.svg" alt="Plate two">
+        <img src="./assets/tiles/03.svg" alt="Plate three">
+        <img src="./assets/tiles/04.svg" alt="Plate four">
+        <img src="./assets/tiles/05.svg" alt="Plate five">
+        <img src="./assets/tiles/06.svg" alt="Plate six">
+      </div>
+    </div>
+
+    <div class="page-piece">
+      <p class="cell-name">lineByLine</p>
+      <p class="big-copy" data-rm-lines-in>Prose arrives a line at a time, because a paragraph read one word at a time is a reading test rather than an effect. The lines are re-split when the width changes, since a line is a fact about the layout and not a property of the text.</p>
+    </div>
+
+    <div class="page-piece">
+      <p class="cell-name">timeline</p>
+      <ol class="timeline-demo" data-rm-timeline>
+        <li data-rm-timeline-item><b>Measure</b><span>The line and the dots come from one number.</span></li>
+        <li data-rm-timeline-item><b>Draw</b><span>So a dot can never light before the line reaches it.</span></li>
+        <li data-rm-timeline-item><b>Reverse</b><span>And scrolling back up un-draws all of it.</span></li>
+      </ol>
+    </div>
+
+    <div class="page-piece">
+      <p class="cell-name">revealGrid <span class="cell-hint">a wave from the corner</span></p>
+      <div class="wave-grid" data-rm-reveal-grid data-rm-from="top-left">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </div>
   </div>
 
   <!-- Navigation -->

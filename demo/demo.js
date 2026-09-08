@@ -14,7 +14,7 @@
 
 import {
   init, cursor, target, crosshair, splash, waves, retroGrid, dotGrid, confetti,
-  REVEAL_EFFECTS, BUTTON_STYLES,
+  REVEAL_EFFECTS, BUTTON_STYLES, CARD_LOOKS,
 } from "../src/index.js";
 
 /* ── The two big grids ─────────────────────────────────────────────────── */
@@ -37,6 +37,17 @@ fillGrid("#effect-grid", REVEAL_EFFECTS, (name) => {
   tile.dataset.rmReveal = name;
   tile.innerHTML = `<b>${name}</b>`;
   return tile;
+});
+
+fillGrid("#card-grid", CARD_LOOKS, (name) => {
+  const card = document.createElement("article");
+  card.className = "look-card";
+  card.dataset.rmCardKit = name;
+  card.tabIndex = 0;
+  card.innerHTML =
+    `<span class="look-media"></span><h4>${name}</h4>` +
+    `<span class="look-meta" data-rm-card-meta>hover or focus</span>`;
+  return card;
 });
 
 fillGrid("#button-grid", BUTTON_STYLES, (name) => {
@@ -62,6 +73,26 @@ waves("#hero-field", { lines: 20, amplitude: 24, color: "rgba(42,167,228,0.22)" 
 waves("#field-waves", { lines: 12, amplitude: 16, wavelength: 220, color: "rgba(42,167,228,0.4)" });
 retroGrid("#field-retro", { cell: 34, speed: 9000 });
 dotGrid("#field-dots", { gap: 20, color: "rgba(255,255,255,0.16)" });
+
+/* ── The form demos ─────────────────────────────────────────────────────── */
+
+// Both of these hand back a method rather than deciding for you what counts as
+// success, so the page supplies the rule — here, a passcode and a pretend
+// request.
+const successDemo = document.querySelector("#success-demo");
+successDemo?.addEventListener("click", () => {
+  successDemo.rmBusy?.();
+  setTimeout(() => successDemo.rmSuccess?.(), 900);
+});
+
+const lockWrap = document.querySelector("[data-rm-lock]");
+const lockInput = document.querySelector("#lock-input");
+lockInput?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  if (lockInput.value === "1234") lockWrap?.rmUnlock?.();
+  else lockWrap?.rmDeny?.();
+});
 
 /* ── Confetti ──────────────────────────────────────────────────────────── */
 

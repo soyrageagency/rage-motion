@@ -17,10 +17,14 @@ Dates are intentions, not promises. If you need something sooner,
 
 ## 0.1 — Shipped
 
-- [x] **100 components** across twenty-five modules, each standalone and
-      copyable — plus 50 named scroll entrances on `reveal` and 52 named looks
-      on `buttonKit`, which are variants of one component rather than a
-      hundred more files to keep correct.
+- [x] **127 components** across twenty-eight modules, each standalone and
+      copyable — plus 50 named scroll entrances on `reveal`, 52 named looks on
+      `buttonKit` and 24 on `cardKit`, which are variants of one component
+      rather than a hundred more files to keep correct.
+- [x] **Forms that stay forms** — every one decorates the real control and
+      keeps its name, its value, the tab order and the browser's own
+      validation. Plus the two with a personality: a face that covers its eyes
+      while you type your password, and a padlock that opens or slams.
 - [x] `core/motion.js`: motion preference, easings, one shared `rAF`, one shared
       scroll read, and an `animate()` that jumps to the finished state instead
       of skipping the animation.
