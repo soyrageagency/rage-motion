@@ -1869,3 +1869,64 @@ code { font-size: 0.9em; }
  * and it is why the kit's own examples always wrap the label.
  */
 .invert-label { position: relative; z-index: 2; }
+
+/* ── Built sections ──────────────────────────────────────────────────────── */
+
+/*
+ * The cells built from the catalogue's own examples. The markup inside them is
+ * whatever the component documents, so this styles the container and lets each
+ * component's own stylesheet do the rest.
+ */
+.built-body {
+  display: grid;
+  gap: 10px;
+  align-content: center;
+  justify-items: stretch;
+  padding: 16px;
+  overflow: hidden;
+}
+.built-body > * { min-width: 0; max-width: 100%; }
+.built-body img { max-width: 100%; height: auto; border-radius: 8px; }
+.built-body ul, .built-body ol { margin: 0; padding: 0; list-style: none; }
+.built-body fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 6px; }
+.built-body legend { font-size: 11px; color: var(--dim); padding: 0; }
+.built-body label { font-size: 13px; display: inline-flex; align-items: center; gap: 7px; }
+.built-body h3, .built-body h4 { margin: 0; font-family: var(--rm-display); font-size: 15px; }
+.built-body p { margin: 0; font-size: 13px; }
+.built-body button { font: inherit; }
+
+/*
+ * The built cells hold real component markup, so the cell has to be a good
+ * host rather than a designer: cap what would otherwise be full-bleed, put
+ * radio groups on a row where they belong, and let anything genuinely wide
+ * scroll inside its own box instead of bursting the grid.
+ */
+.built-body img { max-height: 190px; object-fit: cover; }
+.built-body [data-rm-product-gallery] > img,
+.built-body [data-rm-product-zoom] img { max-height: 200px; width: 100%; }
+
+.built-body fieldset:has(input[type="radio"]),
+.built-body fieldset:has(input[type="checkbox"]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+.built-body fieldset legend { flex-basis: 100%; }
+
+.built-body nav ol,
+.built-body nav ul { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* Anything that insists on being wider than the cell scrolls inside it. */
+.built-body table,
+.built-body [data-rm-kanban],
+.built-body [data-rm-checkout-steps] { max-width: 100%; overflow-x: auto; }
+
+.built-body select {
+  font: inherit;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+}

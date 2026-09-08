@@ -215,7 +215,7 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: gooey built two blobs`, started.gooey === 2, String(started.gooey));
   // Three tab panels, three slideshow dots, three crossfade dots. Every one
   // of them a real tab rather than a div with a click handler.
-  check(`${label}: tabs and slideshow dots are real tabs`, started.tabs === 9, String(started.tabs));
+  check(`${label}: tabs and slideshow dots are real tabs`, started.tabs === 13, String(started.tabs));
   check(`${label}: compare is a real slider`, started.compare === 1, String(started.compare));
   check(`${label}: the wave fields are drawing`, started.waves === 2, String(started.waves));
   check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));
@@ -310,6 +310,20 @@ async function run(browser, { reducedMotion }) {
     invisible = await page.evaluate(INVISIBLE_ON_SCREEN);
   }
   check(`${label}: everything on screen is visible after scrolling`, invisible.length === 0, invisible[0]);
+
+  // Hidden means hidden. An author `display` beats the user-agent rule for
+  // [hidden], so a component that sets one and then trusts `el.hidden = true`
+  // leaves a panel that is still laid out and still takes clicks — and a
+  // full-screen one sits over the whole page.
+  const stillLaidOut = await page.evaluate(() =>
+    [...document.querySelectorAll("[hidden]")]
+      .filter((el) => getComputedStyle(el).display !== "none")
+      .map((el) => `${el.tagName}.${String(el.className).slice(0, 40)}`));
+  check(
+    `${label}: nothing is hidden in name only`,
+    stillLaidOut.length === 0,
+    stillLaidOut.join(", "),
+  );
 
   // The accessible name has to survive text splitting.
   const headline = await page.evaluate(() => {
@@ -433,6 +447,24 @@ async function jump(browser) {
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
   await wait(1600);
 
+  /*
+   * Hidden means hidden.
+   *
+   * An author `display` beats the user-agent rule for [hidden], so a component
+   * that sets one and then trusts `el.hidden = true` has a panel that is
+   * invisible to nobody: still laid out, still taking clicks, and a full-screen
+   * one sitting over the whole page. It has happened often enough to be an
+   * invariant rather than a habit.
+   */
+  const pretendHidden = await page.evaluate(() =>
+    [...document.querySelectorAll("[hidden]")]
+      .filter((el) => getComputedStyle(el).display !== "none")
+      .map((el) => `${el.tagName}.${String(el.className).slice(0, 40)}`));
+  check(
+    "jumped: nothing is hidden in name only",
+    pretendHidden.length === 0,
+    pretendHidden.join(", "),
+  );
   const invisible = await page.evaluate(INVISIBLE_ON_SCREEN);
 
   console.log("\njumped straight to the bottom");

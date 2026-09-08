@@ -969,7 +969,17 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-dropdown-menu[hidden],
 .rm-tooltip[hidden],
 .rm-lightbox[hidden],
-.rm-curtain-nav[hidden] { display: none; }
+.rm-curtain-nav[hidden],
+.rm-form-progress-step[hidden],
+.rm-avatar-upload-preview[hidden],
+.rm-identity-chip-card[hidden],
+.rm-compare-tray[hidden],
+.rm-filter-panel-count[hidden],
+.rm-filter-panel-body[hidden],
+.rm-cart-drawer[hidden],
+.rm-checkout-steps fieldset[hidden],
+.rm-address-form fieldset[hidden],
+.rm-order-confirm[hidden] { display: none; }
 
 /* ── Panel effects ──────────────────────────────────────────────────────── */
 
