@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">155</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">171</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">32</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">34</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -184,6 +184,30 @@
           <li><b>gauge</b><code>data-rm-gauge</code></li>
           <li><b>stat</b><code>data-rm-stat</code></li>
           <li><b>stars</b><code>data-rm-rating</code></li>
+        </ul>
+
+        <h3>Menu shapes</h3>
+        <ul>
+          <li><b>circleNav</b><code>data-rm-circle-nav</code></li>
+          <li><b>curtainNav</b><code>data-rm-curtain-nav</code></li>
+          <li><b>hoverSpread</b><code>data-rm-hover-spread</code></li>
+          <li><b>breadcrumbs</b><code>data-rm-breadcrumbs</code></li>
+          <li><b>treeNav</b><code>data-rm-tree</code></li>
+          <li><b>splitNav</b><code>data-rm-split-nav</code></li>
+          <li><b>stackNav</b><code>data-rm-stack-nav</code></li>
+          <li><b>dotNav</b><code>data-rm-dot-nav</code></li>
+        </ul>
+
+        <h3>Texture</h3>
+        <ul>
+          <li><b>rings</b><code>data-rm-rings</code></li>
+          <li><b>hexGrid</b><code>data-rm-hex</code></li>
+          <li><b>plusGrid</b><code>data-rm-plus</code></li>
+          <li><b>diagonals</b><code>data-rm-diagonals</code></li>
+          <li><b>topography</b><code>data-rm-topography</code></li>
+          <li><b>circuit</b><code>data-rm-circuit</code></li>
+          <li><b>vignette</b><code>data-rm-vignette</code></li>
+          <li><b>halftone</b><code>data-rm-halftone</code></li>
         </ul>
 
         <h3>Chrome</h3>
@@ -1433,6 +1457,200 @@
       <button class="cell-copy" data-copy="<div data-rm-tabs><button data-rm-tab>One</button><div data-rm-tab-panel>…</div></div>">copy</button>
     </article>
   </div>
+
+  <!-- Menu shapes -->
+  <div class="shell rail"><span class="rail-name">Menu shapes</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">circleNav <span class="cell-hint">arrow keys</span></p>
+      <div class="cell-body circle-body">
+        <div class="circle-nav" data-rm-circle-nav data-rm-radius="86" data-rm-from="-150" data-rm-spread="120">
+          <button class="ghost" data-rm-circle-trigger>Fan out</button>
+          <ul>
+            <li><a href="#gallery">One</a></li>
+            <li><a href="#gallery">Two</a></li>
+            <li><a href="#gallery">Three</a></li>
+            <li><a href="#gallery">Four</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-circle-nav&gt;&lt;button data-rm-circle-trigger&gt;Menu&lt;/button&gt;&lt;ul&gt;…&lt;/ul&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">curtainNav <span class="cell-hint">Escape closes</span></p>
+      <div class="cell-body nav-body">
+        <button class="ghost" data-rm-curtain-trigger="demo-curtain">Drop the curtain</button>
+      </div>
+      <button class="cell-copy" data-copy="&lt;button data-rm-curtain-trigger=&quot;menu&quot;&gt;Menu&lt;/button&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">hoverSpread <span class="cell-hint">hover · tab</span></p>
+      <div class="cell-body nav-body">
+        <nav class="spread-nav" data-rm-hover-spread aria-label="Spread example">
+          <a href="#gallery">Work</a>
+          <a href="#gallery">Studio</a>
+          <a href="#gallery">Journal</a>
+          <a href="#gallery">Contact</a>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy="&lt;nav data-rm-hover-spread&gt;&lt;a href=&quot;/&quot;&gt;Work&lt;/a&gt;&lt;/nav&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">breadcrumbs <span class="cell-hint">open the middle</span></p>
+      <div class="cell-body nav-body">
+        <nav class="crumbs" data-rm-breadcrumbs data-rm-keep="1" data-rm-max="3" aria-label="Breadcrumb example">
+          <ol>
+            <li><a href="#gallery">Home</a></li>
+            <li><a href="#gallery">Kit</a></li>
+            <li><a href="#gallery">Motion</a></li>
+            <li><a href="#gallery">Navigation</a></li>
+            <li><a href="#gallery">Breadcrumbs</a></li>
+          </ol>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy="&lt;nav data-rm-breadcrumbs&gt;&lt;ol&gt;&lt;li&gt;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/nav&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">treeNav <span class="cell-hint">arrows · Right opens</span></p>
+      <div class="cell-body tree-body">
+        <ul class="tree" data-rm-tree data-rm-label="Component tree">
+          <li>
+            <button type="button">Entrances</button>
+            <ul>
+              <li><a href="#gallery">reveal</a></li>
+              <li><a href="#gallery">textReveal</a></li>
+            </ul>
+          </li>
+          <li>
+            <button type="button">Navigation</button>
+            <ul>
+              <li><a href="#gallery">pill</a></li>
+              <li><a href="#gallery">gooey</a></li>
+            </ul>
+          </li>
+          <li><a href="#gallery">pageTransition</a></li>
+        </ul>
+      </div>
+      <button class="cell-copy" data-copy="&lt;ul data-rm-tree&gt;&lt;li&gt;&lt;button&gt;Branch&lt;/button&gt;&lt;ul&gt;…&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">splitNav <span class="cell-hint">parts open</span></p>
+      <div class="cell-body split-body">
+        <div class="split-bar" data-rm-split-nav data-rm-travel="102">
+          <div class="split-back" data-rm-split-back>
+            <a href="#gallery">Index</a>
+            <a href="#gallery">Studio</a>
+          </div>
+          <div class="split-half" data-rm-split-half><b>RAGE</b></div>
+          <div class="split-half" data-rm-split-half><b>MOTION</b></div>
+          <button class="split-trigger" type="button" data-rm-split-trigger>Split</button>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-split-nav&gt;&lt;div data-rm-split-half&gt;…&lt;/div&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">stackNav <span class="cell-hint">deals out</span></p>
+      <div class="cell-body stack-body">
+        <div class="stack-nav" data-rm-stack-nav>
+          <button class="ghost" type="button" data-rm-stack-trigger>Deal</button>
+          <ul>
+            <li><a href="#gallery">Overview</a></li>
+            <li><a href="#gallery">Components</a></li>
+            <li><a href="#gallery">Tokens</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-stack-nav&gt;&lt;button data-rm-stack-trigger&gt;Links&lt;/button&gt;&lt;ul&gt;…&lt;/ul&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">dotNav <span class="cell-hint">follows the page</span></p>
+      <div class="cell-body nav-body">
+        <nav class="dot-nav" data-rm-dot-nav aria-label="Section dots">
+          <a href="#index" data-rm-dot-label="Index"></a>
+          <a href="#gallery" data-rm-dot-label="Gallery"></a>
+          <a href="#scroll" data-rm-dot-label="Scroll"></a>
+          <a href="#mcp" data-rm-dot-label="MCP"></a>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy="&lt;nav data-rm-dot-nav&gt;&lt;a href=&quot;#intro&quot; data-rm-dot-label=&quot;Intro&quot;&gt;&lt;/a&gt;&lt;/nav&gt;">copy</button>
+    </article>
+  </div>
+
+  <!-- Texture -->
+  <div class="shell rail"><span class="rail-name">Texture</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">rings</p>
+      <div class="cell-body texture-body" data-rm-rings data-rm-count="4" data-rm-size="150">
+        <span class="texture-label">expanding</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;section data-rm-rings data-rm-count=&quot;4&quot;&gt;…&lt;/section&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">hexGrid <span class="cell-hint">hover</span></p>
+      <div class="cell-body texture-body" data-rm-hex data-rm-size="20">
+        <span class="texture-label">honeycomb</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-hex data-rm-size=&quot;26&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">plusGrid</p>
+      <div class="cell-body texture-body" data-rm-plus data-rm-gap="28">
+        <span class="texture-label">plus field</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;section data-rm-plus data-rm-gap=&quot;34&quot;&gt;…&lt;/section&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">diagonals</p>
+      <div class="cell-body texture-body" data-rm-diagonals data-rm-width="12">
+        <span class="texture-label">soft hatch</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-diagonals data-rm-width=&quot;14&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">topography</p>
+      <div class="cell-body texture-body" data-rm-topography data-rm-contours="8">
+        <span class="texture-label">contours</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;section data-rm-topography data-rm-contours=&quot;9&quot;&gt;…&lt;/section&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">circuit</p>
+      <div class="cell-body texture-body" data-rm-circuit data-rm-traces="5">
+        <span class="texture-label">traces</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-circuit data-rm-traces=&quot;5&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">vignette <span class="cell-hint">scroll</span></p>
+      <div class="cell-body texture-body" data-rm-vignette data-rm-strength="0.85" data-rm-spread="18">
+        <span class="texture-label">edge falls in</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;section data-rm-vignette&gt;…&lt;/section&gt;">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">halftone <span class="cell-hint">hover</span></p>
+      <div class="cell-body texture-body" data-rm-halftone data-rm-gap="10">
+        <span class="texture-label">dot matrix</span>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-halftone data-rm-gap=&quot;12&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+  </div>
+
 </section>
 
 <!-- ── Scroll ───────────────────────────────────────────────────────────── -->
@@ -1700,6 +1918,22 @@ init();</code></pre>
   </nav>
   <p class="note">Focus is trapped in here. Escape closes it and hands focus back to the button.</p>
 </aside>
+
+<div id="demo-curtain" class="curtain" data-rm-curtain-nav hidden>
+  <div class="curtain-col" data-rm-curtain-column>
+    <p class="curtain-head">Work</p>
+    <a href="#gallery">Selected</a><a href="#gallery">Archive</a><a href="#gallery">Index</a>
+  </div>
+  <div class="curtain-col" data-rm-curtain-column>
+    <p class="curtain-head">Studio</p>
+    <a href="#gallery">About</a><a href="#gallery">Team</a><a href="#gallery">Contact</a>
+  </div>
+  <div class="curtain-col" data-rm-curtain-column>
+    <p class="curtain-head">More</p>
+    <a href="#mcp">MCP</a><a href="#start">Install</a>
+    <button class="ghost" type="button" data-rm-curtain-trigger="demo-curtain">Close</button>
+  </div>
+</div>
 
 <div id="demo-sheet" class="sheet" data-rm-sheet hidden>
   <div class="sheet-inner">

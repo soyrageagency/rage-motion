@@ -15,7 +15,7 @@
   </picture>
 </a>
 
-**Award-grade motion for the web, with zero dependencies.** 155 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
+**Award-grade motion for the web, with zero dependencies.** 171 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
 
 *"A headline that reacts to the cursor." · "A carousel that works with a keyboard." · "A menu that traps focus properly." · "A counter that rolls like an odometer."*
 
@@ -132,7 +132,7 @@ stop();   // puts everything back exactly as it was
 
 ---
 
-## The 155 components
+## The 171 components
 
 **Entrances** — `reveal`, with **50 named start states**: up · down · left · right and their `-far` variants · glide · fade · scale · zoom · shrink · pop · rise · drop · spring-up · spring-left · blur · blur-only · blur-up · blur-scale · drift-left · drift-right · tilt-left · tilt-right · roll-left · roll-right · swing · twist · spin · skew-x · skew-y · flip-x · flip-y · unfold · fold-up · door · door-right · corner · lift-3d · curtain-up · curtain-down · curtain-left · curtain-right · iris · wipe-diagonal · mask · slat · none
 
@@ -151,6 +151,8 @@ stop();   // puts everything back exactly as it was
 **Light** — `meteors` · `sparkles` · `lamp` · `beams`
 
 **Decoration** — `mesh` · `starfield` · `dots` · `stripes` · `scanline` · `corners`
+
+**Texture** — `rings` · `hexGrid` · `plusGrid` · `diagonals` · `topography` · `circuit` · `vignette` · `halftone`
 
 **Page chrome** — `scrollbar` · `dropdown` · `tooltip` · `toggle`
 
@@ -177,6 +179,8 @@ stop();   // puts everything back exactly as it was
 **Feedback & waiting** — `skeleton` · `progressBar` · `dotsLoader` · `pulseDot` · `badgeCount` · `emptyState`, plus `spinner` with **6 shapes**: ring · arc · dual · bars · orbit · pulse
 
 **Data, drawn** — `sparkline` · `bars` · `donut` · `gauge` · `stat` · `stars`
+
+**Menu shapes** — `circleNav` · `curtainNav` · `hoverSpread` · `breadcrumbs` · `treeNav` · `splitNav` · `stackNav` · `dotNav`
 
 **Pages** — `pageTransition` · `transitionTo`
 

@@ -918,7 +918,8 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-overlay[hidden],
 .rm-dropdown-menu[hidden],
 .rm-tooltip[hidden],
-.rm-lightbox[hidden] { display: none; }
+.rm-lightbox[hidden],
+.rm-curtain-nav[hidden] { display: none; }
 
 /* ── Panel effects ──────────────────────────────────────────────────────── */
 
@@ -2948,6 +2949,365 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-rating-star:hover span { transform: scale(1.18); }
 .rm-rating-star input:focus-visible + span { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
 
+/* ── Menu shapes ────────────────────────────────────────────────────────── */
+
+/*
+ * The item positions are written by the script, because the arc depends on how
+ * many items there are. What is here is only what the shape needs to exist at
+ * all: a stacking context, and items that can leave the flow without moving
+ * anything around them.
+ */
+.rm-circle-nav { position: relative; display: inline-flex; }
+.rm-circle-nav-items {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+.rm-circle-nav.is-open .rm-circle-nav-items { pointer-events: auto; }
+.rm-circle-nav-item {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  will-change: transform, opacity;
+}
+.rm-circle-nav-item > a,
+.rm-circle-nav-item > button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--rm-radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(20, 20, 20, 0.88);
+  color: inherit;
+  font: inherit;
+  font-size: 0.78rem;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+}
+.rm-circle-nav-item > a:hover,
+.rm-circle-nav-item > button:hover { border-color: var(--rm-accent); }
+
+.rm-curtain-nav {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  background: var(--rm-ink);
+}
+.rm-curtain-nav [data-rm-curtain-column] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  /* Each column is uncovered by its own clip-path; the content never moves. */
+  will-change: clip-path;
+}
+.rm-curtain-nav [data-rm-curtain-column]:last-child { border-right: 0; }
+
+/* Only the transform is ours; the row keeps whatever layout it had. */
+.rm-hover-spread > * { will-change: transform; }
+
+.rm-breadcrumbs ol,
+.rm-breadcrumbs ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rm-breadcrumbs li + li::before {
+  content: "/";
+  margin-right: 0.5rem;
+  opacity: 0.4;
+}
+.rm-breadcrumbs-more button {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--rm-radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+  padding: 0.1rem 0.45rem;
+  cursor: pointer;
+}
+.rm-breadcrumbs-more button:hover { border-color: var(--rm-accent); }
+
+.rm-tree,
+.rm-tree ul,
+.rm-tree ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rm-tree ul,
+.rm-tree ol { padding-left: 1.1rem; }
+.rm-tree li > button,
+.rm-tree li > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 0.22rem 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+.rm-tree-branch > button::before,
+.rm-tree-branch > a::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform var(--rm-tree-duration, 320ms) var(--rm-ease-out);
+}
+.rm-tree-branch.is-open > button::before,
+.rm-tree-branch.is-open > a::before { transform: rotate(90deg); }
+/*
+ * 0fr → 1fr is the whole trick: the row grows to exactly the height of what is
+ * inside it, with nobody measuring anything and nothing to go stale.
+ */
+.rm-tree-shell {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--rm-tree-duration, 320ms) var(--rm-ease-out);
+}
+.rm-tree-branch.is-open > .rm-tree-shell { grid-template-rows: 1fr; }
+.rm-tree-shell > * { overflow: hidden; min-height: 0; }
+
+.rm-split-nav {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  isolation: isolate;
+}
+.rm-split-nav [data-rm-split-half] {
+  position: relative;
+  z-index: 2;
+  background: var(--rm-ink);
+  will-change: transform;
+}
+.rm-split-nav-back {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  gap: 0.4rem;
+}
+/*
+ * :where() so this carries no specificity — it lifts the trigger above the
+ * halves by default, and any placement the page wants still wins.
+ */
+:where(.rm-split-nav [data-rm-split-trigger]) { position: relative; z-index: 3; }
+
+.rm-stack-nav { position: relative; }
+.rm-stack-nav-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+}
+.rm-stack-nav-item {
+  will-change: transform;
+  transform-origin: 50% 0;
+}
+.rm-stack-nav:not(.is-open) .rm-stack-nav-item {
+  /* Shut, the pile is decoration — nothing in it should take a click. */
+  pointer-events: none;
+}
+
+.rm-dot-nav {
+  display: grid;
+  gap: 0.7rem;
+  justify-items: start;
+}
+.rm-dot-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: inherit;
+}
+.rm-dot-nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  transition: transform 0.25s var(--rm-ease-out), background 0.25s;
+}
+.rm-dot-nav-link.is-current .rm-dot-nav-dot {
+  background: var(--rm-accent);
+  transform: scale(1.5);
+}
+.rm-dot-nav-text {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.25s var(--rm-ease-out), transform 0.25s var(--rm-ease-out);
+}
+.rm-dot-nav-link:hover .rm-dot-nav-text,
+.rm-dot-nav-link:focus-visible .rm-dot-nav-text,
+.rm-dot-nav-link.is-current .rm-dot-nav-text { opacity: 1; transform: none; }
+
+/* ── Texture ────────────────────────────────────────────────────────────── */
+
+.rm-rings-host,
+.rm-hex-host,
+.rm-plus-host,
+.rm-diagonals-host,
+.rm-topography-host,
+.rm-circuit-host,
+.rm-vignette-host,
+.rm-halftone-host { position: relative; isolation: isolate; }
+
+.rm-rings,
+.rm-hex,
+.rm-plus,
+.rm-diagonals,
+.rm-topography,
+.rm-circuit,
+.rm-vignette,
+.rm-halftone {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.rm-rings { display: grid; place-items: center; }
+.rm-rings i {
+  position: absolute;
+  width: var(--rm-rings-size, 220px);
+  height: var(--rm-rings-size, 220px);
+  border: 1px solid var(--rm-rings-color, rgba(42, 167, 228, 0.3));
+  border-radius: 50%;
+  opacity: 0;
+  animation: rm-rings-out var(--rm-rings-speed, 4200ms) linear infinite;
+}
+@keyframes rm-rings-out {
+  0% { transform: scale(0.15); opacity: 0; }
+  12% { opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.rm-rings.is-still i { animation: none; opacity: 0.5; transform: scale(0.6); }
+
+.rm-hex svg { width: 100%; height: 100%; }
+.rm-hex.is-lit svg {
+  /* The light is a mask on the pattern, so it costs one composited layer. */
+  mask: radial-gradient(
+    circle var(--rm-hex-glow, 180px) at var(--rm-hex-x, 50%) var(--rm-hex-y, 50%),
+    #000 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    rgba(0, 0, 0, 0.18) 100%
+  );
+}
+
+/*
+ * The marks are drawn by an SVG pattern, so the layer is oversized and moved
+ * by exactly one tile — the drift is seamless and costs one composited
+ * transform rather than a background repaint.
+ */
+.rm-plus svg {
+  position: absolute;
+  top: calc(var(--rm-plus-step, 34px) * -1);
+  left: calc(var(--rm-plus-step, 34px) * -1);
+  width: calc(100% + var(--rm-plus-step, 34px) * 2);
+  height: calc(100% + var(--rm-plus-step, 34px) * 2);
+  animation: rm-plus-drift var(--rm-plus-speed, 26000ms) linear infinite;
+}
+@keyframes rm-plus-drift {
+  to { transform: translate(var(--rm-plus-step, 34px), var(--rm-plus-step, 34px)); }
+}
+.rm-plus.is-still svg { animation: none; }
+
+.rm-diagonals {
+  background-image: repeating-linear-gradient(
+    var(--rm-diagonals-angle, 135deg),
+    var(--rm-diagonals-color, rgba(255, 255, 255, 0.05)) 0,
+    var(--rm-diagonals-color, rgba(255, 255, 255, 0.05)) 1px,
+    transparent 1px,
+    transparent var(--rm-diagonals-width, 14px)
+  );
+  mask: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 var(--rm-diagonals-fade, 22%),
+    #000 calc(100% - var(--rm-diagonals-fade, 22%)),
+    transparent 100%
+  );
+  animation: rm-diagonals-travel var(--rm-diagonals-speed, 2600ms) linear infinite;
+}
+@keyframes rm-diagonals-travel {
+  to { background-position: var(--rm-diagonals-width, 14px) 0; }
+}
+.rm-diagonals.is-still { animation: none; }
+
+.rm-topography svg {
+  width: 140%;
+  height: 140%;
+  margin: -20% 0 0 -20%;
+  animation: rm-topography-drift var(--rm-topography-speed, 34000ms) ease-in-out infinite alternate;
+}
+@keyframes rm-topography-drift {
+  to { transform: translate3d(4%, -3%, 0) scale(1.06); }
+}
+.rm-topography.is-still svg { animation: none; }
+
+.rm-circuit svg { width: 100%; height: 100%; }
+
+/*
+ * A radial gradient rather than an inset box-shadow: shadow blur and spread
+ * take a length, never a percentage, so a shadow written in per cent is simply
+ * dropped and the vignette silently does nothing at any element size.
+ */
+.rm-vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent var(--rm-vignette-spread, 34%),
+    rgba(0, 0, 0, var(--rm-vignette-strength, 0)) 100%
+  );
+}
+
+.rm-halftone {
+  background-image: radial-gradient(
+    var(--rm-halftone-color, rgba(255, 255, 255, 0.22)) var(--rm-halftone-dot, 1.6px),
+    transparent var(--rm-halftone-dot, 1.6px)
+  );
+  background-size: var(--rm-halftone-gap, 12px) var(--rm-halftone-gap, 12px);
+  opacity: 0.5;
+  transition: opacity 0.3s var(--rm-ease-out);
+}
+.rm-halftone.is-lit {
+  opacity: 1;
+  /* Dots read as bigger toward the pointer because the mask lets more through. */
+  mask: radial-gradient(
+    circle var(--rm-halftone-reach, 190px) at var(--rm-halftone-x, 50%) var(--rm-halftone-y, 50%),
+    #000 0%,
+    rgba(0, 0, 0, 0.4) 60%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
 /*
@@ -2978,7 +3338,11 @@ html.rm-cursor-active * { cursor: none !important; }
   .rm-dots-decor,
   .rm-stripes,
   .rm-scanline-bar,
-  .rm-mesh i {
+  .rm-mesh i,
+  .rm-rings i,
+  .rm-plus svg,
+  .rm-diagonals,
+  .rm-topography svg {
     animation: none !important;
   }
   .rm-shiny { color: var(--rm-shiny-highlight, currentColor); background: none; -webkit-text-fill-color: currentColor; }

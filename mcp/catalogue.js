@@ -73,6 +73,8 @@ const DATA = "src/components/data.js";
 const CHROME = "src/components/chrome.js";
 const DECOR = "src/components/decor.js";
 const TRANSITIONS = "src/components/transitions.js";
+const MENUS = "src/components/menus.js";
+const TEXTURE = "src/components/texture.js";
 
 const option = (name, type, dflt, about) => ({ name, type, default: dflt, about });
 
@@ -2525,6 +2527,356 @@ export const CATALOGUE = [
     example: "<fieldset data-rm-rating><legend>Rating</legend></fieldset>",
     usage: 'import { stars } from "@soyrageagency/rage-motion";\nstars();',
     options: [option("count", "number", "5", "Clamped to 10.")],
+  },
+
+  // ── Menu shapes ──────────────────────────────────────────────────────────
+  {
+    name: "circleNav",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-circle-nav",
+    summary: "Items that fan out on an arc from their trigger.",
+    notes:
+      "The arc is real geometry: each item is placed at its own angle and " +
+      "radius with a transform, so the fan opens from the button rather than a " +
+      "panel appearing beside it, and nothing around it moves while it does. " +
+      "Underneath it is a plain role=\"menu\" — arrow keys walk the ring in " +
+      "source order, Escape closes it, focus goes back to the trigger and the " +
+      "rest of the page is inert while it is open. Take the shape away and a " +
+      "working menu is still there, which is the test.",
+    example:
+      '<div data-rm-circle-nav data-rm-radius="120">\n' +
+      '  <button data-rm-circle-trigger>Menu</button>\n' +
+      '  <ul><li><a href="#a">One</a></li><li><a href="#b">Two</a></li></ul>\n' +
+      "</div>",
+    usage: 'import { circleNav } from "@soyrageagency/rage-motion";\ncircleNav();',
+    options: [
+      option("radius", "number", "120", "How far the items travel, in pixels."),
+      option("from", "number", "-90", "The angle the arc starts at, in degrees."),
+      option("spread", "number", "180", "How much of a circle the arc covers."),
+      option("stagger", "number", "40", "Delay between items, in ms."),
+    ],
+  },
+  {
+    name: "curtainNav",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-curtain-nav",
+    summary: "A full-screen menu that falls in columns.",
+    notes:
+      "Each column is uncovered with its own clip-path inset rather than by " +
+      "moving a panel, so the links never travel — the covering falls away " +
+      "from text that was always exactly where it ends up. Text that slides " +
+      "into place is text you cannot read while it arrives. Focus enters the " +
+      "panel, the rest of the page goes inert, Tab is trapped, and Escape " +
+      "returns focus to the button that opened it.",
+    example:
+      '<button data-rm-curtain-trigger="site-menu">Menu</button>\n' +
+      '<div id="site-menu" data-rm-curtain-nav>\n' +
+      '  <div data-rm-curtain-column><a href="#work">Work</a></div>\n' +
+      "</div>",
+    usage: 'import { curtainNav } from "@soyrageagency/rage-motion";\ncurtainNav();',
+    options: [
+      option("duration", "number", "620", "How long one column takes to fall."),
+      option("stagger", "number", "90", "Delay between columns, in ms."),
+    ],
+  },
+  {
+    name: "hoverSpread",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-hover-spread",
+    summary: "A row of links that parts around the pointer.",
+    notes:
+      "Every item is pushed away from the pointer by a squared falloff, so the " +
+      "one you are heading for opens up before you reach it. It is translate " +
+      "on the one shared frame callback, never margin — margin would reflow " +
+      "the row sixty times a second and drag the rest of the header with it. " +
+      "Keyboard focus produces the same spread, so it is not an effect only " +
+      "mouse users are told about.",
+    example: '<nav data-rm-hover-spread><a href="#a">Work</a><a href="#b">About</a></nav>',
+    usage: 'import { hoverSpread } from "@soyrageagency/rage-motion";\nhoverSpread();',
+    options: [
+      option("push", "number", "14", "Maximum shove, in pixels."),
+      option("reach", "number", "150", "How far the pointer is felt, in pixels."),
+      option("selector", "string", '"a, button"', "What counts as an item."),
+    ],
+  },
+  {
+    name: "breadcrumbs",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-breadcrumbs",
+    summary: "A trail that collapses its middle and can open it.",
+    notes:
+      "Long trails are usually truncated with CSS, which hides where you have " +
+      "been without offering it back. This folds the middle behind a real " +
+      "button, and expanding it is a FLIP: the crumbs that stay put do not " +
+      "move, so the eye keeps its place while the row grows. The last crumb " +
+      "carries aria-current=\"page\", which is the part of a breadcrumb that " +
+      "actually does something.",
+    example:
+      '<nav data-rm-breadcrumbs data-rm-keep="1">\n' +
+      '  <ol><li><a href="/">Home</a></li><li><a href="/kit">Kit</a></li></ol>\n' +
+      "</nav>",
+    usage: 'import { breadcrumbs } from "@soyrageagency/rage-motion";\nbreadcrumbs();',
+    options: [
+      option("keep", "number", "1", "How many crumbs stay at the front."),
+      option("max", "number", "4", "Below this many crumbs, nothing folds."),
+      option("label", "string", '"Breadcrumb"', "The nav's accessible name."),
+    ],
+  },
+  {
+    name: "treeNav",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-tree",
+    summary: "A nested tree that opens to its own height.",
+    notes:
+      "The height is animated with grid-template-rows: 0fr to 1fr, so a branch " +
+      "opens to exactly the height of what is inside it with nobody measuring " +
+      "anything — no scrollHeight read, no stale height when the content " +
+      "changes, no jump at the end. It is a real role=\"tree\" with a roving " +
+      "tabindex: one tab stop for the whole thing, arrows to walk it, Right to " +
+      "open a branch and Left to close it.",
+    example:
+      "<ul data-rm-tree>\n" +
+      '  <li><button>Components</button><ul><li><a href="#a">reveal</a></li></ul></li>\n' +
+      "</ul>",
+    usage: 'import { treeNav } from "@soyrageagency/rage-motion";\ntreeNav();',
+    options: [
+      option("duration", "number", "320", "How long a branch takes to open."),
+      option("label", "string", '"Tree"', "The tree's accessible name."),
+    ],
+  },
+  {
+    name: "splitNav",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-split-nav",
+    summary: "A header that parts to reveal what is behind it.",
+    notes:
+      "The two halves slide apart on translate and the menu underneath is " +
+      "uncovered. Nothing fades, so the header text stays legible for the " +
+      "whole movement, and both halves move by the same number in opposite " +
+      "directions rather than needing two sets of keyframes. What is behind " +
+      "is inert while it is covered, so it cannot be tabbed into through a " +
+      "header that is still shut.",
+    example:
+      "<div data-rm-split-nav>\n" +
+      '  <div data-rm-split-back><a href="#a">Work</a></div>\n' +
+      "  <div data-rm-split-half>Left</div><div data-rm-split-half>Right</div>\n" +
+      "  <button data-rm-split-trigger>Menu</button>\n" +
+      "</div>",
+    usage: 'import { splitNav } from "@soyrageagency/rage-motion";\nsplitNav();',
+    options: [
+      option("travel", "number", "100", "How far each half moves, in per cent."),
+      option("duration", "number", "560", "How long the parting takes."),
+    ],
+  },
+  {
+    name: "stackNav",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-stack-nav",
+    summary: "A deck of items that deals itself out.",
+    notes:
+      "Shut, the items sit on top of each other with an offset and a little " +
+      "rotation — a deck. Open, they deal down into a list. Every state is a " +
+      "transform on items that are always in the flow at their final " +
+      "positions, so the deck is an arrangement of the real list rather than a " +
+      "different DOM, and the links leave the tab order while it is shut " +
+      "because a pile is not somewhere a keyboard should land.",
+    example:
+      "<div data-rm-stack-nav>\n" +
+      "  <button data-rm-stack-trigger>Links</button>\n" +
+      '  <ul><li><a href="#a">One</a></li><li><a href="#b">Two</a></li></ul>\n' +
+      "</div>",
+    usage: 'import { stackNav } from "@soyrageagency/rage-motion";\nstackNav();',
+    options: [
+      option("lift", "number", "8", "Offset between stacked items, in pixels."),
+      option("tilt", "number", "3", "Rotation of the alternating cards, in degrees."),
+      option("stagger", "number", "60", "Delay between items as they deal."),
+    ],
+  },
+  {
+    name: "dotNav",
+    category: "navigation",
+    file: MENUS,
+    attribute: "data-rm-dot-nav",
+    summary: "A column of dots that knows which section you are in.",
+    notes:
+      "One IntersectionObserver over the sections rather than a scroll handler " +
+      "measuring all of them every frame. The label beside each dot is real " +
+      "text, shown on hover and on focus and always available to a screen " +
+      "reader, and aria-current marks the section you are in — so the state is " +
+      "never carried by the size of a dot alone.",
+    example: '<nav data-rm-dot-nav><a href="#intro" data-rm-dot-label="Intro"></a></nav>',
+    usage: 'import { dotNav } from "@soyrageagency/rage-motion";\ndotNav();',
+    options: [
+      option("label", "string", '"Sections"', "The nav's accessible name."),
+      option("threshold", "number", "0.5", "How much of a section counts as being in it."),
+    ],
+  },
+
+  // ── Texture ──────────────────────────────────────────────────────────────
+  {
+    name: "rings",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-rings",
+    summary: "Rings that expand outward from a point and fade.",
+    notes:
+      "Concentric circles on one CSS animation at different negative delays, " +
+      "so all of them are phases of a single rule rather than a stack of " +
+      "keyframes, and the field is full on the first frame instead of filling " +
+      "up. They scale rather than change radius, which keeps the whole thing " +
+      "on the compositor; animating width would repaint the parent every frame.",
+    example: '<section data-rm-rings data-rm-count="4">…</section>',
+    usage: 'import { rings } from "@soyrageagency/rage-motion";\nrings();',
+    options: [
+      option("count", "number", "4", "Clamped to 8."),
+      option("size", "number", "220", "The full radius, in pixels."),
+      option("speed", "number", "4200", "One ring's whole journey, in ms."),
+      option("color", "string", '"rgba(42,167,228,0.30)"', "The ring stroke."),
+    ],
+  },
+  {
+    name: "hexGrid",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-hex",
+    summary: "A honeycomb lattice that lights up near the pointer.",
+    notes:
+      "The lattice is one SVG pattern — one node however large the panel is — " +
+      "and the light is a radial-gradient mask following two custom " +
+      "properties. Two numbers a frame, written to a layer with nothing else " +
+      "in it, instead of a class toggled on hundreds of cells. Off the pointer " +
+      "and under reduced motion the lattice is simply there: the pattern is " +
+      "the decoration, the light is the bonus.",
+    example: '<div data-rm-hex data-rm-size="26">…</div>',
+    usage: 'import { hexGrid } from "@soyrageagency/rage-motion";\nhexGrid();',
+    options: [
+      option("size", "number", "26", "Hexagon side, clamped to 8–120px."),
+      option("glow", "number", "180", "Radius of the light, in pixels."),
+      option("color", "string", '"rgba(255,255,255,0.10)"', "The lattice stroke."),
+    ],
+  },
+  {
+    name: "plusGrid",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-plus",
+    summary: "A field of small plus marks.",
+    notes:
+      "Two crossed gradients cut down to short arms by a mask, which is the " +
+      "whole component: no nodes, no frames, no canvas. It drifts by " +
+      "background position, which the compositor handles on its own thread.",
+    example: '<section data-rm-plus data-rm-gap="34">…</section>',
+    usage: 'import { plusGrid } from "@soyrageagency/rage-motion";\nplusGrid();',
+    options: [
+      option("gap", "number", "34", "Distance between marks, in pixels."),
+      option("arm", "number", "5", "Length of each arm, in pixels."),
+      option("color", "string", '"rgba(255,255,255,0.14)"', "The mark colour."),
+    ],
+  },
+  {
+    name: "diagonals",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-diagonals",
+    summary: "Hatching that travels, with a soft edge.",
+    notes:
+      "stripes fills its element edge to edge; this one is masked to fade out " +
+      "at both ends, so it can sit under real text without the text landing on " +
+      "a hard boundary. Same one-gradient cost, and it stops completely under " +
+      "reduced motion.",
+    example: '<div data-rm-diagonals data-rm-width="14">…</div>',
+    usage: 'import { diagonals } from "@soyrageagency/rage-motion";\ndiagonals();',
+    options: [
+      option("width", "number", "14", "Distance between lines, in pixels."),
+      option("angle", "number", "135", "The hatch angle, in degrees."),
+      option("fade", "number", "22", "How much of each end fades out, in per cent."),
+    ],
+  },
+  {
+    name: "topography",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-topography",
+    summary: "Contour lines, drifting.",
+    notes:
+      "Concentric rounded paths built once from a seeded wobble, then moved as " +
+      "a whole. Seeded rather than random, so the same panel draws the same " +
+      "map on every load — a background that is different on every reload is a " +
+      "background that draws attention to itself, which is the one thing it " +
+      "must not do.",
+    example: '<section data-rm-topography data-rm-contours="9">…</section>',
+    usage: 'import { topography } from "@soyrageagency/rage-motion";\ntopography();',
+    options: [
+      option("contours", "number", "9", "Clamped to 2–24."),
+      option("seed", "number", "7", "Change it for a different map."),
+      option("speed", "number", "34000", "One drift, in ms."),
+    ],
+  },
+  {
+    name: "circuit",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-circuit",
+    summary: "Traces with pulses running along them.",
+    notes:
+      "The pulse is a short stroke-dasharray segment moved by " +
+      "stroke-dashoffset along the trace's own path, so it follows every " +
+      "corner exactly — no keyframed coordinates to keep in step with the " +
+      "shape, and changing the trace changes the route for free. It runs only " +
+      "while the panel is on screen; a board animating in a section nobody has " +
+      "scrolled to is battery spent on nothing.",
+    example: '<div data-rm-circuit data-rm-traces="5">…</div>',
+    usage: 'import { circuit } from "@soyrageagency/rage-motion";\ncircuit();',
+    options: [
+      option("traces", "number", "5", "Up to six fixed routes."),
+      option("speed", "number", "3200", "One pulse's journey, in ms."),
+      option("pulse", "string", '"rgba(42,167,228,0.95)"', "The lit segment."),
+    ],
+  },
+  {
+    name: "vignette",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-vignette",
+    summary: "An edge darkening that deepens as you scroll in.",
+    notes:
+      "A single inset shadow whose strength follows how centred the element " +
+      "is, read off the shared scroll frame rather than taking its own " +
+      "measurement. Under reduced motion it settles at its mid strength " +
+      "instead of vanishing: a vignette is contrast, and contrast is not " +
+      "motion.",
+    example: '<section data-rm-vignette data-rm-strength="0.55">…</section>',
+    usage: 'import { vignette } from "@soyrageagency/rage-motion";\nvignette();',
+    options: [
+      option("strength", "number", "0.55", "Darkness at the deepest point."),
+      option("spread", "number", "34", "How far in it reaches, in per cent."),
+    ],
+  },
+  {
+    name: "halftone",
+    category: "decoration",
+    file: TEXTURE,
+    attribute: "data-rm-halftone",
+    summary: "A dot matrix whose dots grow toward the pointer.",
+    notes:
+      "The classic halftone as one radial-gradient layer, with the growth done " +
+      "by a mask centred on the pointer. One element and two numbers a frame — " +
+      "the version made of a thousand spans costs a thousand style " +
+      "recalculations to do the same thing.",
+    example: '<div data-rm-halftone data-rm-gap="12">…</div>',
+    usage: 'import { halftone } from "@soyrageagency/rage-motion";\nhalftone();',
+    options: [
+      option("gap", "number", "12", "Distance between dots, in pixels."),
+      option("dot", "number", "1.6", "Dot radius, in pixels."),
+      option("reach", "number", "190", "How far the pointer is felt, in pixels."),
+    ],
   },
 
   // ── Pages ────────────────────────────────────────────────────────────────

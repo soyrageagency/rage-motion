@@ -171,6 +171,19 @@ async function run(browser, { reducedMotion }) {
     bottomPip: document.querySelectorAll(".rm-bottom-pip").length,
     megaPanels: document.querySelectorAll(".rm-mega-panel").length,
     swap: document.querySelectorAll(".rm-swap-face").length,
+    circleItems: document.querySelectorAll(".rm-circle-nav-item").length,
+    curtainCols: document.querySelectorAll(".rm-curtain-nav [data-rm-curtain-column]").length,
+    spreadRows: document.querySelectorAll(".rm-hover-spread").length,
+    crumbFold: document.querySelectorAll(".rm-breadcrumbs-more button").length,
+    treeShells: document.querySelectorAll(".rm-tree-shell").length,
+    splitHalves: document.querySelectorAll(".rm-split-nav [data-rm-split-half]").length,
+    stackCards: document.querySelectorAll(".rm-stack-nav-item").length,
+    dotLinks: document.querySelectorAll(".rm-dot-nav-link").length,
+    ringLayers: document.querySelectorAll(".rm-rings i").length,
+    hexPattern: document.querySelectorAll(".rm-hex pattern").length,
+    circuitPulses: document.querySelectorAll(".rm-circuit-pulse").length,
+    contours: document.querySelectorAll(".rm-topography path").length,
+    textureLayers: document.querySelectorAll(".rm-plus, .rm-diagonals, .rm-vignette, .rm-halftone").length,
   }));
 
   check(`${label}: text was split`, started.split > 0, JSON.stringify(started));
@@ -199,6 +212,19 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));
   check(`${label}: directional fills mounted`, started.fill >= 2, String(started.fill));
   check(`${label}: swap has both faces`, started.swap === 2, String(started.swap));
+  check(`${label}: the fan placed its items on the arc`, started.circleItems === 4, String(started.circleItems));
+  check(`${label}: the curtain has its columns`, started.curtainCols === 3, String(started.curtainCols));
+  check(`${label}: the spreading row mounted`, started.spreadRows === 1, String(started.spreadRows));
+  check(`${label}: the trail folded its middle`, started.crumbFold === 1, String(started.crumbFold));
+  check(`${label}: the tree wrapped its branches`, started.treeShells === 2, String(started.treeShells));
+  check(`${label}: the split header has two halves`, started.splitHalves === 2, String(started.splitHalves));
+  check(`${label}: the deck took its cards`, started.stackCards === 3, String(started.stackCards));
+  check(`${label}: the dot column linked its sections`, started.dotLinks === 4, String(started.dotLinks));
+  check(`${label}: the rings are drawing`, started.ringLayers === 4, String(started.ringLayers));
+  check(`${label}: the honeycomb built one pattern`, started.hexPattern === 1, String(started.hexPattern));
+  check(`${label}: the circuit has a pulse per trace`, started.circuitPulses === 5, String(started.circuitPulses));
+  check(`${label}: the contour map drew its lines`, started.contours === 8, String(started.contours));
+  check(`${label}: the painted textures all mounted`, started.textureLayers === 4, String(started.textureLayers));
   check(`${label}: five scrollbars styled, plus the page`, started.scrollbars === 6, String(started.scrollbars));
   check(`${label}: the dropdown is a real menu`, started.dropdown === 1, String(started.dropdown));
   check(`${label}: the tooltip is announced`, started.tooltip === 1, String(started.tooltip));

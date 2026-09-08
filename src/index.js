@@ -50,6 +50,12 @@ export {
 } from "./components/feedback.js";
 export { sparkline, bars, donut, gauge, stat, stars } from "./components/data.js";
 export {
+  circleNav, curtainNav, hoverSpread, breadcrumbs, treeNav, splitNav, stackNav, dotNav,
+} from "./components/menus.js";
+export {
+  rings, hexGrid, plusGrid, diagonals, topography, circuit, vignette, halftone,
+} from "./components/texture.js";
+export {
   floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
   stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
 } from "./components/forms.js";
@@ -91,6 +97,12 @@ import {
   skeleton, spinner, progressBar, dotsLoader, pulseDot, badgeCount, emptyState,
 } from "./components/feedback.js";
 import { sparkline, bars, donut, gauge, stat, stars } from "./components/data.js";
+import {
+  circleNav, curtainNav, hoverSpread, breadcrumbs, treeNav, splitNav, stackNav, dotNav,
+} from "./components/menus.js";
+import {
+  rings, hexGrid, plusGrid, diagonals, topography, circuit, vignette, halftone,
+} from "./components/texture.js";
 import {
   floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
   stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
@@ -230,6 +242,24 @@ export function init(options = {}) {
     gauge("[data-rm-gauge]", options.gauge),
     stat("[data-rm-stat]", options.stat),
     stars("[data-rm-rating]", options.stars),
+
+    circleNav("[data-rm-circle-nav]", options.circleNav),
+    curtainNav("[data-rm-curtain-nav]", options.curtainNav),
+    hoverSpread("[data-rm-hover-spread]", options.hoverSpread),
+    breadcrumbs("[data-rm-breadcrumbs]", options.breadcrumbs),
+    treeNav("[data-rm-tree]", options.treeNav),
+    splitNav("[data-rm-split-nav]", options.splitNav),
+    stackNav("[data-rm-stack-nav]", options.stackNav),
+    dotNav("[data-rm-dot-nav]", options.dotNav),
+
+    rings("[data-rm-rings]", options.rings),
+    hexGrid("[data-rm-hex]", options.hexGrid),
+    plusGrid("[data-rm-plus]", options.plusGrid),
+    diagonals("[data-rm-diagonals]", options.diagonals),
+    topography("[data-rm-topography]", options.topography),
+    circuit("[data-rm-circuit]", options.circuit),
+    vignette("[data-rm-vignette]", options.vignette),
+    halftone("[data-rm-halftone]", options.halftone),
     floatLabel("[data-rm-float]", options.floatLabel),
     autoGrow("[data-rm-grow]", options.autoGrow),
     charCount("[data-rm-count-chars]", options.charCount),
