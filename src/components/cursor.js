@@ -165,7 +165,16 @@ export function splash(options = {}) {
     color: colors[i % colors.length],
   }));
 
-  const onMove = (event) => { pointer.x = event.clientX; pointer.y = event.clientY; };
+  let awake = false;
+  const onMove = (event) => {
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    if (awake) return;
+    awake = true;
+    // The trail is the cursor now, so the arrow goes — but only once the
+    // trail is actually following a hand that moved.
+    document.documentElement.classList.add("rm-cursor-active");
+  };
   addEventListener("pointermove", onMove, { passive: true });
 
   const stopFrame = onFrame(() => {
@@ -189,6 +198,7 @@ export function splash(options = {}) {
     removeEventListener("pointermove", onMove);
     removeEventListener("resize", resize);
     canvas.remove();
+    document.documentElement.classList.remove("rm-cursor-active");
   };
 }
 

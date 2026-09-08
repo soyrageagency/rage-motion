@@ -24,7 +24,7 @@
 
 import {
   dataNumber, dataString, EASE, lerp, onFrame,
-  prefersReducedMotion, resolveElements,
+  prefersReducedMotion, resolveElements, whileVisible,
 } from "../core/motion.js";
 
 /**
@@ -313,20 +313,29 @@ export function deck(target = "[data-rm-deck]", options = {}) {
       }, duration * 0.55);
     };
 
-    let timer = setInterval(advance, interval);
-    const pause = () => { clearInterval(timer); timer = 0; };
-    const resume = () => { if (!timer) timer = setInterval(advance, interval); };
-    container.addEventListener("pointerenter", pause);
-    container.addEventListener("pointerleave", resume);
-    container.addEventListener("focusin", pause);
-    container.addEventListener("focusout", resume);
+    /*
+     * While it is on screen, not from the moment the script ran. A deck that
+     * has been shuffling itself in a section nobody has scrolled to is both a
+     * wasted frame budget and an arbitrary starting position.
+     *
+     * It no longer stops on hover either. Pausing under the pointer is right
+     * for a marquee of text somebody is trying to read; on a deck of cards it
+     * simply means the effect freezes the moment anyone leans in to look at
+     * it, which reads as broken. Keyboard focus still holds it, because that
+     * is somebody working through the cards rather than watching them.
+     */
+    let timer = 0;
+    const start = () => { if (!timer) timer = setInterval(advance, interval); };
+    const stop = () => { clearInterval(timer); timer = 0; };
+    const watching = whileVisible(container, () => { start(); return stop; });
+    container.addEventListener("focusin", stop);
+    container.addEventListener("focusout", start);
 
     cleanups.push(() => {
-      clearInterval(timer);
-      container.removeEventListener("pointerenter", pause);
-      container.removeEventListener("pointerleave", resume);
-      container.removeEventListener("focusin", pause);
-      container.removeEventListener("focusout", resume);
+      stop();
+      watching();
+      container.removeEventListener("focusin", stop);
+      container.removeEventListener("focusout", start);
       container.classList.remove("rm-deck");
       cards.forEach((card) => {
         card.classList.remove("rm-deck-card");

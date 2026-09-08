@@ -293,3 +293,30 @@ export function dataString(element, name, fallback) {
   const raw = element.dataset[name];
   return raw === undefined || raw === "" ? fallback : raw;
 }
+
+/**
+ * Bring a child into view inside one container, and move nothing else.
+ *
+ * `scrollIntoView` walks up and scrolls *every* scrollable ancestor, the page
+ * included. A carousel that highlights its first thumbnail on mount therefore
+ * throws the whole page down to wherever the carousel happens to be, which is
+ * a component reaching outside itself for no reason anyone asked for.
+ *
+ * This does the arithmetic on the one box that should move.
+ */
+export function keepInView(container, child, behavior = "auto") {
+  if (!container || !child) return;
+  const box = container.getBoundingClientRect();
+  const item = child.getBoundingClientRect();
+
+  const left = container.scrollLeft + (item.left - box.left) - (box.width - item.width) / 2;
+  const top = container.scrollTop + (item.top - box.top) - (box.height - item.height) / 2;
+
+  // Only the axis that can actually scroll; asking for the other one is how a
+  // horizontal strip ends up nudging its own rows vertically.
+  const options = { behavior };
+  if (container.scrollWidth > container.clientWidth + 1) options.left = Math.max(0, left);
+  if (container.scrollHeight > container.clientHeight + 1) options.top = Math.max(0, top);
+  if (options.left === undefined && options.top === undefined) return;
+  container.scrollTo(options);
+}

@@ -25,7 +25,7 @@
 
 import {
   clamp, dataNumber, dataString, lerp, onFrame,
-  prefersReducedMotion, resolveElements,
+  prefersReducedMotion, resolveElements, keepInView,
 } from "../core/motion.js";
 
 /**
@@ -151,13 +151,14 @@ export function thumbs(target = "[data-rm-thumbs]", options = {}) {
         if (i === at) pick.setAttribute("aria-current", "true");
         else pick.removeAttribute("aria-current");
       });
-      picks[at]?.scrollIntoView({ block: "nearest", inline: "nearest" });
+      // Only the strip moves. scrollIntoView would take the page with it.
+      keepInView(bar, picks[at]);
     };
 
     const handlers = picks.map((pick, index) => {
       const click = (event) => {
         event.preventDefault();
-        slides[index].scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", inline: "center", block: "nearest" });
+        keepInView(frame, slides[index], prefersReducedMotion() ? "auto" : "smooth");
         mark(index);
       };
       pick.addEventListener("click", click);
@@ -240,7 +241,7 @@ export function autoplay(target = "[data-rm-autoplay]", options = {}) {
 
     const go = () => {
       at = (at + 1) % slides.length;
-      slides[at].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      keepInView(frame, slides[at], prefersReducedMotion() ? "auto" : "smooth");
     };
 
     const start = () => {

@@ -659,16 +659,26 @@ code { font-size: 0.9em; }
 .flatten-frame img { width: min(720px, 100%); margin-inline: auto; border-radius: 12px; border: 1px solid var(--line); }
 
 .stack-frame { margin-bottom: clamp(56px, 7vw, 96px); }
+/*
+ * A sticky stack needs somewhere to happen.
+ *
+ * With the cards 14px apart the whole pile formed inside a third of a screen,
+ * so it was over before the eye caught it — correct, and invisible. The gap
+ * between two cards is exactly how far you scroll between one pinning and the
+ * next, so it is measured in screens, not pixels.
+ */
 .stack-card {
   display: flex;
   gap: 20px;
   align-items: flex-start;
-  padding: 24px;
+  min-height: 168px;
+  padding: 26px;
   border-radius: 14px;
   border: 1px solid var(--line);
   background: #151515;
-  margin-bottom: 14px;
+  margin-bottom: 52vh;
 }
+.stack-card:last-child { margin-bottom: 0; }
 .stack-card b { font-family: var(--rm-mono); font-size: 12px; color: var(--accent); }
 .stack-card p { margin: 0; color: #b6b0a8; max-width: 58ch; font-size: 14.5px; }
 

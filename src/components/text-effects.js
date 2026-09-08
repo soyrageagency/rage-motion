@@ -93,6 +93,9 @@ export function decrypt(target = "[data-rm-decrypt]", options = {}) {
  * effect costs nothing per frame — the only JavaScript is setting the text as
  * a custom property and deciding when it runs.
  */
+/** The trigger modes glitch actually implements. */
+const MODES = new Set(["hover", "loop", "always"]);
+
 export function glitch(target = "[data-rm-glitch]", options = {}) {
   const elements = resolveElements(target);
   if (!elements.length) return () => {};
@@ -108,9 +111,34 @@ export function glitch(target = "[data-rm-glitch]", options = {}) {
 
     if (prefersReducedMotion()) continue;
 
-    const mode = dataString(element, "rmGlitch", trigger);
+    // An unrecognised mode falls back to the default rather than being
+    // silently ignored. The demo asked for "auto" for months and simply got
+    // nothing, which is the worst way for a component to disagree with you.
+    const want = dataString(element, "rmGlitch", trigger);
+    const mode = MODES.has(want) ? want : trigger;
     if (mode === "always") {
       element.classList.add("is-glitching");
+    } else if (mode === "hover") {
+      /*
+       * The default mode, and until now the only one that did nothing: the
+       * component handled "always" and "loop" and silently ignored the value
+       * it falls back to, so a plain <span data-rm-glitch> never glitched.
+       *
+       * Focus as well as hover, so the effect is not something only a mouse
+       * user is shown.
+       */
+      const on = () => element.classList.add("is-glitching");
+      const off = () => element.classList.remove("is-glitching");
+      element.addEventListener("pointerenter", on);
+      element.addEventListener("pointerleave", off);
+      element.addEventListener("focusin", on);
+      element.addEventListener("focusout", off);
+      timers.push(() => {
+        element.removeEventListener("pointerenter", on);
+        element.removeEventListener("pointerleave", off);
+        element.removeEventListener("focusin", on);
+        element.removeEventListener("focusout", off);
+      });
     } else if (mode === "loop") {
       // Short bursts on a loop: continuous glitching stops registering after
       // a few seconds and just makes the text hard to read.

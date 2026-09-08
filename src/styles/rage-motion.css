@@ -1698,6 +1698,12 @@ html.rm-cursor-active * { cursor: none !important; }
 
 .rm-btn.is-lift:hover, .rm-btn.is-lift:focus-visible { transform: translateY(-3px); }
 .rm-btn.is-sink:hover, .rm-btn.is-sink:focus-visible { transform: translateY(3px); }
+/*
+ * A hint under the pointer and the full squash on the press. Every other look
+ * in the kit answers a hover, so one that waits for a click reads as the one
+ * that is broken.
+ */
+.rm-btn.is-squish:hover, .rm-btn.is-squish:focus-visible { transform: scale(0.985, 1.015); }
 .rm-btn.is-squish:active { transform: scale(0.94, 1.04); }
 .rm-btn.is-jelly:hover, .rm-btn.is-jelly:focus-visible { animation: rm-btn-jelly 600ms var(--rm-ease-out); }
 @keyframes rm-btn-jelly {

@@ -21,7 +21,7 @@
 /* eslint-env browser */
 
 import {
-  dataNumber, dataString, onFrame, prefersReducedMotion, resolveElements,
+  dataNumber, dataString, onFrame, prefersReducedMotion, resolveElements, keepInView,
 } from "../core/motion.js";
 
 const FOCUSABLE =
@@ -101,7 +101,8 @@ export function command(target = "[data-rm-command]", options = {}) {
       current.classList.add("is-active");
       current.setAttribute("aria-selected", "true");
       field.setAttribute("aria-activedescendant", current.id || "");
-      current.scrollIntoView({ block: "nearest" });
+      // The list scrolls; the page behind the palette stays where it was.
+      keepInView(list, current);
     };
 
     const filter = () => {
