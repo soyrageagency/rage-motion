@@ -40,6 +40,9 @@ export { dots, stripes, corners, scanline, mesh, starfield } from "./components/
 export { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 export { command, sidebar, rail, bottomNav, mega } from "./components/navbars.js";
 export {
+  coverflow, thumbs, autoplay, wheel, peek, ticker, slideshow,
+} from "./components/carousels.js";
+export {
   floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
   stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
 } from "./components/forms.js";
@@ -71,6 +74,9 @@ import { scrollbar, dropdown, tooltip, toggle } from "./components/chrome.js";
 import { dots, stripes, corners, scanline, mesh, starfield } from "./components/decor.js";
 import { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 import { command, sidebar, rail, bottomNav, mega } from "./components/navbars.js";
+import {
+  coverflow, thumbs, autoplay, wheel, peek, ticker, slideshow,
+} from "./components/carousels.js";
 import {
   floatLabel, autoGrow, charCount, passwordToggle, validate, rangeFill, fileDrop,
   stepper, fieldFocus, submitState, mascot, successButton, otp, padlock,
@@ -183,6 +189,13 @@ export function init(options = {}) {
     rail("[data-rm-rail]", options.rail),
     bottomNav("[data-rm-bottom]", options.bottomNav),
     mega("[data-rm-mega]", options.mega),
+    coverflow("[data-rm-coverflow]", options.coverflow),
+    thumbs("[data-rm-thumbs]", options.thumbs),
+    autoplay("[data-rm-autoplay]", options.autoplay),
+    wheel("[data-rm-wheel]", options.wheel),
+    peek("[data-rm-peek]", options.peek),
+    ticker("[data-rm-ticker]", options.ticker),
+    slideshow("[data-rm-slideshow]", options.slideshow),
     floatLabel("[data-rm-float]", options.floatLabel),
     autoGrow("[data-rm-grow]", options.autoGrow),
     charCount("[data-rm-count-chars]", options.charCount),

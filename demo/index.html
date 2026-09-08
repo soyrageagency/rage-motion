@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — 127 web animation components, zero dependencies</title>
-<meta name="description" content="A catalogue of 127 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
+<title>rage-motion — 134 web animation components, zero dependencies</title>
+<meta name="description" content="A catalogue of 134 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="dark">
 
-<meta property="og:title" content="rage-motion — 127 web animation components, zero dependencies">
+<meta property="og:title" content="rage-motion — 134 web animation components, zero dependencies">
 <meta property="og:description" content="A catalogue of components with real technique behind them. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
@@ -53,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">127 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
+    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">134 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">127</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">134</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">28</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">29</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -212,6 +212,13 @@
           <li><b>imageTrail</b><code>data-rm-image-trail</code></li>
           <li><b>orbit</b><code>data-rm-orbit</code></li>
           <li><b>magnetLines</b><code>data-rm-lines</code></li>
+          <li><b>coverflow</b><code>data-rm-coverflow</code></li>
+          <li><b>thumbs</b><code>data-rm-thumbs</code></li>
+          <li><b>autoplay</b><code>data-rm-autoplay</code></li>
+          <li><b>wheel</b><code>data-rm-wheel</code></li>
+          <li><b>peek</b><code>data-rm-peek</code></li>
+          <li><b>ticker</b><code>data-rm-ticker</code></li>
+          <li><b>slideshow</b><code>data-rm-slideshow</code></li>
           <li><b>drag</b><code>data-rm-drag</code></li>
           <li><b>shuffle</b><code>data-rm-shuffle</code></li>
         </ul>
@@ -307,7 +314,7 @@
     <article class="cell">
       <p class="cell-name">textReveal</p>
       <div class="cell-body">
-        <p class="type-lg" data-rm-text="chars" data-rm-effect="rise" data-rm-loop="4600">Character by character</p>
+        <p class="type-lg" data-rm-text="chars" data-rm-effect="rise" data-rm-loop="2600">Character by character</p>
       </div>
       <button class="cell-copy" data-copy='<h1 data-rm-text="chars" data-rm-effect="rise">…</h1>'>copy</button>
     </article>
@@ -315,7 +322,7 @@
     <article class="cell">
       <p class="cell-name">decrypt</p>
       <div class="cell-body">
-        <p class="type-mono-lg" data-rm-decrypt data-rm-loop="4200">SOYRAGE AGENCY</p>
+        <p class="type-mono-lg" data-rm-decrypt data-rm-loop="2800">SOYRAGE AGENCY</p>
       </div>
       <button class="cell-copy" data-copy="<span data-rm-decrypt>SOYRAGE</span>">copy</button>
     </article>
@@ -339,7 +346,7 @@
     <article class="cell">
       <p class="cell-name">countUp</p>
       <div class="cell-body">
-        <p class="type-xl"><span data-rm-count data-rm-loop="4800">1,250</span></p>
+        <p class="type-xl"><span data-rm-count data-rm-loop="3000">1,250</span></p>
       </div>
       <button class="cell-copy" data-copy="<strong data-rm-count>1,250</strong>">copy</button>
     </article>
@@ -379,7 +386,7 @@
     <article class="cell">
       <p class="cell-name">odometer</p>
       <div class="cell-body">
-        <p class="type-xl"><span data-rm-odometer data-rm-loop="5200">128,400</span></p>
+        <p class="type-xl"><span data-rm-odometer data-rm-loop="3200">128,400</span></p>
       </div>
       <button class="cell-copy" data-copy="<strong data-rm-odometer>128,400</strong>">copy</button>
     </article>
@@ -604,7 +611,7 @@
     <article class="cell">
       <p class="cell-name">imageReveal</p>
       <div class="cell-body flush">
-        <figure data-rm-image-reveal="left" data-rm-loop="4400" data-rm-color="#0b0b0b">
+        <figure data-rm-image-reveal="left" data-rm-loop="3000" data-rm-color="#0b0b0b">
           <img src="./assets/tiles/03.svg" alt="A plate uncovered by a sliding curtain">
         </figure>
       </div>
@@ -1091,6 +1098,101 @@
         <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
       </div>
     </div>
+  </div>
+
+  <!-- More carousels -->
+  <div class="shell rail"><span class="rail-name">Seven more carousels</span></div>
+
+  <div class="carousel-strip">
+    <div class="shell"><p class="cell-name strip-name">coverflow <span class="cell-hint">scroll it sideways</span></p></div>
+    <div class="coverflow-pad">
+      <div data-rm-coverflow data-rm-label="Coverflow example">
+        <figure class="flow-slide"><img src="./assets/tiles/01.svg" alt="Plate 1"></figure>
+        <figure class="flow-slide"><img src="./assets/tiles/02.svg" alt="Plate 2"></figure>
+        <figure class="flow-slide"><img src="./assets/tiles/03.svg" alt="Plate 3"></figure>
+        <figure class="flow-slide"><img src="./assets/tiles/04.svg" alt="Plate 4"></figure>
+        <figure class="flow-slide"><img src="./assets/tiles/05.svg" alt="Plate 5"></figure>
+        <figure class="flow-slide"><img src="./assets/tiles/06.svg" alt="Plate 6"></figure>
+        <figure class="flow-slide"><img src="./assets/tiles/01.svg" alt="Plate 1"></figure>
+      </div>
+    </div>
+  </div>
+
+  <div class="shell cells">
+    <article class="cell cell-wide cell-tall">
+      <p class="cell-name">thumbs <span class="cell-hint">pick one, or scroll the frame</span></p>
+      <div class="cell-body thumbs-body">
+        <div class="thumbs-demo" data-rm-thumbs>
+          <div class="thumbs-main" data-rm-thumbs-main>
+            <img src="./assets/tiles/01.svg" alt="Plate one">
+            <img src="./assets/tiles/03.svg" alt="Plate three">
+            <img src="./assets/tiles/05.svg" alt="Plate five">
+          </div>
+          <div class="thumbs-strip" data-rm-thumbs-strip>
+            <button type="button"><img src="./assets/tiles/01.svg" alt=""></button>
+            <button type="button"><img src="./assets/tiles/03.svg" alt=""></button>
+            <button type="button"><img src="./assets/tiles/05.svg" alt=""></button>
+          </div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-thumbs&gt;&lt;div data-rm-thumbs-main&gt;…&lt;/div&gt;&lt;div data-rm-thumbs-strip&gt;…&lt;/div&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-tall">
+      <p class="cell-name">wheel <span class="cell-hint">hover · arrows</span></p>
+      <div class="cell-body wheel-body">
+        <div class="wheel-demo" data-rm-wheel data-rm-radius="76" aria-label="Wheel example">
+          <a href="#gallery">01</a><a href="#gallery">02</a><a href="#gallery">03</a>
+          <a href="#gallery">04</a><a href="#gallery">05</a><a href="#gallery">06</a>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-wheel data-rm-radius=&quot;150&quot;&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-tall">
+      <p class="cell-name">slideshow <span class="cell-hint">real controls</span></p>
+      <div class="cell-body slideshow-body">
+        <div class="slideshow-demo" data-rm-slideshow data-rm-label="Slideshow example">
+          <div data-rm-slide><img src="./assets/tiles/02.svg" alt="Plate two"></div>
+          <div data-rm-slide><img src="./assets/tiles/04.svg" alt="Plate four"></div>
+          <div data-rm-slide><img src="./assets/tiles/06.svg" alt="Plate six"></div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-slideshow&gt;&lt;div data-rm-slide&gt;…&lt;/div&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">ticker <span class="cell-hint">opposing rows</span></p>
+      <div class="cell-body cell-body-flush">
+        <div class="ticker-demo" data-rm-ticker>
+          <div class="ticker-line" data-rm-ticker-row><span>coverflow</span><span>thumbs</span><span>autoplay</span><span>wheel</span></div>
+          <div class="ticker-line" data-rm-ticker-row><span>peek</span><span>ticker</span><span>slideshow</span><span>carousel</span></div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-ticker&gt;&lt;div data-rm-ticker-row&gt;…&lt;/div&gt;&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">autoplay <span class="cell-hint">it stops when you touch it</span></p>
+      <div class="cell-body cell-body-flush">
+        <div class="autoplay-holder">
+          <div class="peek-demo" data-rm-autoplay data-rm-interval="3600">
+            <span>one</span><span>two</span><span>three</span><span>four</span>
+          </div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-autoplay&gt;…&lt;/div&gt;">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">peek <span class="cell-hint">the next one shows</span></p>
+      <div class="cell-body cell-body-flush">
+        <div class="peek-demo" data-rm-peek data-rm-peek="48">
+          <span>one</span><span>two</span><span>three</span>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="&lt;div data-rm-peek&gt;…&lt;/div&gt;">copy</button>
+    </article>
   </div>
 
   <!-- Navigation -->

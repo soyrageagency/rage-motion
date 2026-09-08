@@ -156,6 +156,12 @@ async function run(browser, { reducedMotion }) {
     lockBody: document.querySelectorAll(".rm-lock-body").length,
     successMark: document.querySelectorAll(".rm-success-mark").length,
     mosaicTiles: document.querySelectorAll(".rm-mosaic-tile").length,
+    coverflow: document.querySelectorAll(".rm-coverflow-slide").length,
+    wheelItems: document.querySelectorAll(".rm-wheel-item").length,
+    tickerRows: document.querySelectorAll(".rm-ticker-row").length,
+    autoplayControl: document.querySelectorAll(".rm-autoplay-control").length,
+    slideshowSlides: document.querySelectorAll(".rm-slideshow-slide").length,
+    peekSlides: document.querySelectorAll(".rm-peek-slide").length,
     timelineItems: document.querySelectorAll(".rm-timeline-item").length,
     linesIn: document.querySelectorAll(".rm-lines-in .rm-line").length,
     buttonLooks: document.querySelectorAll(".button-cell .rm-btn").length,
@@ -185,7 +191,7 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: dock took its items`, started.dock === 5, String(started.dock));
   check(`${label}: pill indicators mounted`, started.pill === 2, String(started.pill));
   check(`${label}: gooey built two blobs`, started.gooey === 2, String(started.gooey));
-  check(`${label}: tabs are a real tablist`, started.tabs === 3, String(started.tabs));
+  check(`${label}: tabs and slideshow dots are real tabs`, started.tabs === 6, String(started.tabs));
   check(`${label}: compare is a real slider`, started.compare === 1, String(started.compare));
   check(`${label}: the wave fields are drawing`, started.waves === 2, String(started.waves));
   check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));
@@ -207,6 +213,12 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: the padlock is drawn`, started.lockBody === 1, String(started.lockBody));
   check(`${label}: the success tick is ready`, started.successMark === 1, String(started.successMark));
   check(`${label}: the mosaic took its tiles`, started.mosaicTiles === 6, String(started.mosaicTiles));
+  check(`${label}: coverflow took its slides`, started.coverflow === 7, String(started.coverflow));
+  check(`${label}: the wheel placed its items`, started.wheelItems === 6, String(started.wheelItems));
+  check(`${label}: the ticker built both rows`, started.tickerRows === 2, String(started.tickerRows));
+  check(`${label}: autoplay shipped a pause button`, started.autoplayControl === 1, String(started.autoplayControl));
+  check(`${label}: the slideshow took its frames`, started.slideshowSlides === 3, String(started.slideshowSlides));
+  check(`${label}: peek took its slides`, started.peekSlides === 3, String(started.peekSlides));
   check(`${label}: the timeline took its entries`, started.timelineItems === 3, String(started.timelineItems));
   check(`${label}: the paragraph was split into lines`, started.linesIn >= 2, String(started.linesIn));
   check(`${label}: the rail placed its marker`, started.railMarker === 1, String(started.railMarker));
@@ -253,7 +265,7 @@ async function run(browser, { reducedMotion }) {
   const counted = await page.evaluate(
     () => document.querySelector("[data-rm-odometer]")?.getAttribute("aria-label") ?? "",
   );
-  check(`${label}: the counter still announces its value`, counted === "127", counted);
+  check(`${label}: the counter still announces its value`, counted === "134", counted);
 
   // The rotating words are decoration; the list of them is the content.
   const morphLabel = await page.evaluate(

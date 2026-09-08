@@ -2436,6 +2436,150 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-pinned-chapter { opacity: 0.4; transition: opacity 0.4s; }
 .rm-pinned-chapter.is-current { opacity: 1; }
 
+/* ── Carousels ──────────────────────────────────────────────────────────── */
+
+.rm-coverflow {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  perspective: 1400px;
+  padding-inline: 25%;
+  scrollbar-width: none;
+}
+.rm-coverflow::-webkit-scrollbar { display: none; }
+.rm-coverflow-slide {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  transition: filter 0.3s;
+  filter: saturate(0.65);
+}
+.rm-coverflow-slide.is-front { filter: none; }
+
+.rm-thumbs-main {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.rm-thumbs-main::-webkit-scrollbar { display: none; }
+.rm-thumbs-main > * { flex: 0 0 100%; scroll-snap-align: center; }
+.rm-thumbs-strip { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: thin; }
+.rm-thumbs-strip [aria-current] { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+.rm-autoplay-control {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.rm-autoplay-icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 9px;
+  border-color: transparent transparent transparent currentColor;
+  margin-left: 2px;
+}
+/* Two bars while it is running, a triangle once you have paused it. */
+.rm-autoplay-control:not(.is-paused) .rm-autoplay-icon {
+  width: 9px;
+  height: 11px;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(to right, currentColor 0 3px, transparent 3px 6px, currentColor 6px 9px);
+}
+.rm-autoplay-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+}
+.rm-autoplay.is-running + .rm-autoplay-control .rm-autoplay-ring {
+  border-color: var(--rm-accent);
+  animation: rm-autoplay-tick var(--rm-autoplay-interval, 4200ms) linear infinite;
+}
+@keyframes rm-autoplay-tick {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.rm-wheel {
+  position: relative;
+  display: grid;
+  place-items: center;
+  transform: rotate(var(--rm-wheel-turn, 0deg));
+  transition: none;
+}
+.rm-wheel-item {
+  position: absolute;
+  transform:
+    rotate(var(--rm-wheel-angle, 0deg))
+    translateY(calc(var(--rm-wheel-radius, 130px) * -1))
+    rotate(calc((var(--rm-wheel-angle, 0deg) + var(--rm-wheel-turn, 0deg)) * -1));
+  transition: opacity 0.3s, filter 0.3s;
+  opacity: 0.55;
+}
+.rm-wheel-item.is-front { opacity: 1; }
+
+.rm-peek {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Real scroll padding, so snapping and the scrollbar agree with the peek. */
+  scroll-padding-inline: var(--rm-peek, 64px);
+  padding-inline: var(--rm-peek, 64px);
+}
+.rm-peek-slide { flex: 0 0 calc(100% - var(--rm-peek, 64px) * 2); scroll-snap-align: center; }
+
+.rm-ticker { display: grid; gap: 10px; overflow: hidden; }
+.rm-ticker-row { display: flex; width: max-content; will-change: transform; }
+.rm-ticker-group { display: flex; align-items: center; flex: none; }
+.rm-ticker.is-static { overflow-x: auto; }
+.rm-ticker.is-static .rm-ticker-row { transform: none !important; }
+
+.rm-slideshow { position: relative; }
+.rm-slideshow-slide { transition: opacity var(--rm-slideshow-duration, 520ms) var(--rm-ease-out); }
+.rm-slideshow-slide[hidden] { display: none; }
+.rm-slideshow-controls { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.rm-slideshow-controls button {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+.rm-slideshow-dots { display: flex; gap: 6px; margin-inline: auto; }
+.rm-slideshow-dots button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: transparent;
+  opacity: 0.45;
+  transition: opacity 0.25s, transform 0.25s;
+}
+.rm-slideshow-dots button.is-current { opacity: 1; background: currentColor; transform: scale(1.25); }
+.rm-slideshow-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
 /*

@@ -66,6 +66,7 @@ const NAVBARS = "src/components/navbars.js";
 const FORMS = "src/components/forms.js";
 const CARDKIT = "src/components/card-kit.js";
 const PAGEFX = "src/components/pagefx.js";
+const CAROUSELS = "src/components/carousels.js";
 const CHROME = "src/components/chrome.js";
 const DECOR = "src/components/decor.js";
 const TRANSITIONS = "src/components/transitions.js";
@@ -2085,6 +2086,118 @@ export const CATALOGUE = [
     example: "<section data-rm-pinned><img data-rm-pinned-frame src=\"…\" alt=\"\"><div data-rm-pinned-chapter>…</div></section>",
     usage: 'import { pinnedGallery } from "@soyrageagency/rage-motion";\npinnedGallery();',
     options: [option("line", "number", "0.5", "Where the reading line sits, 0-1.")],
+  },
+
+  // ── More carousels ───────────────────────────────────────────────────────
+  {
+    name: "coverflow",
+    category: "gallery",
+    file: CAROUSELS,
+    attribute: "data-rm-coverflow",
+    summary: "A deck seen at an angle, the front one square on.",
+    notes:
+      "Built on a real scroller, so the wheel, the trackpad and the scrollbar " +
+      "all work. The 3D is computed from each slide's distance to the centre of " +
+      "the viewport rather than from an index, which is why it stays smooth " +
+      "mid-flick instead of snapping between whole slides.",
+    example: "<div data-rm-coverflow><figure>…</figure><figure>…</figure></div>",
+    usage: 'import { coverflow } from "@soyrageagency/rage-motion";\ncoverflow();',
+    options: [option("angle", "number", "42", "Degrees at the edges."), option("depth", "number", "160", "How far back the outer slides sit.")],
+  },
+  {
+    name: "thumbs",
+    category: "gallery",
+    file: CAROUSELS,
+    attribute: "data-rm-thumbs",
+    summary: "A main frame and a strip, each driving the other.",
+    notes:
+      "Both directions, which is the part usually missing: picking a thumbnail " +
+      "moves the frame, and scrolling the frame moves the highlight and scrolls " +
+      "it into view. Whichever slide is nearest the middle wins, so a " +
+      "half-scrolled frame still has a highlight rather than none.",
+    example:
+      "<div data-rm-thumbs>\n" +
+      "  <div data-rm-thumbs-main>…</div>\n" +
+      "  <div data-rm-thumbs-strip><button>…</button></div>\n" +
+      "</div>",
+    usage: 'import { thumbs } from "@soyrageagency/rage-motion";\nthumbs();',
+    options: [],
+  },
+  {
+    name: "autoplay",
+    category: "gallery",
+    file: CAROUSELS,
+    attribute: "data-rm-autoplay",
+    summary: "A carousel that advances itself, and stops the moment you touch it.",
+    notes:
+      "It pauses on hover, on focus anywhere inside, and when the tab is hidden " +
+      "— and it ships a real pause button, because an auto-advancing carousel " +
+      "with no way to stop it fails the one accessibility requirement everybody " +
+      "knows about and nobody implements. The ring shows how long is left, so " +
+      "the movement is never a surprise.",
+    example: "<div data-rm-autoplay data-rm-interval=\"5000\">…</div>",
+    usage: 'import { autoplay } from "@soyrageagency/rage-motion";\nautoplay();',
+    options: [option("interval", "number", "4200", "Between advances.")],
+  },
+  {
+    name: "wheel",
+    category: "gallery",
+    file: CAROUSELS,
+    attribute: "data-rm-wheel",
+    summary: "Items around a wheel that turns under the pointer.",
+    notes:
+      "The radial menu: the whole wheel rotates toward whichever item you point " +
+      "at, so the one you want travels to you rather than you chasing it round " +
+      "the rim. Arrow keys step one notch, which is the part a radial menu " +
+      "almost always forgets.",
+    example: '<div data-rm-wheel data-rm-radius="150"><a href="#">…</a></div>',
+    usage: 'import { wheel } from "@soyrageagency/rage-motion";\nwheel();',
+    options: [option("radius", "number", "130", "How far out the items sit.")],
+  },
+  {
+    name: "peek",
+    category: "gallery",
+    file: CAROUSELS,
+    attribute: "data-rm-peek",
+    summary: "The next slide showing at the edge, so you know it is there.",
+    notes:
+      "Scroll padding rather than a transform: the slides genuinely sit in a " +
+      "narrower scroll port, so snapping, the scrollbar and keyboard scrolling " +
+      "all agree with what you can see. The usual version fakes the peek with a " +
+      "negative margin and then fights its own snap points.",
+    example: '<div data-rm-peek data-rm-peek="80">…</div>',
+    usage: 'import { peek } from "@soyrageagency/rage-motion";\npeek();',
+    options: [option("amount", "number", "64", "How much of the neighbours shows.")],
+  },
+  {
+    name: "ticker",
+    category: "gallery",
+    file: CAROUSELS,
+    attribute: "data-rm-ticker",
+    summary: "Rows travelling in opposite directions.",
+    notes:
+      "Each band moves the other way from the one above, which is what turns a " +
+      "single sliding strip into something that reads as texture. Every row is " +
+      "duplicated until it is twice the viewport and wrapped by exactly one " +
+      "copy, so no row can show a seam.",
+    example: "<div data-rm-ticker><div data-rm-ticker-row>…</div><div data-rm-ticker-row>…</div></div>",
+    usage: 'import { ticker } from "@soyrageagency/rage-motion";\nticker();',
+    options: [option("speed", "number", "40", "Pixels per second."), option("gap", "number", "28", "Between items.")],
+  },
+  {
+    name: "slideshow",
+    category: "gallery",
+    file: CAROUSELS,
+    attribute: "data-rm-slideshow",
+    summary: "One frame at a time, with real controls.",
+    notes:
+      "The plain slideshow done properly: previous and next are buttons, the " +
+      "dots are a tablist, the current frame is the only one not `hidden`, and " +
+      "the change is announced. Every one of those is missing from the version " +
+      "built out of divs and a `setInterval`.",
+    example: "<div data-rm-slideshow><div data-rm-slide>…</div><div data-rm-slide>…</div></div>",
+    usage: 'import { slideshow } from "@soyrageagency/rage-motion";\nslideshow();',
+    options: [option("duration", "number", "520", "The cross-fade.")],
   },
 
   // ── Pages ────────────────────────────────────────────────────────────────

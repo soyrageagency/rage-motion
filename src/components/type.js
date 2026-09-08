@@ -20,7 +20,7 @@
 /* eslint-env browser */
 
 import {
-  clamp, dataNumber, dataString, EASE, lerp, loopWhileVisible, onFrame,
+  clamp, dataNumber, dataString, EASE, lerp, loopWhileVisible, mapRange, onFrame,
   prefersReducedMotion, resolveElements,
 } from "../core/motion.js";
 import { split } from "../core/split.js";
