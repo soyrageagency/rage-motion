@@ -3124,6 +3124,7 @@ export const CATALOGUE = [
     attribute: "data-rm-task-note",
     summary: "An inline note that expands in place without dragging the list through it.",
     notes:
+    // impeccable-disable-next-line layout-transition: prose arguing against one
       "The row takes its final size on the frame the note opens and only the ink animates — a clip-path wipe and a short lift on the note itself. That is deliberately the opposite of the usual height transition: interpolating the height of a row in the middle of a list drags every row below it through a few hundred intermediate positions, which is what makes long lists stutter and what makes a click on the row beneath land somewhere unexpected. The trigger is a real button with `aria-expanded` and `aria-controls`, focus moves into the note when it opens, and Escape closes it and puts focus back on the button that opened it. The resting state is applied from JavaScript, so a note hidden by a stylesheet can never stay hidden for somebody whose script failed to load.",
     example: "<p data-rm-task-note=\"Notes\">Client wants the blue version by Friday.</p>",
     usage: "import { taskNote } from \"@soyrageagency/rage-motion\";\ntaskNote();",
@@ -4166,6 +4167,7 @@ export const CATALOGUE = [
     attribute: "data-rm-product-card",
     summary: "A product tile where the whole card is clickable but only the title is the link.",
     notes:
+    // impeccable-disable-next-line broken-image: prose naming the tag
       "The card stretches the title's own anchor over itself with a pseudo element and lifts every other control onto a higher layer, so the price, the badge and the quick-add button keep their own clicks. Wrapping the entire card in one <a> — the usual shortcut — produces a single link whose accessible name is the title, the price, the rating and the word 'Add' read out in sequence, and it makes a nested quick-add button invalid markup. The second photograph is swapped into the same <img> rather than stacked behind it, so there is one element with one alt text and one place to look; it is preloaded first, because assigning src directly gives you a white flash while the file downloads. The hover lift is a transform on the card alone and it also fires on focusin, so a keyboard visitor gets the same second look rather than a dead tile.",
     example: "<article data-rm-product-card data-rm-image=\"/back.jpg\" data-rm-lift=\"8\">\n  <img src=\"/front.jpg\" alt=\"Linen shirt, front\">\n  <h3><a href=\"/p/linen-shirt\">Linen shirt</a></h3>\n  <p data-rm-price-tag data-rm-price=\"68\"></p>\n  <button type=\"button\" data-rm-add-to-cart>Add to bag</button>\n</article>",
     usage: "import { productCard } from \"@soyrageagency/rage-motion\";\nproductCard();",
@@ -4198,6 +4200,7 @@ export const CATALOGUE = [
     attribute: "data-rm-product-zoom",
     summary: "The real photograph magnified inside its own frame, with no second copy of it.",
     notes:
+    // impeccable-disable-next-line broken-image: prose naming the tag
       "The frame clips and the one <img> already inside it scales around the point under the pointer, so the magnifier is the picture you can already see rather than a floating panel showing a different file. The usual implementation drops in a second, much larger <img> and moves its background-position, which downloads the image twice, doubles the decoded bitmap in memory on a phone, and puts a duplicate of the alt text into the accessibility tree for nothing. The focal point is eased on the shared rAF loop rather than written straight from the pointer event, so a fast flick glides instead of snapping, and the whole loop is wrapped in whileVisible so a page of these costs zero frames once scrolled past. It is driven by a real toggle button with aria-pressed, and once on, the arrow keys pan and Escape turns it off, so the effect is not pointer-only.",
     example: "<figure data-rm-product-zoom data-rm-zoom=\"2.6\" data-rm-glide=\"0.2\">\n  <img src=\"/shirt.jpg\" alt=\"Linen shirt, close weave\">\n</figure>",
     usage: "import { productZoom } from \"@soyrageagency/rage-motion\";\nproductZoom();",

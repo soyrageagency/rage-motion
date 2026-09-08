@@ -128,6 +128,7 @@ test("every image in an example has a source and a description", () => {
    */
   const bad = [];
   for (const component of CATALOGUE) {
+    // impeccable-disable-next-line broken-image: this pattern is the check
     for (const [tag] of component.example.matchAll(/<img\b[^>]*>/g)) {
       if (!/\bsrc="[^"]+"/.test(tag)) bad.push(`${component.name}: no src — ${tag}`);
       else if (!/\balt="[^"]+"/.test(tag)) bad.push(`${component.name}: no alt text — ${tag}`);
