@@ -17,7 +17,10 @@ Dates are intentions, not promises. If you need something sooner,
 
 ## 0.1 — Shipped
 
-- [x] **94 components** across twenty-three modules, each standalone and copyable.
+- [x] **100 components** across twenty-five modules, each standalone and
+      copyable — plus 50 named scroll entrances on `reveal` and 52 named looks
+      on `buttonKit`, which are variants of one component rather than a
+      hundred more files to keep correct.
 - [x] `core/motion.js`: motion preference, easings, one shared `rAF`, one shared
       scroll read, and an `animate()` that jumps to the finished state instead
       of skipping the animation.

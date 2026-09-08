@@ -61,6 +61,8 @@ const NAV = "src/components/nav.js";
 const PANELFX = "src/components/panelfx.js";
 const DISCLOSE = "src/components/disclose.js";
 const MOTIONFX = "src/components/motionfx.js";
+const BUTTONKIT = "src/components/button-kit.js";
+const NAVBARS = "src/components/navbars.js";
 const CHROME = "src/components/chrome.js";
 const DECOR = "src/components/decor.js";
 const TRANSITIONS = "src/components/transitions.js";
@@ -74,11 +76,20 @@ export const CATALOGUE = [
     category: "reveal",
     file: REVEAL,
     attribute: "data-rm-reveal",
-    summary: "Elements enter as they scroll into view.",
+    summary: "Elements enter as they scroll into view — fifty named entrances.",
     notes:
       "The starting state is applied from JavaScript, not CSS. If the script " +
       "never loads the content is simply un-animated rather than invisible — " +
-      "which is the failure mode of every `.hidden { opacity: 0 }` reveal.",
+      "which is the failure mode of every `.hidden { opacity: 0 }` reveal.\n\n" +
+      "Fifty named start states share this one component, so they also share " +
+      "the trigger, the reduced-motion handling and the settle: up, down, left, " +
+      "right and their -far variants, glide, fade, scale, zoom, shrink, pop, " +
+      "rise, drop, spring-up, spring-left, blur, blur-only, blur-up, " +
+      "blur-scale, drift-left, drift-right, tilt-left, tilt-right, roll-left, " +
+      "roll-right, swing, twist, spin, skew-x, skew-y, flip-x, flip-y, unfold, " +
+      "fold-up, door, door-right, corner, lift-3d, curtain-up, curtain-down, " +
+      "curtain-left, curtain-right, iris, wipe-diagonal, mask, slat, none. " +
+      "REVEAL_EFFECTS exports the list.",
     example:
       '<div data-rm-reveal="up" data-rm-delay="120">…</div>\n' +
       '<ul data-rm-reveal="up" data-rm-stagger="80"><li>…</li><li>…</li></ul>',
@@ -1525,6 +1536,131 @@ export const CATALOGUE = [
     example: "<button data-rm-stroke>Read the docs</button>",
     usage: 'import { strokeDraw } from "@soyrageagency/rage-motion";\nstrokeDraw();',
     options: [option("duration", "number", "520", "One lap."), option("width", "number", "1.5", "Stroke weight.")],
+  },
+
+  // ── Button kit ───────────────────────────────────────────────────────────
+  {
+    name: "buttonKit",
+    category: "button",
+    file: BUTTONKIT,
+    attribute: "data-rm-btn",
+    summary: "Fifty-two named button looks, on one component.",
+    notes:
+      "One component with a named look, not fifty-two components — they share " +
+      "the same guarantee, which is the reason to build it this way: none " +
+      "replaces the element, adds a click handler or swallows an event, so " +
+      "focus rings, keyboard activation, form submission and middle-clicking a " +
+      "link all still work. Every look answers to `:hover` AND `:focus-visible`, " +
+      "because a button that only rewards a mouse is half a button. None of " +
+      "them animates a width, a padding or a font size, so no look in the kit " +
+      "can push the layout around while you point at it.\n\n" +
+      "Surface: solid, outline, ghost, soft, glass, inset, depth, brutal, " +
+      "brutal-move. Filling: fill-up, fill-down, fill-left, fill-right, " +
+      "fill-center, fill-diagonal, fill-split, curtain. Light: glow, neon, " +
+      "neon-flicker, sweep, shine, gradient, scan, pulse. Edges: border-grow, " +
+      "border-dash, corner-cut, double, notch. Motion: lift, sink, squish, " +
+      "jelly, wobble, tilt3d, nudge, rotate-in. Label: slide-up, slide-down, " +
+      "slide-left, slice, arrow, track, caps, strike, caret. Progress: " +
+      "loading-bar, rail-grow, progress. Texture: dots, stripes.",
+    example:
+      '<button data-rm-btn="brutal">Ship it</button>\n' +
+      '<a class="cta" data-rm-btn="fill-up" href="/start">Start</a>\n' +
+      '<button data-rm-btn="slide-up" data-rm-twin="Let\'s go">Contact</button>',
+    usage: 'import { buttonKit, BUTTON_STYLES } from "@soyrageagency/rage-motion";\nbuttonKit();\n// BUTTON_STYLES is the list of names, if you want to render a picker.',
+    options: [option("style", "one of BUTTON_STYLES", '"solid"', "The fallback when the attribute names something unknown.")],
+  },
+
+  // ── Large navigation ─────────────────────────────────────────────────────
+  {
+    name: "command",
+    category: "nav",
+    file: NAVBARS,
+    attribute: "data-rm-command",
+    summary: "A ⌘K palette that filters and moves on the keyboard.",
+    notes:
+      "Opens on ⌘K or Ctrl-K, filters as you type, moves with the arrows, " +
+      "commits on Enter, closes on Escape. Focus goes into the field and comes " +
+      "back to whatever had it, and the page behind is inert. The filter is a " +
+      "substring match over each item's own text, so the markup stays the " +
+      "source of truth — there is no parallel list to keep in sync, which is " +
+      "the commonest bug in every hand-rolled palette.",
+    example:
+      "<div data-rm-command hidden>\n" +
+      '  <input data-rm-command-input placeholder="Search…">\n' +
+      '  <div data-rm-command-list><a href="/work">Work</a><a href="/about">About</a></div>\n' +
+      "</div>",
+    usage: 'import { command } from "@soyrageagency/rage-motion";\ncommand();',
+    options: [option("key", "string", '"k"', "The shortcut, with cmd or ctrl."), option("empty", "string", '"Nothing matches"', "Shown when the filter finds nothing.")],
+  },
+  {
+    name: "sidebar",
+    category: "nav",
+    file: NAVBARS,
+    attribute: "data-rm-sidebar",
+    summary: "A drawer that slides in and gives focus back.",
+    notes:
+      "A drawer is a dialog that happens to be against an edge, and treating it " +
+      "as decoration is how it becomes a trap. So: focus moves in and is " +
+      "trapped, Escape closes, focus returns to the button, the page behind is " +
+      "inert and cannot scroll.",
+    example:
+      '<button data-rm-sidebar-open aria-controls="drawer">Menu</button>\n' +
+      '<aside id="drawer" data-rm-sidebar="left" hidden>…</aside>',
+    usage: 'import { sidebar } from "@soyrageagency/rage-motion";\nsidebar();',
+    options: [option("side", "left | right", '"left"', "Which edge it comes from.")],
+  },
+  {
+    name: "rail",
+    category: "nav",
+    file: NAVBARS,
+    attribute: "data-rm-rail",
+    summary: "A vertical rail with a marker that travels.",
+    notes:
+      "It rests on `aria-current`, so `scrollSpy` drives it for free and the " +
+      "rail never has to know what a section is — the same trick `pill` uses, " +
+      "and the reason all three compose. It watches the attribute with a " +
+      "MutationObserver rather than the scroll position, so there is never a " +
+      "second opinion about which section you are in.",
+    example: '<nav data-rm-rail data-rm-spy><a href="#one">One</a><a href="#two">Two</a></nav>',
+    usage: 'import { rail, scrollSpy } from "@soyrageagency/rage-motion";\nrail();\nscrollSpy();',
+    options: [option("duration", "number", "420", "The travel.")],
+  },
+  {
+    name: "bottomNav",
+    category: "nav",
+    file: NAVBARS,
+    attribute: "data-rm-bottom",
+    summary: "A bottom bar with an indicator that follows.",
+    notes:
+      "The phone tab bar. The indicator is measured against the current item " +
+      "and moved with a transform, and the bar hides on the way down and " +
+      "returns on the way up — but never while anything inside it has focus, so " +
+      "tabbing into the navigation cannot make it disappear.",
+    example: '<nav data-rm-bottom><a href="#a" aria-current="true">Home</a><a href="#b">Search</a></nav>',
+    usage: 'import { bottomNav } from "@soyrageagency/rage-motion";\nbottomNav();',
+    options: [option("hideOnScroll", "boolean", "true", "Whether it gets out of the way.")],
+  },
+  {
+    name: "mega",
+    category: "nav",
+    file: NAVBARS,
+    attribute: "data-rm-mega",
+    summary: "A wide panel under a top-level item, with hover intent.",
+    notes:
+      "It opens after a short delay and closes after a longer one, so dragging " +
+      "the pointer diagonally toward the panel does not snap it shut halfway — " +
+      "the single thing that makes most mega menus infuriating. Focus opens it " +
+      "and Escape closes it, and the trigger carries `aria-expanded`, so it is " +
+      "a disclosure rather than a hover trick.",
+    example:
+      "<nav data-rm-mega>\n" +
+      "  <div data-rm-mega-item>\n" +
+      "    <button data-rm-mega-trigger>Products</button>\n" +
+      "    <div data-rm-mega-panel>…</div>\n" +
+      "  </div>\n" +
+      "</nav>",
+    usage: 'import { mega } from "@soyrageagency/rage-motion";\nmega();',
+    options: [option("openDelay", "number", "90", "Hover intent in."), option("closeDelay", "number", "260", "Hover intent out.")],
   },
 
   // ── Pages ────────────────────────────────────────────────────────────────

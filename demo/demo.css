@@ -928,3 +928,150 @@ code { font-size: 0.9em; }
   border: 1px solid var(--line);
   background: #141414;
 }
+
+/* ── The two big grids ───────────────────────────────────────────────── */
+
+.rail-note { margin-bottom: 22px; }
+
+.effect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(126px, 1fr));
+  gap: 10px;
+}
+.effect-tile {
+  display: grid;
+  place-items: center;
+  height: 88px;
+  padding: 8px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  text-align: center;
+}
+.effect-tile b {
+  font-family: var(--rm-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #cfcac2;
+  word-break: break-word;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+  gap: 12px;
+}
+.button-cell {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  align-content: center;
+  min-height: 108px;
+  padding: 14px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+/*
+ * The kit supplies the look; the page still supplies the shape. Wrapped in
+ * :where() so it carries no specificity — otherwise these resets would sit at
+ * the same weight as the kit's own rules, load later, and quietly cancel every
+ * variant that sets a background.
+ */
+.button-cell :where(.rm-btn) {
+  padding: 10px 18px;
+  border-radius: var(--rm-radius-pill);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+/* A hard shadow and a cut corner both want a squarer box than a pill. */
+.button-cell :where(.is-brutal, .is-brutal-move, .is-corner-cut, .is-notch, .is-dots, .is-stripes) {
+  border-radius: 6px;
+}
+.button-cell :where(.is-corner-cut, .is-notch) { border-radius: 0; }
+.button-cell-name {
+  font-family: var(--rm-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #5f5b54;
+}
+
+/* ── Large navigation cells ──────────────────────────────────────────── */
+
+.rail-body { padding: 18px; }
+.mini-rail { display: grid; gap: 6px; padding-left: 14px; }
+.mini-rail a { text-decoration: none; font-size: 14px; color: var(--dim); }
+.mini-rail a[aria-current] { color: var(--text); }
+
+.mini-bottom { display: flex; gap: 4px; padding: 6px; border-radius: var(--rm-radius-pill); border: 1px solid var(--line); }
+.mini-bottom a { padding: 8px 14px; border-radius: var(--rm-radius-pill); text-decoration: none; font-size: 13.5px; color: var(--dim); }
+.mini-bottom a[aria-current] { color: var(--text); }
+
+.mega-body { align-items: start; padding: 18px; }
+.mini-mega { width: 100%; }
+.mega-panel {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+}
+.mega-panel a { padding: 8px 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: var(--dim); }
+.mega-panel a:hover, .mega-panel a:focus-visible { background: #202020; color: var(--text); }
+
+/* ── Palette and drawer ──────────────────────────────────────────────── */
+
+.palette-box {
+  width: min(560px, 100%);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  overflow: hidden;
+  box-shadow: 0 40px 90px -50px rgb(0 0 0 / 1);
+}
+.palette-input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+}
+.palette-input:focus { outline: none; }
+.palette-list { display: grid; padding: 6px; max-height: 46vh; overflow-y: auto; }
+.palette-list a {
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  color: var(--dim);
+}
+.palette-list a.is-active { background: #202020; color: var(--text); }
+.rm-command-empty { padding: 14px 18px; color: #5f5b54; font-size: 13.5px; }
+
+.drawer {
+  padding: 24px;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+.drawer nav { display: grid; gap: 4px; margin-bottom: 22px; }
+.drawer nav a {
+  padding: 10px 12px;
+  border-radius: 9px;
+  text-decoration: none;
+  font-family: var(--rm-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.drawer nav a:hover, .drawer nav a:focus-visible { background: #1c1c1c; }

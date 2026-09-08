@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — 94 web animation components, zero dependencies</title>
-<meta name="description" content="A catalogue of 94 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
+<title>rage-motion — 100 web animation components, zero dependencies</title>
+<meta name="description" content="A catalogue of 100 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="dark">
 
-<meta property="og:title" content="rage-motion — 94 web animation components, zero dependencies">
+<meta property="og:title" content="rage-motion — 100 web animation components, zero dependencies">
 <meta property="og:description" content="A catalogue of components with real technique behind them. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
@@ -53,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">94 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
+    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">100 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">94</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">100</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">23</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">25</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -132,6 +132,7 @@
           <li><b>press</b><code>data-rm-press</code></li>
           <li><b>halo</b><code>data-rm-halo</code></li>
           <li><b>strokeDraw</b><code>data-rm-stroke</code></li>
+          <li><b>buttonKit</b><code>data-rm-btn ×52</code></li>
         </ul>
 
         <h3>Chrome</h3>
@@ -223,7 +224,7 @@
       <div class="index-family">
         <h3>Scroll</h3>
         <ul>
-          <li><b>reveal</b><code>data-rm-reveal</code></li>
+          <li><b>reveal</b><code>data-rm-reveal ×50</code></li>
           <li><b>parallax</b><code>data-rm-parallax</code></li>
           <li><b>progress</b><code>data-rm-progress</code></li>
           <li><b>horizontal</b><code>data-rm-horizontal</code></li>
@@ -244,6 +245,11 @@
           <li><b>tabs</b><code>data-rm-tabs</code></li>
           <li><b>scrollSpy</b><code>data-rm-spy</code></li>
           <li><b>progressRing</b><code>data-rm-ring-progress</code></li>
+          <li><b>command</b><code>data-rm-command</code></li>
+          <li><b>sidebar</b><code>data-rm-sidebar</code></li>
+          <li><b>rail</b><code>data-rm-rail</code></li>
+          <li><b>bottomNav</b><code>data-rm-bottom</code></li>
+          <li><b>mega</b><code>data-rm-mega</code></li>
           <li><b>pageTransition</b><code>js</code></li>
         </ul>
       </div>
@@ -863,6 +869,79 @@
     </article>
   </div>
 
+  <!-- Every reveal, every button -->
+  <div class="shell rail"><span class="rail-name">All 50 scroll entrances</span></div>
+  <div class="shell">
+    <p class="lede rail-note">Every named start state, on the same component. Scroll them into view — each plays as it arrives, and each runs backwards if you scroll away and come back.</p>
+    <div class="effect-grid" id="effect-grid"></div>
+  </div>
+
+  <div class="shell rail"><span class="rail-name">All 52 button looks</span></div>
+  <div class="shell">
+    <p class="lede rail-note">One component, fifty-two named looks. Hover them, reach them with Tab, press them. None replaces the element underneath.</p>
+    <div class="button-grid" id="button-grid"></div>
+  </div>
+
+  <!-- Big navigation -->
+  <div class="shell rail"><span class="rail-name">Navigation, the larger pieces</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">command <span class="cell-hint">press ⌘K or ctrl-K</span></p>
+      <div class="cell-body">
+        <button class="ghost" data-rm-command-open>Open the palette</button>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-command hidden><input data-rm-command-input><div data-rm-command-list>…</div></div>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">sidebar <span class="cell-hint">escape closes</span></p>
+      <div class="cell-body">
+        <button class="ghost" data-rm-sidebar-open aria-controls="drawer">Open the drawer</button>
+      </div>
+      <button class="cell-copy" data-copy='&lt;aside data-rm-sidebar="left" hidden&gt;…&lt;/aside&gt;'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">rail <span class="cell-hint">follows the page</span></p>
+      <div class="cell-body rail-body">
+        <nav class="mini-rail" data-rm-rail aria-label="Rail example">
+          <a href="#gallery" aria-current="true">Gallery</a>
+          <a href="#scroll">Scroll</a>
+          <a href="#mcp">MCP</a>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy='&lt;nav data-rm-rail data-rm-spy&gt;…&lt;/nav&gt;'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">bottomNav <span class="cell-hint">tap one</span></p>
+      <div class="cell-body">
+        <nav class="mini-bottom" data-rm-bottom aria-label="Bottom bar example">
+          <a href="#gallery" aria-current="true">Home</a>
+          <a href="#gallery">Search</a>
+          <a href="#gallery">Saved</a>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy='&lt;nav data-rm-bottom&gt;…&lt;/nav&gt;'>copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">mega <span class="cell-hint">hover intent</span></p>
+      <div class="cell-body mega-body">
+        <nav class="mini-mega" data-rm-mega aria-label="Mega menu example">
+          <div data-rm-mega-item>
+            <button class="ghost" data-rm-mega-trigger>Products ▾</button>
+            <div class="mega-panel" data-rm-mega-panel>
+              <a href="#gallery">Motion kit</a><a href="#gallery">MCP server</a>
+              <a href="#gallery">Templates</a><a href="#gallery">Support</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <button class="cell-copy" data-copy="<nav data-rm-mega><div data-rm-mega-item><button data-rm-mega-trigger>Products</button><div data-rm-mega-panel>…</div></div></nav>">copy</button>
+    </article>
+  </div>
+
   <!-- Navigation -->
   <div class="shell rail"><span class="rail-name">Navigation</span></div>
   <div class="shell cells">
@@ -1156,6 +1235,29 @@ init();</code></pre>
     <button data-cursor="crosshair" aria-pressed="false">cross</button>
     <button data-cursor="splash" aria-pressed="false">splash</button>
   </div>
+</aside>
+
+<div class="palette" data-rm-command hidden>
+  <div class="palette-box">
+    <input class="palette-input" data-rm-command-input type="text" placeholder="Search components…" aria-label="Search components">
+    <div class="palette-list" data-rm-command-list>
+      <a href="#index">Index</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#scroll">Scroll animations</a>
+      <a href="#compare">Before and after</a>
+      <a href="#mcp">MCP server</a>
+      <a href="#start">Start</a>
+    </div>
+  </div>
+</div>
+
+<aside id="drawer" class="drawer" data-rm-sidebar="left" hidden>
+  <p class="mono-label">Drawer</p>
+  <nav aria-label="Drawer menu">
+    <a href="#index">Index</a><a href="#gallery">Gallery</a>
+    <a href="#scroll">Scroll</a><a href="#mcp">MCP</a>
+  </nav>
+  <p class="note">Focus is trapped in here. Escape closes it and hands focus back to the button.</p>
 </aside>
 
 <div class="toast" role="status" aria-live="polite" hidden></div>

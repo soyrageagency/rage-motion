@@ -14,7 +14,45 @@
 
 import {
   init, cursor, target, crosshair, splash, waves, retroGrid, dotGrid, confetti,
+  REVEAL_EFFECTS, BUTTON_STYLES,
 } from "../src/index.js";
+
+/* ── The two big grids ─────────────────────────────────────────────────── */
+
+/*
+ * Built from the library's own exported lists rather than written out by
+ * hand, so the page cannot claim an effect the kit does not have — or quietly
+ * miss one it does. Add a name to the table in reveal.js and a tile appears
+ * here on the next reload.
+ */
+function fillGrid(id, names, build) {
+  const holder = document.querySelector(id);
+  if (!holder) return;
+  holder.append(...names.map(build));
+}
+
+fillGrid("#effect-grid", REVEAL_EFFECTS, (name) => {
+  const tile = document.createElement("div");
+  tile.className = "effect-tile";
+  tile.dataset.rmReveal = name;
+  tile.innerHTML = `<b>${name}</b>`;
+  return tile;
+});
+
+fillGrid("#button-grid", BUTTON_STYLES, (name) => {
+  const cell = document.createElement("div");
+  cell.className = "button-cell";
+  const button = document.createElement("button");
+  button.type = "button";
+  button.dataset.rmBtn = name;
+  button.dataset.rmTwin = "→";
+  button.textContent = name;
+  const label = document.createElement("span");
+  label.className = "button-cell-name";
+  label.textContent = name;
+  cell.append(button, label);
+  return cell;
+});
 
 init();
 

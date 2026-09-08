@@ -16,7 +16,8 @@
 export * from "./core/motion.js";
 export { split, unsplit } from "./core/split.js";
 
-export { reveal } from "./components/reveal.js";
+export { reveal, REVEAL_EFFECTS } from "./components/reveal.js";
+export { buttonKit, BUTTON_STYLES } from "./components/button-kit.js";
 export { textReveal } from "./components/text.js";
 export { decrypt, glitch, shiny, countUp } from "./components/text-effects.js";
 export { pressure, morph, curve, odometer, highlight, outline, rollText, countdown } from "./components/type.js";
@@ -37,9 +38,11 @@ export { fill, shimmer, spark, swap, underline, press, halo, strokeDraw } from "
 export { scrollbar, dropdown, tooltip, toggle } from "./components/chrome.js";
 export { dots, stripes, corners, scanline, mesh, starfield } from "./components/decor.js";
 export { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
+export { command, sidebar, rail, bottomNav, mega } from "./components/navbars.js";
 export { pageTransition, transitionTo } from "./components/transitions.js";
 
 import { reveal } from "./components/reveal.js";
+import { buttonKit } from "./components/button-kit.js";
 import { textReveal } from "./components/text.js";
 import { decrypt, glitch, shiny, countUp } from "./components/text-effects.js";
 import { pressure, morph, curve, odometer, highlight, outline, rollText, countdown } from "./components/type.js";
@@ -59,6 +62,7 @@ import { fill, shimmer, spark, swap, underline, press, halo, strokeDraw } from "
 import { scrollbar, dropdown, tooltip, toggle } from "./components/chrome.js";
 import { dots, stripes, corners, scanline, mesh, starfield } from "./components/decor.js";
 import { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
+import { command, sidebar, rail, bottomNav, mega } from "./components/navbars.js";
 
 /**
  * Start every component that is driven purely by markup.
@@ -73,6 +77,7 @@ import { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from ".
 export function init(options = {}) {
   const stops = [
     reveal("[data-rm-reveal]", options.reveal),
+    buttonKit("[data-rm-btn]", options.buttonKit),
     textReveal("[data-rm-text]", options.text),
     decrypt("[data-rm-decrypt]", options.decrypt),
     glitch("[data-rm-glitch]", options.glitch),
@@ -156,6 +161,11 @@ export function init(options = {}) {
     tabs("[data-rm-tabs]", options.tabs),
     scrollSpy("[data-rm-spy]", options.scrollSpy),
     progressRing("[data-rm-ring-progress]", options.progressRing),
+    command("[data-rm-command]", options.command),
+    sidebar("[data-rm-sidebar]", options.sidebar),
+    rail("[data-rm-rail]", options.rail),
+    bottomNav("[data-rm-bottom]", options.bottomNav),
+    mega("[data-rm-mega]", options.mega),
   ];
   return () => stops.forEach((stop) => stop?.());
 }

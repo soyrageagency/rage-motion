@@ -34,9 +34,10 @@ test("the barrel exports something to check", () => {
 });
 
 test("every exported component is in the catalogue", () => {
-  // `transitionTo` is a helper for `pageTransition` rather than a component of
-  // its own, and is documented as part of it.
-  const helpers = new Set(["transitionTo"]);
+  // Not components: `transitionTo` is a helper documented with
+  // `pageTransition`, and the two SHOUTING exports are the lists of named
+  // variants that `reveal` and `buttonKit` document in their own entries.
+  const helpers = new Set(["transitionTo", "REVEAL_EFFECTS", "BUTTON_STYLES"]);
   const missing = exported.filter((name) => !helpers.has(name) && !findComponent(name));
   assert.deepEqual(missing, [], `not served over MCP: ${missing.join(", ")}`);
 });

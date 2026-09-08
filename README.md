@@ -15,7 +15,7 @@
   </picture>
 </a>
 
-**Award-grade motion for the web, with zero dependencies.** 94 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
+**Award-grade motion for the web, with zero dependencies.** 100 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
 
 *"A headline that reacts to the cursor." · "A carousel that works with a keyboard." · "A menu that traps focus properly." · "A counter that rolls like an odometer."*
 
@@ -132,9 +132,9 @@ stop();   // puts everything back exactly as it was
 
 ---
 
-## The 94 components
+## The 100 components
 
-**Entrances** — `reveal`
+**Entrances** — `reveal`, with **50 named start states**: up · down · left · right and their `-far` variants · glide · fade · scale · zoom · shrink · pop · rise · drop · spring-up · spring-left · blur · blur-only · blur-up · blur-scale · drift-left · drift-right · tilt-left · tilt-right · roll-left · roll-right · swing · twist · spin · skew-x · skew-y · flip-x · flip-y · unfold · fold-up · door · door-right · corner · lift-3d · curtain-up · curtain-down · curtain-left · curtain-right · iris · wipe-diagonal · mask · slat · none
 
 **Text** — `textReveal` · `decrypt` · `glitch` · `shiny` · `countUp` · `outline` · `rollText` · `countdown` · `split`
 
@@ -166,9 +166,9 @@ stop();   // puts everything back exactly as it was
 
 **Carousels & galleries** — `carousel` · `ring` · `deck` · `imageTrail` · `scratch` · `dock` · `compare` · `panels` · `orbit` · `drag` · `shuffle`
 
-**Buttons** — `fill` · `shimmer` · `spark` · `swap` · `confetti` · `underline` · `press` · `halo` · `strokeDraw`
+**Buttons** — `fill` · `shimmer` · `spark` · `swap` · `confetti` · `underline` · `press` · `halo` · `strokeDraw`, plus `buttonKit` with **52 named looks**: solid · outline · ghost · soft · glass · inset · depth · brutal · brutal-move · fill-up · fill-down · fill-left · fill-right · fill-center · fill-diagonal · fill-split · curtain · glow · neon · neon-flicker · sweep · shine · gradient · scan · pulse · border-grow · border-dash · corner-cut · double · notch · lift · sink · squish · jelly · wobble · tilt3d · nudge · rotate-in · slide-up · slide-down · slide-left · slice · arrow · track · caps · strike · caret · loading-bar · rail-grow · progress · dots · stripes
 
-**Navigation** — `pill` · `gooey` · `condense` · `overlay` · `tabs` · `scrollSpy` · `progressRing`
+**Navigation** — `pill` · `gooey` · `condense` · `overlay` · `tabs` · `scrollSpy` · `progressRing` · `command` · `sidebar` · `rail` · `bottomNav` · `mega`
 
 **Pages** — `pageTransition` · `transitionTo`
 

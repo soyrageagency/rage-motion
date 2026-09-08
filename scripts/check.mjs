@@ -148,6 +148,11 @@ async function run(browser, { reducedMotion }) {
     stars: document.querySelectorAll(".rm-stars").length,
     mesh: document.querySelectorAll(".rm-mesh i").length,
     stroke: document.querySelectorAll(".rm-stroke-svg rect").length,
+    effectTiles: document.querySelectorAll(".effect-tile[data-rm-reveal]").length,
+    buttonLooks: document.querySelectorAll(".button-cell .rm-btn").length,
+    railMarker: document.querySelectorAll(".rm-rail-marker").length,
+    bottomPip: document.querySelectorAll(".rm-bottom-pip").length,
+    megaPanels: document.querySelectorAll(".rm-mega-panel").length,
     swap: document.querySelectorAll(".rm-swap-face").length,
   }));
 
@@ -184,6 +189,11 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: the starfield is drawing`, started.stars === 1, String(started.stars));
   check(`${label}: mesh built its stops`, started.mesh === 4, String(started.mesh));
   check(`${label}: strokeDraw measured its rectangle`, started.stroke === 1, String(started.stroke));
+  check(`${label}: all 50 reveal entrances are on the page`, started.effectTiles === 50, String(started.effectTiles));
+  check(`${label}: all 52 button looks are on the page`, started.buttonLooks === 52, String(started.buttonLooks));
+  check(`${label}: the rail placed its marker`, started.railMarker === 1, String(started.railMarker));
+  check(`${label}: the bottom bar placed its indicator`, started.bottomPip === 1, String(started.bottomPip));
+  check(`${label}: the mega panel mounted`, started.megaPanels === 1, String(started.megaPanels));
 
   // Scroll the whole page, then check nothing readable is left invisible.
   await page.evaluate(async () => {
@@ -225,7 +235,7 @@ async function run(browser, { reducedMotion }) {
   const counted = await page.evaluate(
     () => document.querySelector("[data-rm-odometer]")?.getAttribute("aria-label") ?? "",
   );
-  check(`${label}: the counter still announces its value`, counted === "94", counted);
+  check(`${label}: the counter still announces its value`, counted === "100", counted);
 
   // The rotating words are decoration; the list of them is the content.
   const morphLabel = await page.evaluate(
