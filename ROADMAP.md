@@ -17,7 +17,7 @@ Dates are intentions, not promises. If you need something sooner,
 
 ## 0.1 — Shipped
 
-- [x] **80 components** across twenty-one modules, each standalone and copyable.
+- [x] **94 components** across twenty-three modules, each standalone and copyable.
 - [x] `core/motion.js`: motion preference, easings, one shared `rAF`, one shared
       scroll read, and an `animate()` that jumps to the finished state instead
       of skipping the animation.
@@ -30,8 +30,12 @@ Dates are intentions, not promises. If you need something sooner,
 - [x] **Navigation that does not break the site** — `pill`, `gooey`,
       `condense`, `tabs` on the real tab pattern, and an `overlay` that traps
       focus, closes on Escape, restores focus and marks the page inert.
-- [x] **Buttons that decorate rather than replace** — direction-aware `fill`,
-      `shimmer`, `spark`, `swap`.
+- [x] **Buttons that decorate rather than replace** — direction-aware `fill`
+      and `underline`, `shimmer`, `spark`, `swap`, `press`, `halo`,
+      `strokeDraw`.
+- [x] **Chrome that is styled, not rebuilt** — five scrollbars that are still
+      scrollbars, a dropdown on the real menu pattern, an announced tooltip,
+      and a switch that is a checkbox underneath.
 - [x] MCP server: `list_components`, `get_component`, `get_tokens`,
       `get_stylesheet`, `about`, plus a prompt and a resource.
 - [x] A public demo that doubles as the documentation.

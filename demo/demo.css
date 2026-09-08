@@ -877,3 +877,54 @@ code { font-size: 0.9em; }
   padding-left: 4px;
 }
 @media (max-width: 720px) { .cursor-dock { display: none; } }
+
+/* ── Chrome cells ────────────────────────────────────────────────────── */
+
+.scrollbars-body { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: stretch; padding: 12px; }
+.scroller {
+  height: 150px;
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: #141414;
+}
+.scroller p { margin: 0 0 8px; font-family: var(--rm-mono); font-size: 10.5px; color: var(--dim); }
+.scroller span { display: block; height: 420px; background: linear-gradient(#1e1e1e, #101010); border-radius: 6px; }
+@media (max-width: 720px) { .scrollbars-body { grid-template-columns: repeat(2, 1fr); } }
+
+.menu-panel {
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  box-shadow: 0 20px 50px -30px rgb(0 0 0 / 0.9);
+}
+.menu-panel button {
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+}
+.menu-panel button:hover, .menu-panel button:focus-visible { background: #202020; }
+
+.chrome-body { display: grid; gap: 18px; place-items: center; }
+
+.hover-body { display: flex; flex-wrap: wrap; gap: 16px; align-content: center; justify-content: center; }
+.hover-link { font-family: var(--rm-display); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+
+.corner-card {
+  display: grid;
+  place-items: center;
+  width: 78%;
+  height: 108px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #141414;
+}

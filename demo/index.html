@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — 80 web animation components, zero dependencies</title>
-<meta name="description" content="A catalogue of 80 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
+<title>rage-motion — 94 web animation components, zero dependencies</title>
+<meta name="description" content="A catalogue of 94 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="dark">
 
-<meta property="og:title" content="rage-motion — 80 web animation components, zero dependencies">
+<meta property="og:title" content="rage-motion — 94 web animation components, zero dependencies">
 <meta property="og:description" content="A catalogue of components with real technique behind them. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="../src/styles/rage-motion.css">
 <link rel="stylesheet" href="./demo.css">
 </head>
-<body>
+<body data-rm-scrollbar="accent">
 
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
 <header class="bar" data-rm-condense>
@@ -53,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">80 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
+    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">94 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -72,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">80</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">94</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">21</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">23</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -128,6 +128,18 @@
           <li><b>swap</b><code>data-rm-swap</code></li>
           <li><b>ripple</b><code>data-rm-ripple</code></li>
           <li><b>confetti</b><code>js</code></li>
+          <li><b>underline</b><code>data-rm-underline</code></li>
+          <li><b>press</b><code>data-rm-press</code></li>
+          <li><b>halo</b><code>data-rm-halo</code></li>
+          <li><b>strokeDraw</b><code>data-rm-stroke</code></li>
+        </ul>
+
+        <h3>Chrome</h3>
+        <ul>
+          <li><b>scrollbar</b><code>data-rm-scrollbar</code></li>
+          <li><b>dropdown</b><code>data-rm-dropdown</code></li>
+          <li><b>tooltip</b><code>data-rm-tooltip</code></li>
+          <li><b>toggle</b><code>data-rm-toggle</code></li>
         </ul>
       </div>
 
@@ -154,6 +166,12 @@
           <li><b>sparkles</b><code>data-rm-sparkles</code></li>
           <li><b>lamp</b><code>data-rm-lamp</code></li>
           <li><b>beams</b><code>data-rm-beams</code></li>
+          <li><b>mesh</b><code>data-rm-mesh</code></li>
+          <li><b>starfield</b><code>data-rm-stars</code></li>
+          <li><b>dots</b><code>data-rm-dots</code></li>
+          <li><b>stripes</b><code>data-rm-stripes</code></li>
+          <li><b>scanline</b><code>data-rm-scanline</code></li>
+          <li><b>corners</b><code>data-rm-corners</code></li>
         </ul>
       </div>
 
@@ -745,6 +763,103 @@
         <a class="roll-link" data-rm-roll="It is free" href="#start">Pricing</a>
       </div>
       <button class="cell-copy" data-copy='<a data-rm-roll="Get in touch" href="/contact">Contact</a>'>copy</button>
+    </article>
+  </div>
+
+  <!-- Chrome -->
+  <div class="shell rail"><span class="rail-name">Chrome</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">scrollbar <span class="cell-hint">five looks · scroll them</span></p>
+      <div class="cell-body scrollbars-body">
+        <div class="scroller" data-rm-scrollbar="thin"><p>thin</p><span></span></div>
+        <div class="scroller" data-rm-scrollbar="pill"><p>pill</p><span></span></div>
+        <div class="scroller" data-rm-scrollbar="accent"><p>accent</p><span></span></div>
+        <div class="scroller" data-rm-scrollbar="ghost"><p>ghost</p><span></span></div>
+        <div class="scroller" data-rm-scrollbar="inset"><p>inset</p><span></span></div>
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-scrollbar="accent">…</div>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">dropdown <span class="cell-hint">arrow keys</span></p>
+      <div class="cell-body">
+        <div data-rm-dropdown>
+          <button class="ghost" data-rm-dropdown-button>Sort ▾</button>
+          <div class="menu-panel" data-rm-dropdown-menu>
+            <button>Newest first</button>
+            <button>Oldest first</button>
+            <button>By name</button>
+          </div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-dropdown><button data-rm-dropdown-button>Sort</button><div data-rm-dropdown-menu>…</div></div>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">tooltip · toggle</p>
+      <div class="cell-body chrome-body">
+        <button class="ghost" data-rm-tooltip="Announced, not just shown">Hover me</button>
+        <label data-rm-toggle><input type="checkbox" checked> Reduced chrome</label>
+      </div>
+      <button class="cell-copy" data-copy='<button data-rm-tooltip="Copies to your clipboard">Copy</button>'>copy</button>
+    </article>
+  </div>
+
+  <!-- Button hovers -->
+  <div class="shell rail"><span class="rail-name">Hovers</span></div>
+  <div class="shell cells">
+    <article class="cell cell-wide">
+      <p class="cell-name">underline · press · halo · strokeDraw</p>
+      <div class="cell-body hover-body">
+        <a class="hover-link" data-rm-underline href="#gallery">Directional underline</a>
+        <button class="solid" data-rm-press data-rm-color="#2aa7e4">Press me</button>
+        <button class="ghost" data-rm-halo>Halo</button>
+        <button class="ghost" data-rm-stroke>Draw the outline</button>
+      </div>
+      <button class="cell-copy" data-copy='<a data-rm-underline href="/work">Work</a>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">corners <span class="cell-hint">hover</span></p>
+      <div class="cell-body">
+        <div class="corner-card" data-rm-corners><span class="chip">brackets</span></div>
+      </div>
+      <button class="cell-copy" data-copy="<article data-rm-corners>…</article>">copy</button>
+    </article>
+  </div>
+
+  <!-- Decoration -->
+  <div class="shell rail"><span class="rail-name">Decoration</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">mesh</p>
+      <div class="cell-body plate" data-rm-mesh><span class="chip">four blurred stops</span></div>
+      <button class="cell-copy" data-copy="<section data-rm-mesh>…</section>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">starfield <span class="cell-hint">scroll</span></p>
+      <div class="cell-body plate" data-rm-stars="140"><span class="chip">three depths</span></div>
+      <button class="cell-copy" data-copy="<section data-rm-stars>…</section>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">dots</p>
+      <div class="cell-body plate" data-rm-dots data-rm-gap="18"><span class="chip">one gradient</span></div>
+      <button class="cell-copy" data-copy="<section data-rm-dots>…</section>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">stripes</p>
+      <div class="cell-body plate" data-rm-stripes><span class="chip">hatching</span></div>
+      <button class="cell-copy" data-copy="<div data-rm-stripes>…</div>">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">scanline</p>
+      <div class="cell-body plate" data-rm-scanline><span class="chip">something is live</span></div>
+      <button class="cell-copy" data-copy="<div data-rm-scanline>…</div>">copy</button>
     </article>
   </div>
 

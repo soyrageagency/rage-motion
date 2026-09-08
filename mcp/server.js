@@ -103,7 +103,7 @@ server.registerTool(
       category: z
         .enum([
           "all", "reveal", "text", "showpiece", "cursor", "cards", "surface",
-          "background", "disclosure", "scroll", "media", "gallery", "button",
+          "background", "disclosure", "chrome", "scroll", "media", "gallery", "button",
           "nav", "transition",
         ])
         .optional()

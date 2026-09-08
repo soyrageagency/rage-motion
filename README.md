@@ -15,7 +15,7 @@
   </picture>
 </a>
 
-**Award-grade motion for the web, with zero dependencies.** 80 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
+**Award-grade motion for the web, with zero dependencies.** 94 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
 
 *"A headline that reacts to the cursor." · "A carousel that works with a keyboard." · "A menu that traps focus properly." · "A counter that rolls like an odometer."*
 
@@ -132,7 +132,7 @@ stop();   // puts everything back exactly as it was
 
 ---
 
-## The 80 components
+## The 94 components
 
 **Entrances** — `reveal`
 
@@ -150,6 +150,10 @@ stop();   // puts everything back exactly as it was
 
 **Light** — `meteors` · `sparkles` · `lamp` · `beams`
 
+**Decoration** — `mesh` · `starfield` · `dots` · `stripes` · `scanline` · `corners`
+
+**Page chrome** — `scrollbar` · `dropdown` · `tooltip` · `toggle`
+
 **Things that open** — `accordion` · `flip` · `expand` · `lightbox`
 
 **Fields** — `waves` · `retroGrid` · `dotGrid` · `grain`
@@ -162,7 +166,7 @@ stop();   // puts everything back exactly as it was
 
 **Carousels & galleries** — `carousel` · `ring` · `deck` · `imageTrail` · `scratch` · `dock` · `compare` · `panels` · `orbit` · `drag` · `shuffle`
 
-**Buttons** — `fill` · `shimmer` · `spark` · `swap` · `confetti`
+**Buttons** — `fill` · `shimmer` · `spark` · `swap` · `confetti` · `underline` · `press` · `halo` · `strokeDraw`
 
 **Navigation** — `pill` · `gooey` · `condense` · `overlay` · `tabs` · `scrollSpy` · `progressRing`
 

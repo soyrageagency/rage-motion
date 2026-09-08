@@ -61,6 +61,8 @@ const NAV = "src/components/nav.js";
 const PANELFX = "src/components/panelfx.js";
 const DISCLOSE = "src/components/disclose.js";
 const MOTIONFX = "src/components/motionfx.js";
+const CHROME = "src/components/chrome.js";
+const DECOR = "src/components/decor.js";
 const TRANSITIONS = "src/components/transitions.js";
 
 const option = (name, type, dflt, about) => ({ name, type, default: dflt, about });
@@ -1299,6 +1301,230 @@ export const CATALOGUE = [
     example: '<a href="#top" data-rm-ring-progress>Top</a>',
     usage: 'import { progressRing } from "@soyrageagency/rage-motion";\nprogressRing();',
     options: [option("size", "number", "44", "Outer diameter."), option("width", "number", "2", "Stroke.")],
+  },
+
+  // ── Page chrome ──────────────────────────────────────────────────────────
+  {
+    name: "scrollbar",
+    category: "chrome",
+    file: CHROME,
+    attribute: "data-rm-scrollbar",
+    summary: "A styled scrollbar that still behaves like a scrollbar.",
+    notes:
+      "It applies a class; the styling is CSS, using `scrollbar-width` and " +
+      "`scrollbar-color` where they work and `::-webkit-scrollbar` where they " +
+      "do not. Nothing is rebuilt in JavaScript, because the div-with-a-handle " +
+      "version everyone ships loses the wheel's page-jump, the keyboard, the " +
+      "context menu, momentum and every assistive technology that knows what a " +
+      "scrollbar is. Five looks: thin, pill, accent, ghost and inset.",
+    example: '<body data-rm-scrollbar="accent">\n<div class="panel" data-rm-scrollbar="ghost">…</div>',
+    usage: 'import { scrollbar } from "@soyrageagency/rage-motion";\nscrollbar();',
+    options: [
+      option("style", "thin | pill | accent | ghost | inset", '"thin"', "Which look."),
+      option("color", "colour", "unset", "Overrides the thumb."),
+    ],
+  },
+  {
+    name: "dropdown",
+    category: "chrome",
+    file: CHROME,
+    attribute: "data-rm-dropdown",
+    summary: "A menu button with real keyboard semantics.",
+    notes:
+      "The whole pattern, because a homemade dropdown hurts most: " +
+      "`aria-haspopup` and `aria-expanded`, `role=\"menu\"`, arrow keys with " +
+      "Home and End moving a roving focus, Escape closing and returning focus, " +
+      "a click anywhere else closing it, and the menu flipping above the button " +
+      "when there is no room below — measured against the viewport rather than " +
+      "assumed.",
+    example:
+      "<div data-rm-dropdown>\n" +
+      "  <button data-rm-dropdown-button>Sort</button>\n" +
+      "  <div data-rm-dropdown-menu><button>Newest</button><button>Oldest</button></div>\n" +
+      "</div>",
+    usage: 'import { dropdown } from "@soyrageagency/rage-motion";\ndropdown();',
+    options: [option("duration", "number", "220", "The open.")],
+  },
+  {
+    name: "tooltip",
+    category: "chrome",
+    file: CHROME,
+    attribute: "data-rm-tooltip",
+    summary: "A hint that is announced as well as shown.",
+    notes:
+      "Wired with `aria-describedby` and `role=\"tooltip\"`, so a screen reader " +
+      "reads it too — a title replacement that only appears on hover is " +
+      "invisible to everyone not using a mouse, which is the entire point of a " +
+      "tooltip. It shows on focus and hides on Escape, both of which the " +
+      "browser's own `title` does and almost every replacement forgets.",
+    example: '<button data-rm-tooltip="Copies to your clipboard">Copy</button>',
+    usage: 'import { tooltip } from "@soyrageagency/rage-motion";\ntooltip();',
+    options: [option("placement", "top | bottom", '"top"', "Which side it sits."), option("delay", "number", "120", "Before it appears.")],
+  },
+  {
+    name: "toggle",
+    category: "chrome",
+    file: CHROME,
+    attribute: "data-rm-toggle",
+    summary: "A switch that is a real checkbox underneath.",
+    notes:
+      "The input is still there, still focusable, still submitted with the " +
+      "form, still announced as a checkbox — it is only visually replaced. " +
+      "Every switch built from a div loses all four, and usually gains a click " +
+      "handler that does not fire on Space.",
+    example: '<label data-rm-toggle><input type="checkbox"> Dark mode</label>',
+    usage: 'import { toggle } from "@soyrageagency/rage-motion";\ntoggle();',
+    options: [option("duration", "number", "260", "The throw.")],
+  },
+
+  // ── Decoration ───────────────────────────────────────────────────────────
+  {
+    name: "dots",
+    category: "background",
+    file: DECOR,
+    attribute: "data-rm-dots",
+    summary: "A dot field, drifting.",
+    notes:
+      "A repeating radial gradient, not elements — one paint for the whole " +
+      "field however large it is, where a DOM version is one node per dot and a " +
+      "canvas version is a frame budget for something that never changes shape.",
+    example: '<section data-rm-dots data-rm-gap="26">…</section>',
+    usage: 'import { dots } from "@soyrageagency/rage-motion";\ndots();',
+    options: [option("gap", "number", "22", "Spacing."), option("speed", "number", "24000", "One drift cycle.")],
+  },
+  {
+    name: "stripes",
+    category: "background",
+    file: DECOR,
+    attribute: "data-rm-stripes",
+    summary: "Diagonal hatching that travels.",
+    notes:
+      "A repeating linear gradient moved by background-position, which the " +
+      "compositor handles alone. Good for a work-in-progress band, a disabled " +
+      "state, or anywhere a flat block wants texture.",
+    example: '<div data-rm-stripes data-rm-width="12">…</div>',
+    usage: 'import { stripes } from "@soyrageagency/rage-motion";\nstripes();',
+    options: [option("width", "number", "10", "Stripe width."), option("angle", "number", "45", "Degrees.")],
+  },
+  {
+    name: "corners",
+    category: "surface",
+    file: DECOR,
+    attribute: "data-rm-corners",
+    summary: "Brackets that draw themselves around an element.",
+    notes:
+      "Drawn on hover and on focus-within, so a keyboard user gets the same " +
+      "emphasis a mouse user does. Corners rather than a border because a " +
+      "border changes the box; these sit outside it and cannot move anything.",
+    example: "<article data-rm-corners>…</article>",
+    usage: 'import { corners } from "@soyrageagency/rage-motion";\ncorners();',
+    options: [option("size", "number", "16", "Bracket length."), option("offset", "number", "8", "How far outside the box.")],
+  },
+  {
+    name: "scanline",
+    category: "background",
+    file: DECOR,
+    attribute: "data-rm-scanline",
+    summary: "A CRT line passing down a panel.",
+    notes:
+      "One gradient sliding on a loop over a faint rule pattern. Overdone it is " +
+      "a costume; at low opacity on a dark panel it just adds the sense that " +
+      "something is live.",
+    example: "<div data-rm-scanline>…</div>",
+    usage: 'import { scanline } from "@soyrageagency/rage-motion";\nscanline();',
+    options: [option("speed", "number", "5200", "One pass."), option("lines", "boolean", "true", "The rule pattern under it.")],
+  },
+  {
+    name: "mesh",
+    category: "background",
+    file: DECOR,
+    attribute: "data-rm-mesh",
+    summary: "A mesh gradient that moves, in CSS.",
+    notes:
+      "Four radial gradients on long offset transforms under a blur. The blur " +
+      "is what makes it a mesh rather than four visible blobs, and doing it in " +
+      "CSS means the compositor animates it with no main-thread work — a canvas " +
+      "mesh looks the same and costs a budget you will want elsewhere.",
+    example: "<section data-rm-mesh>…</section>",
+    usage: 'import { mesh } from "@soyrageagency/rage-motion";\nmesh();',
+    options: [option("blur", "number", "70", "How far the colours bleed."), option("opacity", "number", "0.5", "Keep it under the text's contrast floor.")],
+  },
+  {
+    name: "starfield",
+    category: "background",
+    file: DECOR,
+    attribute: "data-rm-stars",
+    summary: "Depth, on a canvas, with parallax on scroll.",
+    notes:
+      "Canvas rather than CSS because this is the one thing the other " +
+      "decorations are not: hundreds of independent points at three depths " +
+      "drifting at different rates. The nearer layer moves further with scroll, " +
+      "which is the whole illusion. It stops when the section is off screen.",
+    example: "<section data-rm-stars>…</section>",
+    usage: 'import { starfield } from "@soyrageagency/rage-motion";\nstarfield();',
+    options: [option("count", "number", "160", "Clamped to 400."), option("parallax", "number", "0.22", "How much depth the scroll gives.")],
+  },
+
+  // ── More buttons ─────────────────────────────────────────────────────────
+  {
+    name: "underline",
+    category: "button",
+    file: BUTTONS,
+    attribute: "data-rm-underline",
+    summary: "An underline that draws from the side you came in through.",
+    notes:
+      "The link equivalent of `fill`: enter from the left and the rule grows " +
+      "from the left, leave to the right and it retreats that way. One " +
+      "`transform-origin` swap, and the difference between a link that feels " +
+      "physical and a `text-decoration` toggle. Focus grows it from the middle, " +
+      "because focus has no side to come from.",
+    example: '<a class="link" data-rm-underline href="/work">Work</a>',
+    usage: 'import { underline } from "@soyrageagency/rage-motion";\nunderline();',
+    options: [option("thickness", "number", "1.5", "Rule weight."), option("duration", "number", "340", "The draw.")],
+  },
+  {
+    name: "press",
+    category: "button",
+    file: BUTTONS,
+    attribute: "data-rm-press",
+    summary: "A button with depth that actually depresses.",
+    notes:
+      "The face travels exactly the distance the shadow loses, so the bottom " +
+      "edge stays where it was and only the key moves — which is what makes it " +
+      "read as a key going down rather than a rectangle sliding.",
+    example: '<button data-rm-press data-rm-depth="5">Buy</button>',
+    usage: 'import { press } from "@soyrageagency/rage-motion";\npress();',
+    options: [option("depth", "number", "4", "How far it sits above its shadow.")],
+  },
+  {
+    name: "halo",
+    category: "button",
+    file: BUTTONS,
+    attribute: "data-rm-halo",
+    summary: "A glow that follows the pointer inside the button.",
+    notes:
+      "`spotlight` sized for a control, and it fades rather than snapping off, " +
+      "so leaving the button does not read as a light being switched off. One " +
+      "shared listener for the whole set.",
+    example: "<button data-rm-halo>Hover me</button>",
+    usage: 'import { halo } from "@soyrageagency/rage-motion";\nhalo();',
+    options: [option("size", "number", "120", "Glow diameter.")],
+  },
+  {
+    name: "strokeDraw",
+    category: "button",
+    file: BUTTONS,
+    attribute: "data-rm-stroke",
+    summary: "An outline that draws itself around the button on hover.",
+    notes:
+      "A real SVG rectangle revealed with `stroke-dashoffset`, so the line " +
+      "travels around the shape from one corner. A CSS border can only fade in " +
+      "— it has no start and no end, which is why every CSS version of this is " +
+      "four elements pretending to be one line. The rectangle is re-measured on " +
+      "resize, so it stays on the button when the label or the font changes.",
+    example: "<button data-rm-stroke>Read the docs</button>",
+    usage: 'import { strokeDraw } from "@soyrageagency/rage-motion";\nstrokeDraw();',
+    options: [option("duration", "number", "520", "One lap."), option("width", "number", "1.5", "Stroke weight.")],
   },
 
   // ── Pages ────────────────────────────────────────────────────────────────

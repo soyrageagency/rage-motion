@@ -141,6 +141,13 @@ async function run(browser, { reducedMotion }) {
     waves: document.querySelectorAll(".rm-waves").length,
     tracing: document.querySelectorAll(".rm-tracing-line").length,
     fill: document.querySelectorAll(".rm-fill-sheet").length,
+    scrollbars: document.querySelectorAll(".rm-scrollbar").length,
+    dropdown: document.querySelectorAll('.rm-dropdown-menu[role="menu"]').length,
+    tooltip: document.querySelectorAll('.rm-tooltip[role="tooltip"]').length,
+    toggle: document.querySelectorAll(".rm-toggle-track").length,
+    stars: document.querySelectorAll(".rm-stars").length,
+    mesh: document.querySelectorAll(".rm-mesh i").length,
+    stroke: document.querySelectorAll(".rm-stroke-svg rect").length,
     swap: document.querySelectorAll(".rm-swap-face").length,
   }));
 
@@ -170,6 +177,13 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));
   check(`${label}: directional fills mounted`, started.fill >= 2, String(started.fill));
   check(`${label}: swap has both faces`, started.swap === 2, String(started.swap));
+  check(`${label}: five scrollbars styled, plus the page`, started.scrollbars === 6, String(started.scrollbars));
+  check(`${label}: the dropdown is a real menu`, started.dropdown === 1, String(started.dropdown));
+  check(`${label}: the tooltip is announced`, started.tooltip === 1, String(started.tooltip));
+  check(`${label}: the toggle kept its checkbox`, started.toggle === 1, String(started.toggle));
+  check(`${label}: the starfield is drawing`, started.stars === 1, String(started.stars));
+  check(`${label}: mesh built its stops`, started.mesh === 4, String(started.mesh));
+  check(`${label}: strokeDraw measured its rectangle`, started.stroke === 1, String(started.stroke));
 
   // Scroll the whole page, then check nothing readable is left invisible.
   await page.evaluate(async () => {
@@ -211,7 +225,7 @@ async function run(browser, { reducedMotion }) {
   const counted = await page.evaluate(
     () => document.querySelector("[data-rm-odometer]")?.getAttribute("aria-label") ?? "",
   );
-  check(`${label}: the counter still announces its value`, counted === "80", counted);
+  check(`${label}: the counter still announces its value`, counted === "94", counted);
 
   // The rotating words are decoration; the list of them is the content.
   const morphLabel = await page.evaluate(

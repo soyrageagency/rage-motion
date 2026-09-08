@@ -916,6 +916,8 @@ html.rm-cursor-active * { cursor: none !important; }
  */
 .rm-tab-panel[hidden],
 .rm-overlay[hidden],
+.rm-dropdown-menu[hidden],
+.rm-tooltip[hidden],
 .rm-lightbox[hidden] { display: none; }
 
 /* ── Panel effects ──────────────────────────────────────────────────────── */
@@ -1160,6 +1162,312 @@ html.rm-cursor-active * { cursor: none !important; }
   opacity: 0.55;
 }
 
+/* ── Scrollbars ─────────────────────────────────────────────────────────── */
+
+/*
+ * Two syntaxes on purpose. `scrollbar-width`/`scrollbar-color` is the standard
+ * and the only one Firefox understands; `::-webkit-scrollbar` is the only one
+ * that can be shaped. Together they cover everything, and neither replaces the
+ * scrollbar with a div — which is what costs you the wheel's page-jump, the
+ * keyboard, the context menu and every assistive technology.
+ */
+.rm-scrollbar {
+  --rm-scrollbar-color: #3a3a3a;
+  --rm-scrollbar-track: transparent;
+  scrollbar-color: var(--rm-scrollbar-color) var(--rm-scrollbar-track);
+}
+.rm-scrollbar::-webkit-scrollbar { width: 12px; height: 12px; }
+.rm-scrollbar::-webkit-scrollbar-track { background: var(--rm-scrollbar-track); }
+.rm-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--rm-scrollbar-color);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.rm-scrollbar::-webkit-scrollbar-thumb:hover { background-clip: padding-box; }
+
+.rm-scrollbar.is-thin { scrollbar-width: thin; }
+.rm-scrollbar.is-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.rm-scrollbar.is-thin::-webkit-scrollbar-thumb { border-width: 2px; }
+
+.rm-scrollbar.is-pill::-webkit-scrollbar { width: 14px; height: 14px; }
+.rm-scrollbar.is-pill::-webkit-scrollbar-thumb { border-width: 4px; }
+
+.rm-scrollbar.is-accent { --rm-scrollbar-color: var(--rm-accent); }
+
+/* Present but out of the way until you reach for it. */
+.rm-scrollbar.is-ghost { --rm-scrollbar-color: transparent; }
+.rm-scrollbar.is-ghost:hover, .rm-scrollbar.is-ghost:focus-within {
+  --rm-scrollbar-color: #3a3a3a;
+}
+.rm-scrollbar.is-ghost::-webkit-scrollbar-thumb { transition: background-color 0.25s; }
+
+.rm-scrollbar.is-inset {
+  --rm-scrollbar-track: rgb(255 255 255 / 0.04);
+}
+.rm-scrollbar.is-inset::-webkit-scrollbar-track { border-radius: 999px; }
+
+/* ── Dropdown ───────────────────────────────────────────────────────────── */
+
+.rm-dropdown { position: relative; display: inline-block; }
+.rm-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  min-width: 180px;
+  display: grid;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: top left;
+  transition:
+    opacity var(--rm-dropdown-duration, 220ms) var(--rm-ease-out),
+    transform var(--rm-dropdown-duration, 220ms) var(--rm-ease-out);
+}
+.rm-dropdown.is-open .rm-dropdown-menu { opacity: 1; transform: translateY(0) scale(1); }
+.rm-dropdown.is-above .rm-dropdown-menu {
+  top: auto;
+  bottom: calc(100% + 8px);
+  transform-origin: bottom left;
+}
+.rm-dropdown-menu[hidden] { display: none; }
+
+/* ── Tooltip ────────────────────────────────────────────────────────────── */
+
+.rm-tooltip-host { position: relative; }
+.rm-tooltip {
+  position: absolute;
+  z-index: 50;
+  padding: 7px 11px;
+  border-radius: var(--rm-radius-sm);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-size: 12.5px;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s, transform 0.18s var(--rm-ease-out);
+}
+.rm-tooltip.is-open { opacity: 1; }
+.rm-tooltip[hidden] { display: none; }
+.is-top > .rm-tooltip { bottom: calc(100% + 8px); left: 50%; transform: translate(-50%, 4px); }
+.is-top > .rm-tooltip.is-open { transform: translate(-50%, 0); }
+.is-bottom > .rm-tooltip { top: calc(100% + 8px); left: 50%; transform: translate(-50%, -4px); }
+.is-bottom > .rm-tooltip.is-open { transform: translate(-50%, 0); }
+
+/* ── Toggle ─────────────────────────────────────────────────────────────── */
+
+.rm-toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+/*
+ * The checkbox stays: focusable, submitted with the form, announced as a
+ * checkbox. It is moved under the track rather than removed, because
+ * `display: none` takes it out of the tab order and `visibility: hidden` stops
+ * it receiving focus at all.
+ */
+.rm-toggle-input {
+  position: absolute;
+  width: 44px;
+  height: 24px;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.rm-toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex: none;
+  border-radius: var(--rm-radius-pill);
+  background: rgb(255 255 255 / 0.14);
+  transition: background-color var(--rm-toggle-duration, 260ms) var(--rm-ease-out);
+}
+.rm-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--rm-cream);
+  transition: transform var(--rm-toggle-duration, 260ms) var(--rm-ease-out);
+}
+.rm-toggle-input:checked ~ .rm-toggle-track { background: var(--rm-accent); }
+.rm-toggle-input:checked ~ .rm-toggle-track .rm-toggle-knob { transform: translateX(20px); }
+.rm-toggle-input:focus-visible ~ .rm-toggle-track { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Decoration ─────────────────────────────────────────────────────────── */
+
+.rm-dots-decor-host, .rm-stripes-host, .rm-scanline-host, .rm-mesh-host, .rm-stars-host {
+  position: relative;
+  isolation: isolate;
+}
+.rm-dots-decor, .rm-stripes, .rm-scanline, .rm-mesh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.rm-dots-decor {
+  background-image: radial-gradient(
+    var(--rm-dots-color, rgba(255, 255, 255, 0.16)) var(--rm-dots-size, 1.4px),
+    transparent var(--rm-dots-size, 1.4px)
+  );
+  background-size: var(--rm-dots-gap, 22px) var(--rm-dots-gap, 22px);
+  animation: rm-dots-drift var(--rm-dots-speed, 24s) linear infinite;
+}
+.rm-dots-decor.is-still { animation: none; }
+@keyframes rm-dots-drift {
+  to { background-position: var(--rm-dots-gap, 22px) var(--rm-dots-gap, 22px); }
+}
+
+.rm-stripes {
+  background-image: repeating-linear-gradient(
+    var(--rm-stripes-angle, 45deg),
+    var(--rm-stripes-color, rgba(255, 255, 255, 0.06)) 0,
+    var(--rm-stripes-color, rgba(255, 255, 255, 0.06)) var(--rm-stripes-width, 10px),
+    transparent var(--rm-stripes-width, 10px),
+    transparent calc(var(--rm-stripes-width, 10px) * 2)
+  );
+  background-size: calc(var(--rm-stripes-width, 10px) * 2.83) calc(var(--rm-stripes-width, 10px) * 2.83);
+  animation: rm-stripes-run var(--rm-stripes-speed, 1600ms) linear infinite;
+}
+.rm-stripes.is-still { animation: none; }
+@keyframes rm-stripes-run {
+  to {
+    background-position:
+      calc(var(--rm-stripes-width, 10px) * 2.83)
+      calc(var(--rm-stripes-width, 10px) * 2.83);
+  }
+}
+
+.rm-corners { position: relative; }
+.rm-corners-layer { position: absolute; inset: calc(var(--rm-corners-offset, 8px) * -1); pointer-events: none; }
+.rm-corners-layer i {
+  position: absolute;
+  width: var(--rm-corners-size, 16px);
+  height: var(--rm-corners-size, 16px);
+  border: var(--rm-corners-width, 1.5px) solid var(--rm-corners-color, #2aa7e4);
+  opacity: 0;
+  transition:
+    opacity var(--rm-corners-duration, 320ms) var(--rm-ease-out),
+    translate var(--rm-corners-duration, 320ms) var(--rm-ease-out);
+}
+.rm-corners-layer i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; translate: 6px 6px; }
+.rm-corners-layer i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; translate: -6px 6px; }
+.rm-corners-layer i:nth-child(3) { bottom: 0; right: 0; border-left: 0; border-top: 0; translate: -6px -6px; }
+.rm-corners-layer i:nth-child(4) { bottom: 0; left: 0; border-right: 0; border-top: 0; translate: 6px -6px; }
+.rm-corners:hover .rm-corners-layer i,
+.rm-corners:focus-within .rm-corners-layer i { opacity: 1; translate: 0 0; }
+
+.rm-scanline.has-lines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.03) 0 1px,
+    transparent 1px 3px
+  );
+}
+.rm-scanline-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background: linear-gradient(to bottom, transparent, var(--rm-scanline-color, rgba(42, 167, 228, 0.5)), transparent);
+  opacity: 0.5;
+  animation: rm-scanline-pass var(--rm-scanline-speed, 5200ms) linear infinite;
+}
+.rm-scanline.is-still .rm-scanline-bar { animation: none; opacity: 0; }
+@keyframes rm-scanline-pass {
+  from { transform: translateY(-120%); }
+  to { transform: translateY(560%); }
+}
+
+.rm-mesh { filter: blur(var(--rm-mesh-blur, 70px)); opacity: var(--rm-mesh-opacity, 0.5); }
+.rm-mesh i {
+  position: absolute;
+  width: 56%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--rm-mesh-color);
+  top: calc(var(--rm-mesh-index) * 16% - 10%);
+  left: calc(var(--rm-mesh-index) * 21% - 12%);
+  animation: rm-mesh-drift var(--rm-mesh-speed, 22s) ease-in-out infinite alternate;
+  animation-delay: calc(var(--rm-mesh-index) * -3400ms);
+}
+.rm-mesh.is-still i { animation: none; }
+@keyframes rm-mesh-drift {
+  from { transform: translate3d(-8%, -6%, 0) scale(1); }
+  to { transform: translate3d(16%, 12%, 0) scale(1.28); }
+}
+
+.rm-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+
+/* ── Button hovers ──────────────────────────────────────────────────────── */
+
+.rm-underline { position: relative; text-decoration: none; }
+.rm-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: var(--rm-underline-thickness, 1.5px);
+  background: var(--rm-underline-color, currentColor);
+  transform: scaleX(0);
+  /* Which side it grows from is written by the component, from where you came. */
+  transform-origin: var(--rm-underline-origin, left) center;
+  transition: transform var(--rm-underline-duration, 340ms) var(--rm-ease-out);
+}
+.rm-underline.is-on::after { transform: scaleX(1); }
+
+.rm-press {
+  box-shadow: 0 var(--rm-press-depth, 4px) 0 0 var(--rm-press-color, #0e0e0e);
+  transition:
+    transform var(--rm-press-duration, 120ms) var(--rm-ease-out),
+    box-shadow var(--rm-press-duration, 120ms) var(--rm-ease-out);
+}
+/* The face travels the same distance the shadow loses, so the bottom edge
+ * stays exactly where it was and only the key moves. */
+.rm-press:active {
+  transform: translateY(var(--rm-press-depth, 4px));
+  box-shadow: 0 0 0 0 var(--rm-press-color, #0e0e0e);
+}
+
+.rm-halo { position: relative; overflow: hidden; isolation: isolate; }
+.rm-halo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(
+    var(--rm-halo-size, 120px) circle at var(--rm-halo-x, 50%) var(--rm-halo-y, 50%),
+    var(--rm-halo-color, rgba(255, 255, 255, 0.28)),
+    transparent 70%
+  );
+}
+.rm-halo:hover::before, .rm-halo:focus-visible::before { opacity: 1; }
+
+.rm-stroke { position: relative; }
+.rm-stroke-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.rm-stroke-svg rect {
+  stroke-dasharray: var(--rm-stroke-length, 400);
+  stroke-dashoffset: var(--rm-stroke-length, 400);
+  transition: stroke-dashoffset var(--rm-stroke-duration, 520ms) var(--rm-ease-out);
+}
+.rm-stroke:hover .rm-stroke-svg rect,
+.rm-stroke:focus-visible .rm-stroke-svg rect { stroke-dashoffset: 0; }
+
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
 /*
@@ -1186,7 +1494,11 @@ html.rm-cursor-active * { cursor: none !important; }
   .rm-lamp-cone,
   .rm-beams-layer i,
   .rm-sparkles-layer i,
-  .rm-meteors-layer i {
+  .rm-meteors-layer i,
+  .rm-dots-decor,
+  .rm-stripes,
+  .rm-scanline-bar,
+  .rm-mesh i {
     animation: none !important;
   }
   .rm-shiny { color: var(--rm-shiny-highlight, currentColor); background: none; -webkit-text-fill-color: currentColor; }

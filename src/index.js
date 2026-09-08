@@ -33,7 +33,9 @@ export { tracing, flatten, sticky } from "./components/scrollfx.js";
 export { imageReveal, pixelate, hoverPreview, marquee } from "./components/media.js";
 export { carousel, ring, deck, imageTrail, scratch, dock } from "./components/gallery.js";
 export { compare, panels, skew, orbit } from "./components/interactive.js";
-export { fill, shimmer, spark, swap } from "./components/buttons.js";
+export { fill, shimmer, spark, swap, underline, press, halo, strokeDraw } from "./components/buttons.js";
+export { scrollbar, dropdown, tooltip, toggle } from "./components/chrome.js";
+export { dots, stripes, corners, scanline, mesh, starfield } from "./components/decor.js";
 export { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 export { pageTransition, transitionTo } from "./components/transitions.js";
 
@@ -53,7 +55,9 @@ import { tracing, flatten, sticky } from "./components/scrollfx.js";
 import { imageReveal, pixelate, hoverPreview, marquee } from "./components/media.js";
 import { carousel, ring, deck, imageTrail, scratch, dock } from "./components/gallery.js";
 import { compare, panels, skew, orbit } from "./components/interactive.js";
-import { fill, shimmer, spark, swap } from "./components/buttons.js";
+import { fill, shimmer, spark, swap, underline, press, halo, strokeDraw } from "./components/buttons.js";
+import { scrollbar, dropdown, tooltip, toggle } from "./components/chrome.js";
+import { dots, stripes, corners, scanline, mesh, starfield } from "./components/decor.js";
 import { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 
 /**
@@ -131,6 +135,20 @@ export function init(options = {}) {
     shimmer("[data-rm-shimmer]", options.shimmer),
     spark("[data-rm-spark]", options.spark),
     swap("[data-rm-swap]", options.swap),
+    underline("[data-rm-underline]", options.underline),
+    press("[data-rm-press]", options.press),
+    halo("[data-rm-halo]", options.halo),
+    strokeDraw("[data-rm-stroke]", options.strokeDraw),
+    scrollbar("[data-rm-scrollbar]", options.scrollbar),
+    dropdown("[data-rm-dropdown]", options.dropdown),
+    tooltip("[data-rm-tooltip]", options.tooltip),
+    toggle("[data-rm-toggle]", options.toggle),
+    dots("[data-rm-dots]", options.dots),
+    stripes("[data-rm-stripes]", options.stripes),
+    corners("[data-rm-corners]", options.corners),
+    scanline("[data-rm-scanline]", options.scanline),
+    mesh("[data-rm-mesh]", options.mesh),
+    starfield("[data-rm-stars]", options.starfield),
     pill("[data-rm-pill]", options.pill),
     gooey("[data-rm-gooey]", options.gooey),
     condense("[data-rm-condense]", options.condense),
