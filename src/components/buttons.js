@@ -223,7 +223,23 @@ export function swap(target = "[data-rm-swap]", options = {}) {
     second.setAttribute("aria-hidden", "true");
     second.textContent = dataString(element, "rmSwap", label);
 
-    element.replaceChildren(first, second);
+    /*
+     * The faces travel inside a window of their own, not inside the button.
+     *
+     * Clipping at the button means clipping at the padding edge, so the
+     * waiting label sits a few pixels inside the bottom of the button and its
+     * top slice is visible the whole time — which looks exactly like a bug,
+     * and is the reason this pattern is usually built with two absolutely
+     * positioned copies and a pile of magic numbers.
+     *
+     * A wrapper that is one line tall clips at the line instead. It also means
+     * the button keeps whatever padding, height and alignment the page gave
+     * it, rather than the component quietly dictating them.
+     */
+    const window_ = document.createElement("span");
+    window_.className = "rm-swap-window";
+    window_.append(first, second);
+    element.replaceChildren(window_);
 
     cleanups.push(() => {
       element.classList.remove("rm-swap");

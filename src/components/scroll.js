@@ -213,20 +213,29 @@ export function stack(target = "[data-rm-stack]", options = {}) {
   const containers = resolveElements(target);
   if (!containers.length) return () => {};
 
-  const { selector = "[data-rm-card]", top = 80, scaleStep = 0.04, dim = 0.35 } = options;
+  const { selector = "[data-rm-card]", top = 80, step = 26, scaleStep = 0.04, dim = 0.35 } = options;
   const groups = [];
 
   for (const container of containers) {
     const cards = [...container.querySelectorAll(selector)];
     if (!cards.length) continue;
     container.classList.add("rm-stack");
+    /*
+     * How far apart the cards stick is the whole legibility of the pile.
+     *
+     * Twelve pixels — the old default — leaves a sliver of each passed card
+     * showing, which reads as a rendering fault rather than as a stack. The
+     * step wants to be at least a line of text tall, so what stays visible is
+     * something you can actually recognise: a number, a title, an edge with
+     * meaning on it.
+     */
+    const apart = Math.max(0, dataNumber(container, "rmStep", step));
     cards.forEach((card, index) => {
       card.classList.add("rm-stack-card");
-      // Each card sticks slightly lower, so the pile is visible at the top.
-      card.style.top = `${top + index * 12}px`;
+      card.style.top = `${top + index * apart}px`;
       card.style.zIndex = String(index + 1);
     });
-    groups.push({ container, cards });
+    groups.push({ container, cards, apart });
   }
   if (!groups.length) return () => {};
 
@@ -238,14 +247,14 @@ export function stack(target = "[data-rm-stack]", options = {}) {
   }
 
   const stop = onScroll((y, viewport) => {
-    for (const { cards } of groups) {
+    for (const { cards, apart } of groups) {
       cards.forEach((card, index) => {
         const box = card.getBoundingClientRect();
         if (box.bottom < 0 || box.top > viewport) return;
         const remaining = cards.length - 1 - index;
         if (remaining === 0) { card.style.transform = ""; card.style.filter = ""; return; }
         // How far this card has been travelled past, 0 to 1.
-        const passed = clamp(mapRange(box.top, top + index * 12, -box.height * 0.5, 0, 1));
+        const passed = clamp(mapRange(box.top, top + index * apart, -box.height * 0.5, 0, 1));
         card.style.transform = `scale(${(1 - passed * scaleStep * Math.min(remaining, 3)).toFixed(4)})`;
         card.style.filter = `brightness(${(1 - passed * dim).toFixed(3)})`;
       });

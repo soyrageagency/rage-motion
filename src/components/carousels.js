@@ -81,8 +81,16 @@ export function coverflow(target = "[data-rm-coverflow]", options = {}) {
         // -1 at the left edge, 0 dead centre, 1 at the right edge.
         const offset = clamp((rect.left + rect.width / 2 - middle) / (box.width / 2), -1, 1);
         const away = Math.abs(offset);
+        /*
+         * No perspective here. A perspective in the slide's own transform
+         * gives every slide its own vanishing point, centred on itself — so
+         * they all turn identically and the row reads as flat cards at an
+         * angle rather than as a wall you are standing in front of. The
+         * perspective belongs to the rail, in the stylesheet, so all of them
+         * share one eye position. That single line is the whole illusion.
+         */
         slide.style.transform =
-          `perspective(1200px) rotateY(${(-offset * angle).toFixed(2)}deg) ` +
+          `rotateY(${(-offset * angle).toFixed(2)}deg) ` +
           `translateZ(${(-away * depth).toFixed(1)}px) scale(${(1 - away * 0.12).toFixed(3)})`;
         slide.style.opacity = (1 - away * fade).toFixed(3);
         slide.style.zIndex = String(100 - Math.round(away * 100));

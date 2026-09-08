@@ -609,7 +609,43 @@ export function contextMenu(target = "[data-rm-context]", options = {}) {
     panel.classList.add("rm-context-menu");
     panel.hidden = true;
     panel.setAttribute("role", "menu");
-    items.forEach((one) => one.setAttribute("role", "menuitem"));
+
+    /*
+     * Icons come out of the markup, never out of a script.
+     *
+     * An item can carry `data-rm-icon` holding either a character — an emoji, a
+     * dingbat, anything the page's font can draw — or the id of an inline
+     * <svg><symbol>, written as "#trash". The first is a span, the second a
+     * <use>, and both are marked aria-hidden with the item's own text left to
+     * do the announcing. That is the whole point: an icon that is the label is
+     * an item a screen reader reads as nothing at all.
+     *
+     * Doing it this way rather than shipping an icon set means the page keeps
+     * whatever icons it already has, and the kit stays at zero dependencies.
+     */
+    const drawn = [];
+    items.forEach((one) => {
+      one.setAttribute("role", "menuitem");
+      const icon = one.getAttribute("data-rm-icon");
+      if (!icon) return;
+
+      let mark;
+      if (icon.startsWith("#")) {
+        mark = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        mark.setAttribute("class", "rm-context-icon");
+        mark.setAttribute("viewBox", one.getAttribute("data-rm-icon-box") ?? "0 0 24 24");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", icon);
+        mark.appendChild(use);
+      } else {
+        mark = document.createElement("span");
+        mark.className = "rm-context-icon";
+        mark.textContent = icon;
+      }
+      mark.setAttribute("aria-hidden", "true");
+      one.prepend(mark);
+      drawn.push(mark);
+    });
 
     let at = 0;
     let returnTo = null;
@@ -671,6 +707,7 @@ export function contextMenu(target = "[data-rm-context]", options = {}) {
 
     cleanups.push(() => {
       hide();
+      drawn.forEach((mark) => mark.remove());
       zone.removeEventListener("contextmenu", onContext);
       zone.removeEventListener("keydown", onZoneKey);
       document.removeEventListener("keydown", onKey);

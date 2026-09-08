@@ -241,7 +241,7 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: the select kept a real select under its face`, started.selectFace === 1, String(started.selectFace));
   check(`${label}: the clear button is there`, started.clearDrop === 1, String(started.clearDrop));
   check(`${label}: the card number is grouped`, started.maskValue === "4242 4242 4242 4242", started.maskValue);
-  check(`${label}: five scrollbars styled, plus the page`, started.scrollbars === 6, String(started.scrollbars));
+  check(`${label}: six scrollbars styled, plus the page`, started.scrollbars === 7, String(started.scrollbars));
   check(`${label}: the dropdown is a real menu`, started.dropdown === 1, String(started.dropdown));
   check(`${label}: the tooltip is announced`, started.tooltip === 1, String(started.tooltip));
   check(`${label}: the toggles kept their checkboxes`, started.toggle === 2, String(started.toggle));

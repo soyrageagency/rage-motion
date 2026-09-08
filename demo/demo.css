@@ -668,16 +668,34 @@ code { font-size: 0.9em; }
  * next, so it is measured in screens, not pixels.
  */
 .stack-card {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  min-height: 168px;
-  padding: 26px;
-  border-radius: 14px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 4px 20px;
+  align-content: start;
+  min-height: 178px;
+  padding: 22px 26px;
+  border-radius: 16px;
   border: 1px solid var(--line);
-  background: #151515;
+  /* Opaque, and a shade lighter than the page: a pile has to hide what is
+   * behind it or it is not a pile. */
+  background: #17171a;
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.55);
   margin-bottom: 52vh;
 }
+/* The strip that stays visible when the next card lands on top of it. */
+.stack-card b {
+  grid-column: 1;
+  align-self: center;
+}
+.stack-card h4 {
+  grid-column: 2;
+  margin: 0;
+  font-family: var(--rm-display);
+  font-size: 17px;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+.stack-card p { grid-column: 2; }
 .stack-card:last-child { margin-bottom: 0; }
 .stack-card b { font-family: var(--rm-mono); font-size: 12px; color: var(--accent); }
 .stack-card p { margin: 0; color: #b6b0a8; max-width: 58ch; font-size: 14.5px; }
@@ -948,7 +966,7 @@ code { font-size: 0.9em; }
 
 /* ── Chrome cells ────────────────────────────────────────────────────── */
 
-.scrollbars-body { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: stretch; padding: 12px; }
+.scrollbars-body { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: stretch; padding: 12px; }
 .scroller {
   height: 150px;
   overflow-y: auto;
@@ -1730,3 +1748,124 @@ code { font-size: 0.9em; }
 .gal-contact img { aspect-ratio: 1; object-fit: cover; }
 .gal-spiral { min-height: 210px; }
 .gal-ribbon { min-height: 200px; overflow: hidden; }
+
+
+/* ── The inverted hover cell ─────────────────────────────────────────────── */
+
+/*
+ * One cell on cream, everything else on ink.
+ *
+ * These six effects are all about a surface reacting under the pointer, and on
+ * a dark page a dark effect on a dark button is a rumour. Putting them on the
+ * light side of the palette makes each one legible for what it is, and proves
+ * the components carry their colour from the markup rather than assuming a
+ * dark background — the tokens are the only thing that changes.
+ */
+.cell-invert .cell-body {
+  background: var(--rm-cream);
+  border-color: #d8d2c8;
+  color: var(--rm-ink);
+}
+.invert-body {
+  display: grid;
+  gap: 14px;
+  place-items: center;
+  align-content: center;
+  padding: 26px 20px;
+}
+.invert-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.invert-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--rm-radius-pill);
+  border: 1px solid rgba(14, 14, 14, 0.22);
+  /*
+   * An explicit ground, not transparent.
+   *
+   * These buttons isolate their own stacking context so the effect sheets stay
+   * inside them — which also means anything blending in there blends against
+   * the group's backdrop, and a transparent group has nothing to blend with.
+   * Painting the same cream the cell uses costs nothing and makes the group
+   * self-contained.
+   */
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  font-family: var(--rm-display);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.24s var(--rm-ease-out), color 0.24s var(--rm-ease-out);
+}
+.invert-btn:hover, .invert-btn:focus-visible { border-color: var(--rm-ink); }
+.invert-btn:focus-visible { outline: 2px solid var(--rm-ink); outline-offset: 3px; }
+
+/* The fill sheet arrives from below and the label inverts as it passes. */
+.invert-btn.is-fill:hover, .invert-btn.is-fill:focus-visible { color: var(--rm-cream); }
+
+/* The shimmer needs a dark ground to travel across. */
+.invert-btn.is-shimmer {
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  border-color: var(--rm-ink);
+}
+
+.invert-btn.is-magnetic { border-style: dashed; }
+
+.invert-note {
+  margin: 6px 0 0;
+  max-width: 46ch;
+  text-align: center;
+  font-family: var(--rm-display);
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(14, 14, 14, 0.62);
+}
+
+/*
+ * Two details the cell needs to be honest.
+ *
+ * `swap` lays its two faces in one grid cell; the button rule above sets
+ * inline-flex and would stack them, so the twin ends up hanging below the
+ * button. The component's own display wins here.
+ *
+ * And the fill label must not turn cream until the dark sheet has actually
+ * arrived under it — otherwise the word disappears for the length of the
+ * travel, which is exactly the frame everybody sees. A delay on the way in and
+ * none on the way out is the whole fix.
+ */
+/*
+ * The fill label inverts against whatever is behind it, with no timing at all.
+ *
+ * Switching the colour on :hover means guessing when the sheet arrives, and
+ * whatever delay you pick is wrong on the way out — for a sixth of a second
+ * the word is cream on cream and simply gone. `mix-blend-mode: difference`
+ * has no schedule: the label is the inverse of the pixel under it, so it is
+ * dark on the cream button and light on the dark sheet, correct on every
+ * frame of the travel including the ones nobody planned for.
+ */
+.invert-btn.is-fill .invert-label {
+  mix-blend-mode: difference;
+  color: var(--rm-cream);
+}
+
+/*
+ * The label sits above whatever the effect paints.
+ *
+ * fill and ripple both put a sheet inside the button at z-index 1; a bare text
+ * node has no stacking position of its own, so the sheet covers the word at
+ * exactly the moment it is meant to be legible against it. One span fixes it,
+ * and it is why the kit's own examples always wrap the label.
+ */
+.invert-label { position: relative; z-index: 2; }

@@ -22,7 +22,7 @@
 
 import { dataString, prefersReducedMotion, resolveElements } from "../core/motion.js";
 
-const STYLES = ["thin", "pill", "accent", "ghost", "inset"];
+const STYLES = ["hairline", "thin", "pill", "accent", "ghost", "inset"];
 
 /**
  * A styled scrollbar that still behaves like a scrollbar.

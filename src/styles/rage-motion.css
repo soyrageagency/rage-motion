@@ -801,7 +801,14 @@ html.rm-cursor-active * { cursor: none !important; }
   transform: translate(-50%, -50%);
 }
 
-.rm-swap { display: inline-grid; overflow: hidden; }
+.rm-swap { display: inline-grid; }
+/* One line tall, so the waiting label is clipped at the line, not at the
+ * button's padding edge where a slice of it would always show. */
+.rm-swap-window {
+  display: grid;
+  overflow: hidden;
+  line-height: inherit;
+}
 .rm-swap-face {
   grid-area: 1 / 1;
   transition: transform var(--rm-swap-duration, 380ms) var(--rm-ease-out);
@@ -1215,41 +1222,109 @@ html.rm-cursor-active * { cursor: none !important; }
  * scrollbar with a div — which is what costs you the wheel's page-jump, the
  * keyboard, the context menu and every assistive technology.
  */
+/*
+ * Scrollbars, restrained.
+ *
+ * A scrollbar is chrome, not content. The default browser bar is 15 or 17
+ * pixels of high-contrast furniture down the side of everything, and the usual
+ * "custom scrollbar" makes it worse by painting a track, a border and a hover
+ * colour on top. So the shape of all of these is the same: a hairline thumb
+ * with no track at all, at a contrast that is legible without asking for
+ * attention, going to full contrast only when the pointer is actually in the
+ * region it belongs to.
+ *
+ *   • `--rm-scrollbar-size`  the width, one number, used by both engines
+ *   • `--rm-scrollbar-color` the thumb at rest
+ *   • `--rm-scrollbar-live`  the thumb while the region is reached
+ *
+ * The thumb keeps a minimum length, because a thumb that shrinks with the
+ * content becomes a two-pixel speck in a long list and nobody can grab it.
+ * And the corner where two bars meet is left transparent — the default is a
+ * pale square that every custom scrollbar forgets.
+ */
 .rm-scrollbar {
-  --rm-scrollbar-color: #3a3a3a;
+  --rm-scrollbar-size: 7px;
+  --rm-scrollbar-color: rgb(255 255 255 / 0.14);
+  --rm-scrollbar-live: rgb(255 255 255 / 0.30);
   --rm-scrollbar-track: transparent;
+
+  scrollbar-width: thin;
   scrollbar-color: var(--rm-scrollbar-color) var(--rm-scrollbar-track);
+  /* No reflow when the bar appears and disappears. */
+  scrollbar-gutter: auto;
 }
-.rm-scrollbar::-webkit-scrollbar { width: 12px; height: 12px; }
+.rm-scrollbar:hover,
+.rm-scrollbar:focus-within { scrollbar-color: var(--rm-scrollbar-live) var(--rm-scrollbar-track); }
+
+.rm-scrollbar::-webkit-scrollbar {
+  width: var(--rm-scrollbar-size);
+  height: var(--rm-scrollbar-size);
+}
 .rm-scrollbar::-webkit-scrollbar-track { background: var(--rm-scrollbar-track); }
+.rm-scrollbar::-webkit-scrollbar-corner { background: transparent; }
 .rm-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--rm-scrollbar-color);
+  background-color: var(--rm-scrollbar-color);
   border-radius: 999px;
+  /* Grabbable however long the content is. */
+  min-height: 42px;
+  transition: background-color 0.24s var(--rm-ease-out);
+}
+.rm-scrollbar:hover::-webkit-scrollbar-thumb,
+.rm-scrollbar:focus-within::-webkit-scrollbar-thumb {
+  background-color: var(--rm-scrollbar-live);
+}
+
+/* hairline — the least a scrollbar can be and still be one. */
+.rm-scrollbar.is-hairline {
+  --rm-scrollbar-size: 3px;
+  --rm-scrollbar-color: rgb(255 255 255 / 0.12);
+  --rm-scrollbar-live: rgb(255 255 255 / 0.26);
+}
+
+/* thin — the default, named so it can be asked for explicitly. */
+.rm-scrollbar.is-thin { --rm-scrollbar-size: 7px; }
+
+/* pill — a touch wider, with the thumb inset off both edges. */
+.rm-scrollbar.is-pill { --rm-scrollbar-size: 11px; }
+.rm-scrollbar.is-pill::-webkit-scrollbar-thumb {
   border: 3px solid transparent;
   background-clip: content-box;
 }
-.rm-scrollbar::-webkit-scrollbar-thumb:hover { background-clip: padding-box; }
 
-.rm-scrollbar.is-thin { scrollbar-width: thin; }
-.rm-scrollbar.is-thin::-webkit-scrollbar { width: 8px; height: 8px; }
-.rm-scrollbar.is-thin::-webkit-scrollbar-thumb { border-width: 2px; }
+/* accent — the same restraint, in the brand colour. */
+.rm-scrollbar.is-accent {
+  --rm-scrollbar-color: color-mix(in srgb, var(--rm-accent) 38%, transparent);
+  --rm-scrollbar-live: var(--rm-accent);
+}
 
-.rm-scrollbar.is-pill::-webkit-scrollbar { width: 14px; height: 14px; }
-.rm-scrollbar.is-pill::-webkit-scrollbar-thumb { border-width: 4px; }
-
-.rm-scrollbar.is-accent { --rm-scrollbar-color: var(--rm-accent); }
-
-/* Present but out of the way until you reach for it. */
+/* ghost — nothing at all until you reach for it. */
 .rm-scrollbar.is-ghost { --rm-scrollbar-color: transparent; }
-.rm-scrollbar.is-ghost:hover, .rm-scrollbar.is-ghost:focus-within {
-  --rm-scrollbar-color: #3a3a3a;
-}
-.rm-scrollbar.is-ghost::-webkit-scrollbar-thumb { transition: background-color 0.25s; }
 
+/* inset — a faint groove, for a panel that needs its edge described. */
 .rm-scrollbar.is-inset {
-  --rm-scrollbar-track: rgb(255 255 255 / 0.04);
+  --rm-scrollbar-size: 9px;
+  --rm-scrollbar-track: rgb(255 255 255 / 0.05);
 }
-.rm-scrollbar.is-inset::-webkit-scrollbar-track { border-radius: 999px; }
+.rm-scrollbar.is-inset::-webkit-scrollbar-track {
+  border-radius: 999px;
+  margin-block: 4px;
+}
+.rm-scrollbar.is-inset::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* On a light surface the thumb has to be dark, not pale. */
+@media (prefers-color-scheme: light) {
+  .rm-scrollbar:not([class*="is-accent"]) {
+    --rm-scrollbar-color: rgb(0 0 0 / 0.16);
+    --rm-scrollbar-live: rgb(0 0 0 / 0.34);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-scrollbar::-webkit-scrollbar-thumb { transition-duration: 0s; }
+}
 
 /* ── Dropdown ───────────────────────────────────────────────────────────── */
 
@@ -2095,24 +2170,92 @@ html.rm-cursor-active * { cursor: none !important; }
 
 /* ── Mascot ─────────────────────────────────────────────────────────────── */
 
-.rm-mascot { width: var(--rm-mascot-size, 96px); }
-.rm-mascot svg { width: 100%; height: auto; overflow: visible; }
-.rm-mascot-head, .rm-mascot-ear { fill: var(--rm-terracotta); }
-.rm-mascot-head { fill: color-mix(in srgb, var(--rm-terracotta) 88%, #fff); }
-.rm-mascot-eye { fill: var(--rm-ink); transition: transform 0.25s var(--rm-ease-out); }
-.rm-mascot-eyes { transform: translateX(calc(var(--rm-mascot-look, 0) * 1px)); transition: transform 0.3s var(--rm-ease-out); }
-.rm-mascot-mouth { stroke: var(--rm-ink); fill: none; }
-.rm-mascot-hand { fill: var(--rm-terracotta); }
+/*
+ * The mascot.
+ *
+ * Every colour is a gradient defined in the SVG itself, so the shading travels
+ * with the shape rather than being painted on top of it, and the whole
+ * character is one paint. Nothing here animates a size — the hands, the lids
+ * and the eyes all move on transforms, so the face never nudges the field it
+ * is sitting above.
+ */
+.rm-mascot {
+  width: var(--rm-mascot-size, 104px);
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.34));
+}
+.rm-mascot svg { width: 100%; height: auto; overflow: visible; display: block; }
+
+.rm-mascot-head { fill: url(#rmMascotSkin); }
+.rm-mascot-ear { fill: url(#rmMascotEar); }
+.rm-mascot-snout { fill: url(#rmMascotSnout); }
+.rm-mascot-palm { fill: url(#rmMascotHand); }
+.rm-mascot-fingers rect { fill: url(#rmMascotHand); }
+
+/* The bounce light along the bottom edge: what makes the head read as round. */
+.rm-mascot-rim {
+  fill: none;
+  stroke: rgba(255, 233, 204, 0.55);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.rm-mascot-eye { fill: #241a12; }
+.rm-mascot-glint { fill: rgba(255, 255, 255, 0.92); }
+.rm-mascot-nose { fill: #7c4d31; }
+.rm-mascot-mouth { stroke: #7c4d31; fill: none; }
+
+/* One transform for the pair, so both eyes track together. */
+.rm-mascot-eyes {
+  transform: translateX(calc(var(--rm-mascot-look, 0) * 1px));
+  transition: transform 0.3s var(--rm-ease-out);
+}
+
+/*
+ * The lids are the blink and the squint, both. Scaling a lid down to nothing is
+ * the open eye; scaling it up covers the eye. One property, two states.
+ */
+.rm-mascot-lid {
+  fill: url(#rmMascotSkin);
+  transform: scaleY(0);
+  transform-origin: center 44px;
+  transition: transform 0.18s var(--rm-ease-out);
+}
+
 .rm-mascot-hands {
-  transform: translateY(0);
+  transform: translateY(46px);
   transition: transform 0.42s var(--rm-ease-out);
 }
-/* Hands up over the eyes while the password has focus. */
-.rm-mascot.is-hiding .rm-mascot-hands { transform: translateY(-56px); }
-/* Peeking: one hand drops just enough to see. */
-.rm-mascot.is-peeking .rm-mascot-hands { transform: translateY(-44px) rotate(-6deg); }
-.rm-mascot.is-hiding .rm-mascot-eye { transform: scaleY(0.12); transform-origin: center; }
-.rm-mascot.is-peeking .rm-mascot-eye { transform: scaleY(1); }
+.rm-mascot-hand { transition: transform 0.42s var(--rm-ease-out); }
+.rm-mascot-fingers rect { transition: transform 0.34s var(--rm-ease-out); }
+
+/* Hands up, eyes shut. */
+.rm-mascot.is-hiding .rm-mascot-hands { transform: translateY(-58px); }
+.rm-mascot.is-hiding .rm-mascot-lid { transform: scaleY(1); }
+
+/*
+ * Peeking: the right hand drops a little and two of its fingers part, so there
+ * is a real gap for a real eye to look through. The eye behind it opens and
+ * looks toward the gap. It is four small transforms and it is the whole
+ * character of the thing.
+ */
+.rm-mascot.is-peeking .rm-mascot-hand.is-right { transform: translateY(7px) rotate(-7deg); }
+.rm-mascot.is-peeking .rm-mascot-hand.is-right .rm-mascot-fingers rect:nth-child(2) {
+  transform: translateX(-4px) rotate(-9deg);
+}
+.rm-mascot.is-peeking .rm-mascot-hand.is-right .rm-mascot-fingers rect:nth-child(3) {
+  transform: translateX(5px) rotate(9deg);
+}
+.rm-mascot.is-peeking .rm-mascot-lid:last-child { transform: scaleY(0.15); }
+.rm-mascot.is-peeking .rm-mascot-eyes { transform: translateX(2px) translateY(1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* The states still change; they simply arrive rather than travel. */
+  .rm-mascot-hands,
+  .rm-mascot-hand,
+  .rm-mascot-lid,
+  .rm-mascot-eyes,
+  .rm-mascot-fingers rect { transition-duration: 0s; }
+}
 
 /* ── Success button ─────────────────────────────────────────────────────── */
 
@@ -2499,6 +2642,16 @@ html.rm-cursor-active * { cursor: none !important; }
   perspective: 1400px;
   padding-inline: 25%;
   scrollbar-width: none;
+
+  /*
+   * One vanishing point for the whole row, and the slides live in its 3D
+   * space rather than each flattening into its own plane.
+   */
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  /* So the first and last slide can reach the middle. */
+  scroll-padding-inline: 50%;
 }
 .rm-coverflow::-webkit-scrollbar { display: none; }
 .rm-coverflow-slide {
@@ -2636,6 +2789,8 @@ html.rm-cursor-active * { cursor: none !important; }
 /* ── Phone shapes ───────────────────────────────────────────────────────── */
 
 .rm-island {
+  --rm-island-fade: 10px;
+
   display: inline-grid;
   place-items: center;
   overflow: hidden;
@@ -2646,6 +2801,26 @@ html.rm-cursor-active * { cursor: none !important; }
   transition:
     width var(--rm-island-duration, 520ms) var(--rm-ease-in-out),
     height var(--rm-island-duration, 520ms) var(--rm-ease-in-out);
+
+  /*
+   * The content fades out against the top and bottom edges rather than being
+   * cut off by them.
+   *
+   * While the island is growing or shrinking, whatever is inside is briefly
+   * taller than the box — with plain `overflow: hidden` that lands as a hard
+   * horizontal slice through a line of text, which is the one frame everybody
+   * notices. A mask makes the same clipping soft, so the content appears to
+   * dissolve into the shell instead of being guillotined by it.
+   *
+   * It costs one composited layer and nothing per frame.
+   */
+  mask: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 var(--rm-island-fade),
+    #000 calc(100% - var(--rm-island-fade)),
+    transparent 100%
+  );
 }
 .rm-island > * { white-space: nowrap; }
 
@@ -2808,6 +2983,30 @@ html.rm-cursor-active * { cursor: none !important; }
 }
 .rm-context-menu.is-open { opacity: 1; transform: scale(1); }
 .rm-context-menu[hidden] { display: none; }
+
+/*
+ * The icon is given a fixed box so the labels line up down the menu whatever
+ * each icon's own width happens to be — a menu whose text starts at a
+ * different place on every row is a menu that reads as a list of accidents.
+ */
+.rm-context-icon {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.85;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+.rm-context-menu [role="menuitem"] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
 /* ── Feedback ───────────────────────────────────────────────────────────── */
 

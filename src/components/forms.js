@@ -629,7 +629,8 @@ export function mascot(target = "[data-rm-mascot]", options = {}) {
   const {
     watch = 'input[type="email"], input[type="text"]',
     secret = 'input[type="password"], [data-rm-secret]',
-    size = 96,
+    size = 104,
+    peekAfter = 2200,
   } = options;
   const cleanups = [];
 
@@ -642,19 +643,84 @@ export function mascot(target = "[data-rm-mascot]", options = {}) {
     face.className = "rm-mascot";
     face.setAttribute("aria-hidden", "true");
     face.style.setProperty("--rm-mascot-size", `${dataNumber(wrapper, "rmSize", size)}px`);
+
+    /*
+     * The shading is four gradients and nothing else.
+     *
+     * A flat two-tone character reads as a diagram; what makes a shape look
+     * like an object is a light with a direction. So: a radial highlight up and
+     * to the left on the head, a warmer bounce at the bottom, the ears a shade
+     * darker so they sit behind, and the hands lit from the same direction as
+     * the head. It is the difference between a drawing of a face and a face.
+     *
+     * All of it is in the defs and none of it is animated — the gradients cost
+     * one paint, and only transforms move afterwards.
+     */
     face.innerHTML =
-      '<svg viewBox="0 0 120 130" fill="none">' +
-      '<circle class="rm-mascot-ear" cx="24" cy="44" r="14"/>' +
-      '<circle class="rm-mascot-ear" cx="96" cy="44" r="14"/>' +
-      '<circle class="rm-mascot-head" cx="60" cy="62" r="40"/>' +
-      '<g class="rm-mascot-eyes">' +
-      '<circle class="rm-mascot-eye" cx="46" cy="58" r="5"/>' +
-      '<circle class="rm-mascot-eye" cx="74" cy="58" r="5"/>' +
+      '<svg viewBox="0 0 120 134" fill="none">' +
+      "<defs>" +
+      '<radialGradient id="rmMascotSkin" cx="34%" cy="26%" r="82%">' +
+      '<stop offset="0%" stop-color="#f6c99a"/>' +
+      '<stop offset="52%" stop-color="#e0a273"/>' +
+      '<stop offset="100%" stop-color="#b97b52"/>' +
+      "</radialGradient>" +
+      '<radialGradient id="rmMascotEar" cx="40%" cy="32%" r="80%">' +
+      '<stop offset="0%" stop-color="#d9976a"/>' +
+      '<stop offset="100%" stop-color="#a96c47"/>' +
+      "</radialGradient>" +
+      '<linearGradient id="rmMascotSnout" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="#ffe4c4"/>' +
+      '<stop offset="100%" stop-color="#f0c298"/>' +
+      "</linearGradient>" +
+      '<radialGradient id="rmMascotHand" cx="36%" cy="28%" r="84%">' +
+      '<stop offset="0%" stop-color="#f3bd8b"/>' +
+      '<stop offset="100%" stop-color="#c07f55"/>' +
+      "</radialGradient>" +
+      "</defs>" +
+
+      '<g class="rm-mascot-ears">' +
+      '<circle class="rm-mascot-ear" cx="23" cy="46" r="15"/>' +
+      '<circle class="rm-mascot-ear" cx="97" cy="46" r="15"/>' +
       "</g>" +
-      '<path class="rm-mascot-mouth" d="M50 78 Q60 86 70 78" stroke-width="3" stroke-linecap="round"/>' +
+
+      '<circle class="rm-mascot-head" cx="60" cy="62" r="41"/>' +
+      // A soft rim along the bottom edge: the bounce light that sells the volume.
+      '<path class="rm-mascot-rim" d="M 27 85 A 41 41 0 0 0 93 85" />' +
+      '<ellipse class="rm-mascot-snout" cx="60" cy="78" rx="23" ry="17"/>' +
+
+      '<g class="rm-mascot-eyes">' +
+      '<ellipse class="rm-mascot-eye" cx="46" cy="57" rx="5.2" ry="5.8"/>' +
+      '<ellipse class="rm-mascot-eye" cx="74" cy="57" rx="5.2" ry="5.8"/>' +
+      '<circle class="rm-mascot-glint" cx="47.8" cy="55" r="1.7"/>' +
+      '<circle class="rm-mascot-glint" cx="75.8" cy="55" r="1.7"/>' +
+      "</g>" +
+      // Lids, so blinking and squinting are the same one transform.
+      '<g class="rm-mascot-lids">' +
+      '<rect class="rm-mascot-lid" x="38" y="44" width="17" height="12" rx="6"/>' +
+      '<rect class="rm-mascot-lid" x="66" y="44" width="17" height="12" rx="6"/>' +
+      "</g>" +
+
+      '<circle class="rm-mascot-nose" cx="60" cy="74" r="3.4"/>' +
+      '<path class="rm-mascot-mouth" d="M51 82 Q60 89 69 82" stroke-width="2.6" stroke-linecap="round"/>' +
+
       '<g class="rm-mascot-hands">' +
-      '<ellipse class="rm-mascot-hand" cx="38" cy="118" rx="20" ry="16"/>' +
-      '<ellipse class="rm-mascot-hand" cx="82" cy="118" rx="20" ry="16"/>' +
+      '<g class="rm-mascot-hand is-left">' +
+      '<ellipse class="rm-mascot-palm" cx="36" cy="120" rx="21" ry="17"/>' +
+      // Four fingers, so the gap between two of them is a real gap to peek through.
+      '<g class="rm-mascot-fingers">' +
+      '<rect x="22" y="104" width="7" height="16" rx="3.5"/>' +
+      '<rect x="31" y="101" width="7" height="19" rx="3.5"/>' +
+      '<rect x="40" y="103" width="7" height="17" rx="3.5"/>' +
+      '<rect x="49" y="107" width="7" height="13" rx="3.5"/>' +
+      "</g></g>" +
+      '<g class="rm-mascot-hand is-right">' +
+      '<ellipse class="rm-mascot-palm" cx="84" cy="120" rx="21" ry="17"/>' +
+      '<g class="rm-mascot-fingers">' +
+      '<rect x="64" y="107" width="7" height="13" rx="3.5"/>' +
+      '<rect x="73" y="103" width="7" height="17" rx="3.5"/>' +
+      '<rect x="82" y="101" width="7" height="19" rx="3.5"/>' +
+      '<rect x="91" y="104" width="7" height="16" rx="3.5"/>' +
+      "</g></g>" +
       "</g></svg>";
     wrapper.prepend(face);
 
@@ -666,12 +732,42 @@ export function mascot(target = "[data-rm-mascot]", options = {}) {
       face.style.setProperty("--rm-mascot-look", (filled * 7 - 3.5).toFixed(2));
     };
 
-    const cover = () => face.classList.add("is-hiding");
-    const uncover = () => face.classList.remove("is-hiding");
+    /*
+     * Covering is about typing, not about clicking.
+     *
+     * Hiding the eyes the instant the field takes focus is the version
+     * everybody builds, and it is wrong twice over: it reacts before there is
+     * anything to hide, and it means simply tabbing through a form makes the
+     * character flinch. So the hands come up on the first keystroke and go
+     * down on blur.
+     *
+     * And a character that covers its eyes and then holds perfectly still is a
+     * prop. After a pause in the typing it parts two fingers and has a look —
+     * which is the joke, and it also quietly tells you the field is still the
+     * one you are in.
+     */
+    const stopPeeking = () => face.classList.remove("is-peeking");
+    let idle = 0;
+
+    const cover = () => {
+      clearTimeout(idle);
+      face.classList.add("is-hiding");
+      stopPeeking();
+      idle = setTimeout(() => {
+        if (face.classList.contains("is-hiding")) face.classList.add("is-peeking");
+      }, dataNumber(wrapper, "rmPeekAfter", peekAfter));
+    };
+
+    const uncover = () => {
+      clearTimeout(idle);
+      face.classList.remove("is-hiding");
+      stopPeeking();
+    };
 
     eyes?.addEventListener("input", look);
     eyes?.addEventListener("focus", uncover);
-    hidden?.addEventListener("focus", cover);
+    // On typing, not on focus.
+    hidden?.addEventListener("input", cover);
     hidden?.addEventListener("blur", uncover);
 
     // Where there is a show/hide toggle, peeking is exactly what it means.
@@ -682,9 +778,10 @@ export function mascot(target = "[data-rm-mascot]", options = {}) {
     toggle?.addEventListener("click", onToggleClick);
 
     cleanups.push(() => {
+      clearTimeout(idle);
       eyes?.removeEventListener("input", look);
       eyes?.removeEventListener("focus", uncover);
-      hidden?.removeEventListener("focus", cover);
+      hidden?.removeEventListener("input", cover);
       hidden?.removeEventListener("blur", uncover);
       toggle?.removeEventListener("click", onToggleClick);
       face.remove();

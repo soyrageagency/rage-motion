@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="../src/styles/rage-motion.css">
 <link rel="stylesheet" href="./demo.css">
 </head>
-<body data-rm-scrollbar="accent">
+<body data-rm-scrollbar="hairline">
 
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
 <header class="bar" data-rm-condense data-rm-frosted>
@@ -573,15 +573,31 @@
   <!-- Buttons -->
   <div class="shell rail"><span class="rail-name">Buttons &amp; cursors</span></div>
   <div class="shell cells">
-    <article class="cell cell-wide">
-      <p class="cell-name">fill · shimmer · spark · swap · ripple · magnetic</p>
-      <div class="cell-body button-body">
-        <button class="ghost" data-rm-fill data-rm-color="#2aa7e4">Directional fill</button>
-        <button class="solid" data-rm-shimmer>Shimmer</button>
-        <button class="ghost" data-rm-spark data-rm-color="#f4d738">Spark</button>
-        <button class="ghost" data-rm-swap="Downloading…">Download</button>
-        <button class="ghost" data-rm-ripple>Ripple</button>
-        <button class="ghost" data-rm-magnetic>Magnetic</button>
+    <article class="cell cell-wide cell-invert">
+      <p class="cell-name">fill · shimmer · spark · swap · ripple · magnetic <span class="cell-hint">hover every one</span></p>
+      <div class="cell-body invert-body">
+        <div class="invert-row">
+          <button class="invert-btn is-fill" data-rm-fill data-rm-color="#0e0e0e" data-rm-from="bottom">
+            <span class="invert-label">Directional fill</span>
+          </button>
+          <button class="invert-btn is-shimmer" data-rm-shimmer data-rm-color="rgba(14,14,14,0.22)">
+            <span class="invert-label">Shimmer</span>
+          </button>
+          <button class="invert-btn is-spark" data-rm-spark data-rm-color="#0e0e0e" data-rm-pieces="18">
+            <span class="invert-label">Spark</span>
+          </button>
+        </div>
+        <div class="invert-row">
+          <button class="invert-btn is-swap" data-rm-swap="Downloading…">Download</button>
+          <button class="invert-btn is-ripple" data-rm-ripple data-rm-color="rgba(14,14,14,0.16)">
+            <span class="invert-label">Ripple</span>
+          </button>
+          <button class="invert-btn is-magnetic" data-rm-magnetic data-rm-strength="0.4">
+            <span class="invert-label">Magnetic</span>
+          </button>
+        </div>
+        <p class="invert-note">Six effects on one surface, so you can tell them apart. Black on
+          cream here and cream on black everywhere else — the same components, no second code path.</p>
       </div>
       <button class="cell-copy" data-copy="<button data-rm-fill>Directional fill</button>">copy</button>
     </article>
@@ -899,6 +915,7 @@
     <article class="cell cell-wide">
       <p class="cell-name">scrollbar <span class="cell-hint">five looks · scroll them</span></p>
       <div class="cell-body scrollbars-body">
+        <div class="scroller" data-rm-scrollbar="hairline"><p>hairline</p><span></span></div>
         <div class="scroller" data-rm-scrollbar="thin"><p>thin</p><span></span></div>
         <div class="scroller" data-rm-scrollbar="pill"><p>pill</p><span></span></div>
         <div class="scroller" data-rm-scrollbar="accent"><p>accent</p><span></span></div>
@@ -2097,10 +2114,10 @@
 
     <div class="stack-frame">
       <p class="cell-name">stack</p>
-      <div data-rm-stack>
-        <article class="stack-card" data-rm-card><b>01</b><p>Cards pile up and shrink as you pass them. The sticking is CSS <code>position: sticky</code>; only scale and brightness are computed.</p></article>
-        <article class="stack-card" data-rm-card><b>02</b><p>Each card sticks a little lower than the last, so the pile stays visible at the top rather than hiding behind the front one.</p></article>
-        <article class="stack-card" data-rm-card><b>03</b><p>Under reduced motion the whole effect is dropped and they are simply three cards, in order.</p></article>
+      <div data-rm-stack data-rm-step="40">
+        <article class="stack-card" data-rm-card><b>01</b><h4>The pin is CSS</h4><p>Cards pile up and shrink as you pass them. The sticking is <code>position: sticky</code>; only the scale and the brightness are computed.</p></article>
+        <article class="stack-card" data-rm-card><b>02</b><h4>Each one lands lower</h4><p>Every card sticks a little further down than the last, so the pile stays readable at the top rather than disappearing behind the front one.</p></article>
+        <article class="stack-card" data-rm-card><b>03</b><h4>And it degrades</h4><p>Under reduced motion the whole effect is dropped and they are simply three cards, in order, at full size.</p></article>
       </div>
     </div>
 
@@ -2351,10 +2368,23 @@ init();</code></pre>
 </div>
 
 <div id="demo-context" class="menu-panel" data-rm-context-menu hidden>
-  <button>Copy markup</button>
-  <button>Open in a new tab</button>
-  <button>Report an issue</button>
+  <button data-rm-icon="#rm-icon-copy">Copy markup</button>
+  <button data-rm-icon="#rm-icon-external">Open in a new tab</button>
+  <button data-rm-icon="#rm-icon-flag">Report an issue</button>
 </div>
+
+<!-- The icons the context menu points at. One sprite, no dependency. -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <symbol id="rm-icon-copy" viewBox="0 0 24 24">
+    <rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+  </symbol>
+  <symbol id="rm-icon-external" viewBox="0 0 24 24">
+    <path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/>
+  </symbol>
+  <symbol id="rm-icon-flag" viewBox="0 0 24 24">
+    <path d="M5 21V4h11l-1.5 4L16 12H5"/>
+  </symbol>
+</svg>
 
 <div class="toast" role="status" aria-live="polite" hidden></div>
 
