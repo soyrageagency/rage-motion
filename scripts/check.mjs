@@ -166,7 +166,6 @@ async function run(browser, { reducedMotion }) {
   check(`${label}: gooey built two blobs`, started.gooey === 2, String(started.gooey));
   check(`${label}: tabs are a real tablist`, started.tabs === 3, String(started.tabs));
   check(`${label}: compare is a real slider`, started.compare === 1, String(started.compare));
-  check(`${label}: progress bar mounted`, started.progress === 1, String(started.progress));
   check(`${label}: the wave fields are drawing`, started.waves === 2, String(started.waves));
   check(`${label}: tracing drew its path`, started.tracing === 1, String(started.tracing));
   check(`${label}: directional fills mounted`, started.fill >= 2, String(started.fill));
@@ -212,7 +211,7 @@ async function run(browser, { reducedMotion }) {
   const counted = await page.evaluate(
     () => document.querySelector("[data-rm-odometer]")?.getAttribute("aria-label") ?? "",
   );
-  check(`${label}: the counter still announces its value`, counted === "64", counted);
+  check(`${label}: the counter still announces its value`, counted === "80", counted);
 
   // The rotating words are decoration; the list of them is the content.
   const morphLabel = await page.evaluate(

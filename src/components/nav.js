@@ -501,3 +501,121 @@ export function tabs(target = "[data-rm-tabs]", options = {}) {
 
   return () => cleanups.forEach((stop) => stop());
 }
+
+/**
+ * Mark the navigation link for whatever section you are reading.
+ *
+ * It sets `aria-current="true"` and nothing else — no classes of its own, no
+ * indicator. That is the whole design: `pill` and `gooey` already rest on the
+ * current link, so putting the two together makes the indicator follow the
+ * page as you scroll, and none of the three had to know about the others.
+ *
+ * Whichever section is nearest the reading line wins, rather than testing
+ * ranges, so there is never a scroll position where nothing is marked.
+ *
+ *   <nav data-rm-spy data-rm-pill>
+ *     <a href="#work">Work</a><a href="#about">About</a>
+ *   </nav>
+ */
+export function scrollSpy(target = "[data-rm-spy]", options = {}) {
+  const navs = resolveElements(target);
+  if (!navs.length) return () => {};
+
+  const { selector = 'a[href^="#"]', line = 0.32 } = options;
+  const groups = [];
+
+  for (const nav of navs) {
+    const links = [...nav.querySelectorAll(selector)];
+    const pairs = links
+      .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
+      .filter((pair) => pair.section);
+    if (pairs.length > 1) groups.push({ nav, pairs, current: -1 });
+  }
+  if (!groups.length) return () => {};
+
+  const stopFrame = onFrame(() => {
+    const reading = innerHeight * line;
+    for (const group of groups) {
+      let best = 0;
+      let bestDistance = Infinity;
+      group.pairs.forEach((pair, index) => {
+        const box = pair.section.getBoundingClientRect();
+        // Distance from the section's top to the reading line, but a section
+        // you are inside always beats one you have not reached.
+        const distance = box.top <= reading && box.bottom > reading
+          ? 0
+          : Math.abs(box.top - reading);
+        if (distance < bestDistance) { bestDistance = distance; best = index; }
+      });
+
+      if (best === group.current) continue;
+      group.current = best;
+      group.pairs.forEach(({ link }, index) => {
+        if (index === best) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      });
+    }
+  });
+
+  return () => {
+    stopFrame();
+    groups.forEach(({ pairs }) => pairs.forEach(({ link }) => link.removeAttribute("aria-current")));
+  };
+}
+
+/**
+ * A ring that fills as the page scrolls.
+ *
+ * `stroke-dasharray` on a real circle, so the ring is drawn rather than
+ * approximated by rotating two half-discs — which is the usual trick and the
+ * reason those versions cannot be given a rounded cap.
+ *
+ * It is decoration for a number that is already announced by the page, so it
+ * is `aria-hidden` and never becomes the only way to know where you are.
+ *
+ *   <a href="#top" data-rm-ring-progress>Top</a>
+ */
+export function progressRing(target = "[data-rm-ring-progress]", options = {}) {
+  const elements = resolveElements(target);
+  if (!elements.length) return () => {};
+
+  const { size = 44, width = 2, color = "#2aa7e4", track = "rgba(255,255,255,0.14)" } = options;
+  const rings = [];
+
+  for (const element of elements) {
+    const box = dataNumber(element, "rmSize", size);
+    const radius = (box - width) / 2;
+    const length = 2 * Math.PI * radius;
+
+    element.classList.add("rm-ring-progress");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", `0 0 ${box} ${box}`);
+    svg.setAttribute("width", String(box));
+    svg.setAttribute("height", String(box));
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML =
+      `<circle cx="${box / 2}" cy="${box / 2}" r="${radius}" fill="none" stroke="${dataString(element, "rmTrack", track)}" stroke-width="${width}"/>` +
+      `<circle class="rm-ring-progress-arc" cx="${box / 2}" cy="${box / 2}" r="${radius}" fill="none" ` +
+      `stroke="${dataString(element, "rmColor", color)}" stroke-width="${width}" stroke-linecap="round" ` +
+      `stroke-dasharray="${length.toFixed(2)}" stroke-dashoffset="${length.toFixed(2)}" ` +
+      `transform="rotate(-90 ${box / 2} ${box / 2})"/>`;
+    element.prepend(svg);
+    rings.push({ element, svg, arc: svg.querySelector(".rm-ring-progress-arc"), length });
+  }
+
+  const stopFrame = onFrame(() => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const ratio = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    for (const ring of rings) {
+      ring.arc.setAttribute("stroke-dashoffset", (ring.length * (1 - ratio)).toFixed(2));
+    }
+  });
+
+  return () => {
+    stopFrame();
+    rings.forEach((ring) => {
+      ring.svg.remove();
+      ring.element.classList.remove("rm-ring-progress");
+    });
+  };
+}

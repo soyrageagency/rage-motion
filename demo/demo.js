@@ -12,7 +12,9 @@
  * Crafted by SoyRage Agency — https://soyrage.es/
  */
 
-import { init, cursor, target, crosshair, splash, waves, retroGrid, dotGrid } from "../src/index.js";
+import {
+  init, cursor, target, crosshair, splash, waves, retroGrid, dotGrid, confetti,
+} from "../src/index.js";
 
 init();
 
@@ -23,24 +25,41 @@ waves("#field-waves", { lines: 12, amplitude: 16, wavelength: 220, color: "rgba(
 retroGrid("#field-retro", { cell: 34, speed: 9000 });
 dotGrid("#field-dots", { gap: 20, color: "rgba(255,255,255,0.16)" });
 
+/* ── Confetti ──────────────────────────────────────────────────────────── */
+
+// confetti() hands back a fire() rather than binding itself to anything, so
+// the page decides what counts as good news.
+const fire = confetti();
+document.querySelector("#confetti-button")?.addEventListener("click", (event) => {
+  fire({ x: event.clientX, y: event.clientY });
+});
+
 /* ── Cursor picker ─────────────────────────────────────────────────────── */
 
 // A custom cursor is a page-level decision, so init() does not make it. This
 // page makes it, and lets you change your mind.
 const CURSORS = { cursor, target, crosshair, splash };
-let stopCursor = target();
+// The page starts on the system cursor. Replacing someone pointer before they
+// have asked is the fastest way to make a site feel broken, and half the point
+// of shipping four of these is that a site should pick one deliberately.
+let stopCursor = null;
 
-document.querySelector(".cursor-picker")?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-cursor]");
-  if (!button) return;
+const pickers = [...document.querySelectorAll(".cursor-picker")];
+for (const picker of pickers) {
+  picker.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-cursor]");
+    if (!button) return;
 
-  stopCursor?.();
-  stopCursor = CURSORS[button.dataset.cursor]?.() ?? null;
+    stopCursor?.();
+    stopCursor = CURSORS[button.dataset.cursor]?.() ?? null;
 
-  for (const other of button.parentElement.children) {
-    other.setAttribute("aria-pressed", String(other === button));
-  }
-});
+    // Both pickers show the same state, wherever you changed it.
+    const chosen = button.dataset.cursor;
+    for (const other of pickers.flatMap((one) => [...one.children])) {
+      other.setAttribute("aria-pressed", String(other.dataset.cursor === chosen));
+    }
+  });
+}
 
 /* ── Copy to clipboard ─────────────────────────────────────────────────── */
 

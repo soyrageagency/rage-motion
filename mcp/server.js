@@ -101,7 +101,11 @@ server.registerTool(
       "there is probably already one for it.",
     inputSchema: {
       category: z
-        .enum(["all", "reveal", "text", "showpiece", "cursor", "cards", "surface", "background", "scroll", "media", "gallery", "button", "nav", "transition"])
+        .enum([
+          "all", "reveal", "text", "showpiece", "cursor", "cards", "surface",
+          "background", "disclosure", "scroll", "media", "gallery", "button",
+          "nav", "transition",
+        ])
         .optional()
         .describe("Narrow the list. Default all."),
     },

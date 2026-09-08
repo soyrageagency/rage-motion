@@ -19,11 +19,14 @@ export { split, unsplit } from "./core/split.js";
 export { reveal } from "./components/reveal.js";
 export { textReveal } from "./components/text.js";
 export { decrypt, glitch, shiny, countUp } from "./components/text-effects.js";
-export { pressure, morph, curve, odometer, highlight } from "./components/type.js";
+export { pressure, morph, curve, odometer, highlight, outline, rollText, countdown } from "./components/type.js";
 export { typewriter, waveText, magnetLines, ripple } from "./components/showpiece.js";
 export { cursor, splash, magnetic, target, crosshair } from "./components/cursor.js";
 export { spotlight, tilt, border } from "./components/cards.js";
 export { beam, trail, glare, electric, blurEdge } from "./components/surface.js";
+export { meteors, sparkles, lamp, beams } from "./components/panelfx.js";
+export { accordion, flip, expand, lightbox } from "./components/disclose.js";
+export { drag, shuffle, confetti } from "./components/motionfx.js";
 export { waves, retroGrid, dotGrid, grain } from "./components/field.js";
 export { parallax, progress, horizontal, stack, scrub } from "./components/scroll.js";
 export { tracing, flatten, sticky } from "./components/scrollfx.js";
@@ -31,24 +34,27 @@ export { imageReveal, pixelate, hoverPreview, marquee } from "./components/media
 export { carousel, ring, deck, imageTrail, scratch, dock } from "./components/gallery.js";
 export { compare, panels, skew, orbit } from "./components/interactive.js";
 export { fill, shimmer, spark, swap } from "./components/buttons.js";
-export { pill, gooey, condense, overlay, tabs } from "./components/nav.js";
+export { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 export { pageTransition, transitionTo } from "./components/transitions.js";
 
 import { reveal } from "./components/reveal.js";
 import { textReveal } from "./components/text.js";
 import { decrypt, glitch, shiny, countUp } from "./components/text-effects.js";
-import { pressure, morph, curve, odometer, highlight } from "./components/type.js";
+import { pressure, morph, curve, odometer, highlight, outline, rollText, countdown } from "./components/type.js";
 import { typewriter, waveText, magnetLines, ripple } from "./components/showpiece.js";
 import { magnetic } from "./components/cursor.js";
 import { spotlight, tilt, border } from "./components/cards.js";
 import { beam, trail, glare, electric, blurEdge } from "./components/surface.js";
+import { meteors, sparkles, lamp, beams } from "./components/panelfx.js";
+import { accordion, flip, expand, lightbox } from "./components/disclose.js";
+import { drag, shuffle } from "./components/motionfx.js";
 import { parallax, progress, horizontal, stack, scrub } from "./components/scroll.js";
 import { tracing, flatten, sticky } from "./components/scrollfx.js";
 import { imageReveal, pixelate, hoverPreview, marquee } from "./components/media.js";
 import { carousel, ring, deck, imageTrail, scratch, dock } from "./components/gallery.js";
 import { compare, panels, skew, orbit } from "./components/interactive.js";
 import { fill, shimmer, spark, swap } from "./components/buttons.js";
-import { pill, gooey, condense, overlay, tabs } from "./components/nav.js";
+import { pill, gooey, condense, overlay, tabs, scrollSpy, progressRing } from "./components/nav.js";
 
 /**
  * Start every component that is driven purely by markup.
@@ -73,6 +79,9 @@ export function init(options = {}) {
     curve("[data-rm-curve]", options.curve),
     odometer("[data-rm-odometer]", options.odometer),
     highlight("[data-rm-highlight]", options.highlight),
+    outline("[data-rm-outline]", options.outline),
+    rollText("[data-rm-roll]", options.roll),
+    countdown("[data-rm-countdown]", options.countdown),
     typewriter("[data-rm-type]", options.typewriter),
     waveText("[data-rm-wave]", options.wave),
     magnetLines("[data-rm-lines]", options.lines),
@@ -86,6 +95,16 @@ export function init(options = {}) {
     glare("[data-rm-glare]", options.glare),
     electric("[data-rm-electric]", options.electric),
     blurEdge("[data-rm-blur-edge]", options.blurEdge),
+    meteors("[data-rm-meteors]", options.meteors),
+    sparkles("[data-rm-sparkles]", options.sparkles),
+    lamp("[data-rm-lamp]", options.lamp),
+    beams("[data-rm-beams]", options.beams),
+    accordion("[data-rm-accordion]", options.accordion),
+    flip("[data-rm-flip]", options.flip),
+    expand("[data-rm-expand]", options.expand),
+    lightbox("[data-rm-lightbox]", options.lightbox),
+    drag("[data-rm-drag]", options.drag),
+    shuffle("[data-rm-shuffle]", options.shuffle),
     parallax("[data-rm-parallax]", options.parallax),
     progress("[data-rm-progress]", options.progress),
     horizontal("[data-rm-horizontal]", options.horizontal),
@@ -117,6 +136,8 @@ export function init(options = {}) {
     condense("[data-rm-condense]", options.condense),
     overlay("[data-rm-overlay]", options.overlay),
     tabs("[data-rm-tabs]", options.tabs),
+    scrollSpy("[data-rm-spy]", options.scrollSpy),
+    progressRing("[data-rm-ring-progress]", options.progressRing),
   ];
   return () => stops.forEach((stop) => stop?.());
 }

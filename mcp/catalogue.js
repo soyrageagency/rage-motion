@@ -58,6 +58,9 @@ const GALLERY = "src/components/gallery.js";
 const INTERACTIVE = "src/components/interactive.js";
 const BUTTONS = "src/components/buttons.js";
 const NAV = "src/components/nav.js";
+const PANELFX = "src/components/panelfx.js";
+const DISCLOSE = "src/components/disclose.js";
+const MOTIONFX = "src/components/motionfx.js";
 const TRANSITIONS = "src/components/transitions.js";
 
 const option = (name, type, dflt, about) => ({ name, type, default: dflt, about });
@@ -1027,6 +1030,275 @@ export const CATALOGUE = [
       "</div>",
     usage: 'import { tabs } from "@soyrageagency/rage-motion";\ntabs();',
     options: [option("distance", "number", "26", "How far the panel travels in.")],
+  },
+
+  // ── Panel effects ────────────────────────────────────────────────────────
+  {
+    name: "meteors",
+    category: "background",
+    file: PANELFX,
+    attribute: "data-rm-meteors",
+    summary: "Streaks falling across a section.",
+    notes:
+      "Each meteor gets its own delay, duration and length from a seeded " +
+      "sequence, so the shower never lines up into a visible pattern — which " +
+      "is exactly what happens when they share one animation and only the " +
+      "position differs.",
+    example: '<section data-rm-meteors="18">…</section>',
+    usage: 'import { meteors } from "@soyrageagency/rage-motion";\nmeteors();',
+    options: [option("count", "number", "14", "Clamped to 40."), option("speed", "number", "4200", "Base fall time.")],
+  },
+  {
+    name: "sparkles",
+    category: "background",
+    file: PANELFX,
+    attribute: "data-rm-sparkles",
+    summary: "Points that twinkle and drift over an element.",
+    notes:
+      "Negative animation delays start every point part-way through, so the " +
+      "field is already alive on the first frame instead of blinking on " +
+      "together — and a point at full brightness is a different size from its " +
+      "neighbour, which is what stops it looking like dust.",
+    example: "<h1 data-rm-sparkles>Launch day</h1>",
+    usage: 'import { sparkles } from "@soyrageagency/rage-motion";\nsparkles();',
+    options: [option("count", "number", "26", "Clamped to 60."), option("color", "colour", '"#f4d738"', "The points.")],
+  },
+  {
+    name: "lamp",
+    category: "background",
+    file: PANELFX,
+    attribute: "data-rm-lamp",
+    summary: "A cone of light thrown from one edge.",
+    notes:
+      "Two mirrored halves of a conic gradient meeting at a hairline, which " +
+      "gives the light a hard source and a soft spill. A blurred radial " +
+      "gradient — the usual approach — reads as a smudge in the corner.",
+    example: '<section data-rm-lamp="top" data-rm-color="#2aa7e4">…</section>',
+    usage: 'import { lamp } from "@soyrageagency/rage-motion";\nlamp();',
+    options: [option("spread", "number", "42", "How wide the cone opens."), option("from", "top | bottom", '"top"', "Which edge it hangs from.")],
+  },
+  {
+    name: "beams",
+    category: "background",
+    file: PANELFX,
+    attribute: "data-rm-beams",
+    summary: "Vertical shafts sweeping through a dark panel.",
+    notes:
+      "Masked to fade at both ends, which is the difference between light and " +
+      "a set of moving stripes. Each shaft has its own width, opacity and " +
+      "period.",
+    example: "<section data-rm-beams>…</section>",
+    usage: 'import { beams } from "@soyrageagency/rage-motion";\nbeams();',
+    options: [option("count", "number", "7", "Clamped to 20."), option("tilt", "number", "12", "Degrees off vertical.")],
+  },
+
+  // ── Disclosure ───────────────────────────────────────────────────────────
+  {
+    name: "accordion",
+    category: "disclosure",
+    file: DISCLOSE,
+    attribute: "data-rm-accordion",
+    summary: "Sections that expand without measuring anything.",
+    notes:
+      "The height animates with `grid-template-rows: 0fr → 1fr`, so nothing is " +
+      "measured and nothing is hardcoded: the panel can contain an image that " +
+      "loads late, a font that swaps, or text that rewraps, and the animation " +
+      "stays correct. Every version built on `scrollHeight` breaks on all three.",
+    example:
+      "<div data-rm-accordion>\n" +
+      "  <section>\n" +
+      "    <button data-rm-accordion-head>What it costs</button>\n" +
+      "    <div data-rm-accordion-body>…</div>\n" +
+      "  </section>\n" +
+      "</div>",
+    usage: 'import { accordion } from "@soyrageagency/rage-motion";\naccordion();',
+    options: [option("single", "boolean", "true", "Close the others when one opens.")],
+  },
+  {
+    name: "flip",
+    category: "disclosure",
+    file: DISCLOSE,
+    attribute: "data-rm-flip",
+    summary: "A card with a back, turned by pointer or keyboard.",
+    notes:
+      "A flip card that only answers to hover hides half its content from " +
+      "anyone not using a mouse, so this is a real control: role, " +
+      "`aria-pressed`, Enter and Space. The hidden face is `inert`, so nobody " +
+      "tabs into something they cannot see. The faces share a grid cell, so the " +
+      "card sizes to the taller one and never clips the other.",
+    example:
+      "<div data-rm-flip>\n  <div data-rm-flip-front>…</div>\n  <div data-rm-flip-back>…</div>\n</div>",
+    usage: 'import { flip } from "@soyrageagency/rage-motion";\nflip();',
+    options: [option("axis", "x | y", '"y"', "Which way it turns."), option("duration", "number", "620", "The turn.")],
+  },
+  {
+    name: "expand",
+    category: "disclosure",
+    file: DISCLOSE,
+    attribute: "data-rm-expand",
+    summary: "A card that grows into a dialog, out of exactly where you pressed.",
+    notes:
+      "The card itself becomes the dialog — not a copy, and not some other " +
+      "element fading in from the middle of the screen. A placeholder holds its " +
+      "place so nothing below jumps, and it FLIPs from its old box to its new " +
+      "one, which is why anything inside it survives the transition. It is a " +
+      "real dialog while open: focus moved in and trapped, Escape closes, focus " +
+      "returns to the card.",
+    example:
+      "<article data-rm-expand>\n  <h3>Title</h3>\n  <div data-rm-expand-more hidden>The long version…</div>\n</article>",
+    usage: 'import { expand } from "@soyrageagency/rage-motion";\nexpand();',
+    options: [option("width", "number", "720", "Opened width, capped to the viewport.")],
+  },
+  {
+    name: "lightbox",
+    category: "disclosure",
+    file: DISCLOSE,
+    attribute: "data-rm-lightbox",
+    summary: "An image that opens full screen, out of its own thumbnail.",
+    notes:
+      "The same FLIP as `expand`, so the picture grows from where it was rather " +
+      "than cross-fading in. Escape or a click closes it and focus goes back to " +
+      "the thumbnail.",
+    example: '<img data-rm-lightbox src="small.jpg" alt="…">',
+    usage: 'import { lightbox } from "@soyrageagency/rage-motion";\nlightbox();',
+    options: [option("duration", "number", "480", "The grow.")],
+  },
+
+  // ── Motion primitives ────────────────────────────────────────────────────
+  {
+    name: "drag",
+    category: "gallery",
+    file: MOTIONFX,
+    attribute: "data-rm-drag",
+    summary: "Pick anything up, throw it, watch it settle back.",
+    notes:
+      "Pointer capture means the drag survives the pointer leaving the element, " +
+      "which is the bug in most hand-rolled drags: move fast and the thing is " +
+      "stranded because `pointermove` stopped arriving. Arrow keys nudge it, " +
+      "because a control only usable by dragging is one some people cannot use.",
+    example: "<div data-rm-drag>Throw me</div>",
+    usage: 'import { drag } from "@soyrageagency/rage-motion";\ndrag();',
+    options: [option("bounds", "number", "160", "How far it can travel."), option("spring", "number", "0.09", "How quickly it comes home.")],
+  },
+  {
+    name: "shuffle",
+    category: "gallery",
+    file: MOTIONFX,
+    attribute: "data-rm-shuffle",
+    summary: "A grid that rearranges itself when you filter it.",
+    notes:
+      "A FLIP: measure where every item is, change what is shown, measure " +
+      "again, animate each from its old box to its new one. Items travel to " +
+      "their new places instead of the grid blinking into a different " +
+      "arrangement — and the layout is still plain CSS grid doing the work.",
+    example:
+      "<div data-rm-shuffle>\n" +
+      '  <button data-rm-filter="all" aria-pressed="true">All</button>\n' +
+      '  <button data-rm-filter="web">Web</button>\n' +
+      "  <div data-rm-shuffle-grid>\n" +
+      '    <article data-rm-tags="web">…</article>\n' +
+      "  </div>\n" +
+      "</div>",
+    usage: 'import { shuffle } from "@soyrageagency/rage-motion";\nshuffle();',
+    options: [option("duration", "number", "520", "The travel."), option("stagger", "number", "22", "Between items, capped at 220ms total.")],
+  },
+  {
+    name: "confetti",
+    category: "button",
+    file: MOTIONFX,
+    attribute: null,
+    summary: "A burst of confetti at any point you name.",
+    notes:
+      "Each piece gets its own arc — a horizontal throw plus gravity — rather " +
+      "than a straight line, which is what makes it read as confetti and not a " +
+      "firework. Pieces remove themselves the moment they finish, so a page " +
+      "cannot accumulate them. Returns a `fire()` to call when the good news " +
+      "arrives.",
+    example: "<!-- no markup: call fire() from your own handler -->",
+    usage:
+      'import { confetti } from "@soyrageagency/rage-motion";\n' +
+      "const fire = confetti();\n" +
+      'button.addEventListener("click", (e) => fire({ x: e.clientX, y: e.clientY }));',
+    options: [option("count", "number", "60", "Pieces per burst."), option("gravity", "number", "420", "How far they fall.")],
+  },
+
+  // ── More typography ──────────────────────────────────────────────────────
+  {
+    name: "outline",
+    category: "text",
+    file: TYPE,
+    attribute: "data-rm-outline",
+    summary: "Outlined text that fills as it crosses the viewport.",
+    notes:
+      "One element: a stroke for the empty part and a gradient clipped to the " +
+      "glyphs for the filled part. Two stacked copies of the text — the usual " +
+      "fake — double the antialiasing on every edge, which is why those " +
+      "versions look blurry as they fill.",
+    example: "<h2 data-rm-outline>Scroll to fill</h2>",
+    usage: 'import { outline } from "@soyrageagency/rage-motion";\noutline();',
+    options: [option("stroke", "colour", '"rgba(241,238,233,0.28)"', "The empty outline.")],
+  },
+  {
+    name: "rollText",
+    category: "text",
+    file: TYPE,
+    attribute: "data-rm-roll",
+    summary: "A word that rolls to its replacement.",
+    notes:
+      "Both faces are real text in the flow, sharing a grid cell, so the " +
+      "element still sizes itself. The usual version absolutely positions the " +
+      "back face, which collapses the box and hides the second label from " +
+      "everything but a mouse.",
+    example: '<a data-rm-roll="Get in touch" href="/contact">Contact</a>',
+    usage: 'import { rollText } from "@soyrageagency/rage-motion";\nrollText();',
+    options: [option("axis", "x | y", '"x"', "Roll vertically or sideways.")],
+  },
+  {
+    name: "countdown",
+    category: "text",
+    file: TYPE,
+    attribute: "data-rm-countdown",
+    summary: "A live countdown on rolling digit columns.",
+    notes:
+      "The target is read from `datetime`, so the markup carries a real " +
+      "machine-readable date and the page still says something useful with no " +
+      "JavaScript at all. It ticks once a second, because nothing below a " +
+      "second is visible on a clock.",
+    example: '<time data-rm-countdown datetime="2027-01-01T00:00:00Z">1 January</time>',
+    usage: 'import { countdown } from "@soyrageagency/rage-motion";\ncountdown();',
+    options: [option("done", "string", '"Now"', "Shown when it reaches zero.")],
+  },
+
+  // ── More navigation ──────────────────────────────────────────────────────
+  {
+    name: "scrollSpy",
+    category: "nav",
+    file: NAV,
+    attribute: "data-rm-spy",
+    summary: "Marks the navigation link for whatever section you are reading.",
+    notes:
+      "It sets `aria-current` and nothing else — no classes, no indicator of " +
+      "its own. That is the design: `pill` and `gooey` already rest on the " +
+      "current link, so putting them together makes the indicator follow the " +
+      "page as you scroll, and none of the three had to know about the others.",
+    example: '<nav data-rm-spy data-rm-pill><a href="#work">Work</a><a href="#about">About</a></nav>',
+    usage: 'import { scrollSpy } from "@soyrageagency/rage-motion";\nscrollSpy();',
+    options: [option("line", "number", "0.32", "Where the reading line sits, 0-1.")],
+  },
+  {
+    name: "progressRing",
+    category: "nav",
+    file: NAV,
+    attribute: "data-rm-ring-progress",
+    summary: "A ring that fills as the page scrolls.",
+    notes:
+      "`stroke-dasharray` on a real circle, so the ring is drawn rather than " +
+      "approximated by rotating two half-discs — which is the usual trick and " +
+      "why those versions cannot have a rounded cap. It is `aria-hidden`: " +
+      "decoration for something the page already announces.",
+    example: '<a href="#top" data-rm-ring-progress>Top</a>',
+    usage: 'import { progressRing } from "@soyrageagency/rage-motion";\nprogressRing();',
+    options: [option("size", "number", "44", "Outer diameter."), option("width", "number", "2", "Stroke.")],
   },
 
   // ── Pages ────────────────────────────────────────────────────────────────

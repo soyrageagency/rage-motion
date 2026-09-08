@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — 64 web animation components, zero dependencies</title>
-<meta name="description" content="A catalogue of 64 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
+<title>rage-motion — 80 web animation components, zero dependencies</title>
+<meta name="description" content="A catalogue of 80 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="dark">
 
-<meta property="og:title" content="rage-motion — 64 web animation components, zero dependencies">
+<meta property="og:title" content="rage-motion — 80 web animation components, zero dependencies">
 <meta property="og:description" content="A catalogue of components with real technique behind them. Zero dependencies. Plus an MCP server so your AI uses these instead of its own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://soyrageagency.github.io/rage-motion/">
@@ -22,8 +22,6 @@
 </head>
 <body>
 
-<div data-rm-progress data-rm-color="#2aa7e4"></div>
-
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
 <header class="bar" data-rm-condense>
   <a class="brand" href="#top">
@@ -34,8 +32,8 @@
     rage-motion
   </a>
 
-  <nav class="bar-nav" data-rm-pill data-rm-color="rgba(255,255,255,0.08)" aria-label="Sections">
-    <a href="#index" aria-current="page">Index</a>
+  <nav class="bar-nav" data-rm-pill data-rm-spy data-rm-color="rgba(255,255,255,0.08)" aria-label="Sections">
+    <a href="#index">Index</a>
     <a href="#gallery">Gallery</a>
     <a href="#scroll">Scroll</a>
     <a href="#mcp">MCP</a>
@@ -55,7 +53,7 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">64 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
+    <p class="mono-label"><span data-rm-decrypt data-rm-loop="6000">80 COMPONENTS · 0 DEPENDENCIES · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -74,9 +72,9 @@
     </div>
 
     <dl class="hero-facts">
-      <div><dt data-rm-odometer data-rm-loop="7000">64</dt><dd>components</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7000">80</dt><dd>components</dd></div>
       <div><dt data-rm-odometer data-rm-loop="7400">0</dt><dd>dependencies</dd></div>
-      <div><dt data-rm-odometer data-rm-loop="7800">17</dt><dd>modules, all copyable</dd></div>
+      <div><dt data-rm-odometer data-rm-loop="7800">21</dt><dd>modules, all copyable</dd></div>
       <div><dt>MIT</dt><dd>take it and ship it</dd></div>
     </dl>
   </div>
@@ -105,6 +103,9 @@
           <li><b>countUp</b><code>data-rm-count</code></li>
           <li><b>typewriter</b><code>data-rm-type</code></li>
           <li><b>waveText</b><code>data-rm-wave</code></li>
+          <li><b>outline</b><code>data-rm-outline</code></li>
+          <li><b>rollText</b><code>data-rm-roll</code></li>
+          <li><b>countdown</b><code>data-rm-countdown</code></li>
           <li><b>split</b><code>—</code></li>
         </ul>
       </div>
@@ -126,6 +127,7 @@
           <li><b>spark</b><code>data-rm-spark</code></li>
           <li><b>swap</b><code>data-rm-swap</code></li>
           <li><b>ripple</b><code>data-rm-ripple</code></li>
+          <li><b>confetti</b><code>js</code></li>
         </ul>
       </div>
 
@@ -148,6 +150,10 @@
           <li><b>retroGrid</b><code>js</code></li>
           <li><b>dotGrid</b><code>js</code></li>
           <li><b>grain</b><code>js</code></li>
+          <li><b>meteors</b><code>data-rm-meteors</code></li>
+          <li><b>sparkles</b><code>data-rm-sparkles</code></li>
+          <li><b>lamp</b><code>data-rm-lamp</code></li>
+          <li><b>beams</b><code>data-rm-beams</code></li>
         </ul>
       </div>
 
@@ -164,6 +170,16 @@
           <li><b>imageTrail</b><code>data-rm-image-trail</code></li>
           <li><b>orbit</b><code>data-rm-orbit</code></li>
           <li><b>magnetLines</b><code>data-rm-lines</code></li>
+          <li><b>drag</b><code>data-rm-drag</code></li>
+          <li><b>shuffle</b><code>data-rm-shuffle</code></li>
+        </ul>
+
+        <h3>Disclosure</h3>
+        <ul>
+          <li><b>accordion</b><code>data-rm-accordion</code></li>
+          <li><b>flip</b><code>data-rm-flip</code></li>
+          <li><b>expand</b><code>data-rm-expand</code></li>
+          <li><b>lightbox</b><code>data-rm-lightbox</code></li>
         </ul>
       </div>
 
@@ -208,6 +224,8 @@
           <li><b>condense</b><code>data-rm-condense</code></li>
           <li><b>overlay</b><code>data-rm-overlay</code></li>
           <li><b>tabs</b><code>data-rm-tabs</code></li>
+          <li><b>scrollSpy</b><code>data-rm-spy</code></li>
+          <li><b>progressRing</b><code>data-rm-ring-progress</code></li>
           <li><b>pageTransition</b><code>js</code></li>
         </ul>
       </div>
@@ -435,10 +453,10 @@
       <div class="cell-body cursor-body">
         <p class="cursor-note">A custom cursor is a page-level decision, so <code>init()</code> leaves it alone. Switch this page's:</p>
         <div class="cursor-picker" role="group" aria-label="Cursor style">
-          <button data-cursor="none" aria-pressed="false">system</button>
-          <button data-cursor="cursor" aria-pressed="false">cursor</button>
-          <button data-cursor="target" aria-pressed="true">target</button>
-          <button data-cursor="crosshair" aria-pressed="false">crosshair</button>
+          <button data-cursor="none" aria-pressed="true">system</button>
+          <button data-cursor="cursor" aria-pressed="false">dot</button>
+          <button data-cursor="target" aria-pressed="false">target</button>
+          <button data-cursor="crosshair" aria-pressed="false">cross</button>
           <button data-cursor="splash" aria-pressed="false">splash</button>
         </div>
       </div>
@@ -578,6 +596,155 @@
         <span class="trail-hint">move across</span>
       </div>
       <button class="cell-copy" data-copy='<section data-rm-image-trail data-rm-images="/a.jpg,/b.jpg">…</section>'>copy</button>
+    </article>
+  </div>
+
+  <!-- Light -->
+  <div class="shell rail"><span class="rail-name">Light</span></div>
+  <div class="shell cells">
+    <article class="cell">
+      <p class="cell-name">meteors</p>
+      <div class="cell-body plate" data-rm-meteors="16"><span class="chip">seeded shower</span></div>
+      <button class="cell-copy" data-copy='<section data-rm-meteors="18">…</section>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">sparkles</p>
+      <div class="cell-body plate" data-rm-sparkles="30"><p class="type-lg">Launch day</p></div>
+      <button class="cell-copy" data-copy="<h1 data-rm-sparkles>Launch day</h1>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">lamp</p>
+      <div class="cell-body plate" data-rm-lamp="top"><span class="chip">conic cone</span></div>
+      <button class="cell-copy" data-copy='<section data-rm-lamp="top">…</section>'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">beams</p>
+      <div class="cell-body plate" data-rm-beams><span class="chip">masked shafts</span></div>
+      <button class="cell-copy" data-copy="<section data-rm-beams>…</section>">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">outline <span class="cell-hint">scroll</span></p>
+      <div class="cell-body"><p class="type-xl" data-rm-outline>Fills as you scroll</p></div>
+      <button class="cell-copy" data-copy="<h2 data-rm-outline>Fills as you scroll</h2>">copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">countdown</p>
+      <div class="cell-body">
+        <time class="type-lg" data-rm-countdown datetime="2027-01-01T00:00:00Z">1 January 2027</time>
+      </div>
+      <button class="cell-copy" data-copy='<time data-rm-countdown datetime="2027-01-01T00:00:00Z">1 January</time>'>copy</button>
+    </article>
+  </div>
+
+  <!-- Disclosure -->
+  <div class="shell rail"><span class="rail-name">Things that open</span></div>
+  <div class="shell cells">
+    <article class="cell cell-tall">
+      <p class="cell-name">flip <span class="cell-hint">hover · enter</span></p>
+      <div class="cell-body flip-body">
+        <div class="flip-card" data-rm-flip>
+          <div class="flip-face" data-rm-flip-front><b>Front</b><span>hover, or press Enter</span></div>
+          <div class="flip-face is-reverse" data-rm-flip-back><b>Back</b><span>the hidden face is inert</span></div>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-flip><div data-rm-flip-front>…</div><div data-rm-flip-back>…</div></div>">copy</button>
+    </article>
+
+    <article class="cell cell-tall">
+      <p class="cell-name">expand <span class="cell-hint">click a card</span></p>
+      <div class="cell-body expand-body">
+        <article class="expand-card" data-rm-expand data-rm-width="620">
+          <h4>It grows from here</h4>
+          <p class="note">Press it.</p>
+          <div data-rm-expand-more hidden>
+            <p class="note">The card itself is the dialog — a placeholder holds its place in the grid and it FLIPs from its old box to this one, so it grew out of exactly where you pressed rather than fading in from the middle of the screen.</p>
+            <p class="note">Escape closes it, focus is trapped while it is open, and it goes back to the card afterwards.</p>
+          </div>
+        </article>
+      </div>
+      <button class="cell-copy" data-copy="<article data-rm-expand><h3>Title</h3><div data-rm-expand-more hidden>…</div></article>">copy</button>
+    </article>
+
+    <article class="cell cell-tall">
+      <p class="cell-name">accordion</p>
+      <div class="cell-body accordion-body" data-rm-accordion>
+        <section>
+          <button class="acc-head" data-rm-accordion-head>No measuring</button>
+          <div class="acc-body" data-rm-accordion-body><p class="note">The height animates from <code>0fr</code> to <code>1fr</code> on a grid row, so nothing is measured and nothing is hardcoded.</p></div>
+        </section>
+        <section>
+          <button class="acc-head" data-rm-accordion-head>Why that matters</button>
+          <div class="acc-body" data-rm-accordion-body><p class="note">An image that loads late, a font that swaps, text that rewraps — every version built on <code>scrollHeight</code> breaks on all three.</p></div>
+        </section>
+        <section>
+          <button class="acc-head" data-rm-accordion-head>Still a real control</button>
+          <div class="acc-body" data-rm-accordion-body><p class="note"><code>aria-expanded</code>, <code>aria-controls</code>, and a labelled region.</p></div>
+        </section>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-accordion><section><button data-rm-accordion-head>…</button><div data-rm-accordion-body>…</div></section></div>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">lightbox <span class="cell-hint">click</span></p>
+      <div class="cell-body flush">
+        <img data-rm-lightbox src="./assets/tiles/04.svg" alt="A plate that opens full screen">
+      </div>
+      <button class="cell-copy" data-copy='<img data-rm-lightbox src="small.jpg" alt="…">'>copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">drag <span class="cell-hint">throw it · arrows</span></p>
+      <div class="cell-body">
+        <div class="drag-puck" data-rm-drag data-rm-bounds="90" data-rm-label="Draggable puck">throw me</div>
+      </div>
+      <button class="cell-copy" data-copy="<div data-rm-drag>Throw me</div>">copy</button>
+    </article>
+
+    <article class="cell">
+      <p class="cell-name">confetti <span class="cell-hint">press</span></p>
+      <div class="cell-body">
+        <button class="solid" id="confetti-button">Ship it</button>
+      </div>
+      <button class="cell-copy" data-copy='const fire = confetti(); button.onclick = (e) => fire({ x: e.clientX, y: e.clientY });'>copy</button>
+    </article>
+
+    <article class="cell cell-wide cell-tall">
+      <p class="cell-name">shuffle <span class="cell-hint">filter it</span></p>
+      <div class="cell-body shuffle-body" data-rm-shuffle>
+        <div class="shuffle-filters">
+          <button data-rm-filter="all" aria-pressed="true">All</button>
+          <button data-rm-filter="type">Type</button>
+          <button data-rm-filter="light">Light</button>
+          <button data-rm-filter="scroll">Scroll</button>
+        </div>
+        <div class="shuffle-grid" data-rm-shuffle-grid>
+          <article data-rm-tags="type">pressure</article>
+          <article data-rm-tags="type">morph</article>
+          <article data-rm-tags="light">lamp</article>
+          <article data-rm-tags="scroll">tracing</article>
+          <article data-rm-tags="type">odometer</article>
+          <article data-rm-tags="light">beams</article>
+          <article data-rm-tags="scroll">flatten</article>
+          <article data-rm-tags="light">meteors</article>
+          <article data-rm-tags="scroll">sticky</article>
+        </div>
+      </div>
+      <button class="cell-copy" data-copy='<div data-rm-shuffle><button data-rm-filter="all">All</button><div data-rm-shuffle-grid><article data-rm-tags="web">…</article></div></div>'>copy</button>
+    </article>
+
+    <article class="cell cell-wide">
+      <p class="cell-name">rollText <span class="cell-hint">hover the links</span></p>
+      <div class="cell-body roll-body">
+        <a class="roll-link" data-rm-roll="Get in touch" href="#start">Contact</a>
+        <a class="roll-link" data-rm-roll="Take it all" href="#start">Download</a>
+        <a class="roll-link" data-rm-roll="It is free" href="#start">Pricing</a>
+      </div>
+      <button class="cell-copy" data-copy='<a data-rm-roll="Get in touch" href="/contact">Contact</a>'>copy</button>
     </article>
   </div>
 
@@ -864,6 +1031,17 @@ init();</code></pre>
   </nav>
   <p class="menu-hint">Escape closes · focus is trapped in here</p>
 </div>
+
+<aside class="cursor-dock" aria-label="Cursor style">
+  <span class="cursor-dock-label">cursor</span>
+  <div class="cursor-picker">
+    <button data-cursor="none" aria-pressed="true">system</button>
+    <button data-cursor="cursor" aria-pressed="false">dot</button>
+    <button data-cursor="target" aria-pressed="false">target</button>
+    <button data-cursor="crosshair" aria-pressed="false">cross</button>
+    <button data-cursor="splash" aria-pressed="false">splash</button>
+  </div>
+</aside>
 
 <div class="toast" role="status" aria-live="polite" hidden></div>
 

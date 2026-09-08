@@ -15,7 +15,7 @@
   </picture>
 </a>
 
-**Award-grade motion for the web, with zero dependencies.** 64 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
+**Award-grade motion for the web, with zero dependencies.** 80 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
 
 *"A headline that reacts to the cursor." · "A carousel that works with a keyboard." · "A menu that traps focus properly." · "A counter that rolls like an odometer."*
 
@@ -132,11 +132,11 @@ stop();   // puts everything back exactly as it was
 
 ---
 
-## The 64 components
+## The 80 components
 
 **Entrances** — `reveal`
 
-**Text** — `textReveal` · `decrypt` · `glitch` · `shiny` · `countUp` · `split`
+**Text** — `textReveal` · `decrypt` · `glitch` · `shiny` · `countUp` · `outline` · `rollText` · `countdown` · `split`
 
 **Typography with technique** — `pressure` · `morph` · `curve` · `odometer` · `highlight`
 
@@ -148,6 +148,10 @@ stop();   // puts everything back exactly as it was
 
 **Surfaces** — `beam` · `trail` · `glare` · `electric` · `blurEdge`
 
+**Light** — `meteors` · `sparkles` · `lamp` · `beams`
+
+**Things that open** — `accordion` · `flip` · `expand` · `lightbox`
+
 **Fields** — `waves` · `retroGrid` · `dotGrid` · `grain`
 
 **Scroll** — `parallax` · `progress` · `horizontal` · `stack` · `scrub` · `skew`
@@ -156,11 +160,11 @@ stop();   // puts everything back exactly as it was
 
 **Media** — `imageReveal` · `pixelate` · `hoverPreview` · `marquee`
 
-**Carousels & galleries** — `carousel` · `ring` · `deck` · `imageTrail` · `scratch` · `dock` · `compare` · `panels` · `orbit`
+**Carousels & galleries** — `carousel` · `ring` · `deck` · `imageTrail` · `scratch` · `dock` · `compare` · `panels` · `orbit` · `drag` · `shuffle`
 
-**Buttons** — `fill` · `shimmer` · `spark` · `swap`
+**Buttons** — `fill` · `shimmer` · `spark` · `swap` · `confetti`
 
-**Navigation** — `pill` · `gooey` · `condense` · `overlay` · `tabs`
+**Navigation** — `pill` · `gooey` · `condense` · `overlay` · `tabs` · `scrollSpy` · `progressRing`
 
 **Pages** — `pageTransition` · `transitionTo`
 

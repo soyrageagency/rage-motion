@@ -17,7 +17,7 @@ Dates are intentions, not promises. If you need something sooner,
 
 ## 0.1 — Shipped
 
-- [x] **64 components** across seventeen modules, each standalone and copyable.
+- [x] **80 components** across twenty-one modules, each standalone and copyable.
 - [x] `core/motion.js`: motion preference, easings, one shared `rAF`, one shared
       scroll read, and an `animate()` that jumps to the finished state instead
       of skipping the animation.
@@ -41,9 +41,9 @@ Dates are intentions, not promises. If you need something sooner,
 
 ## 0.2 — Finer control *(next)*
 
-- [ ] **Per-element `data-rm-once="false"`.** Today `once` is an option for the
-      set, not the element; the demo had to drop the attribute because it did
-      nothing, and an attribute that does nothing is worse than no attribute.
+- [ ] **Per-element `data-rm-once="false"`.** `data-rm-loop` covers repeating
+      while an element is on screen; replaying on re-entry is still a set-wide
+      option rather than a per-element one.
 - [ ] **Every option available as `data-rm-*`.** Markup should be able to
       configure whatever JavaScript can, across all components rather than some.
 - [ ] **Types.** `.d.ts` generated from the JSDoc that is already written.

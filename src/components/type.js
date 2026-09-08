@@ -463,3 +463,169 @@ export function highlight(target = "[data-rm-highlight]", options = {}) {
     });
   };
 }
+
+/**
+ * Outlined text that fills as it crosses the viewport.
+ *
+ * The fill is a gradient clipped to the glyphs whose stop position is driven
+ * by scroll, so the letters fill from the left like ink running into them —
+ * not a second copy of the text fading in on top of the first, which is how
+ * this is usually faked and why it looks doubled at the edges.
+ *
+ *   <h2 data-rm-outline>Scroll to fill</h2>
+ */
+export function outline(target = "[data-rm-outline]", options = {}) {
+  const elements = resolveElements(target);
+  if (!elements.length) return () => {};
+
+  const { color = "#f1eee9", stroke = "rgba(241,238,233,0.28)", width = 1, start = 0.9, end = 0.35 } = options;
+
+  for (const element of elements) {
+    element.classList.add("rm-outline");
+    element.style.setProperty("--rm-outline-color", dataString(element, "rmColor", color));
+    element.style.setProperty("--rm-outline-stroke", dataString(element, "rmStroke", stroke));
+    element.style.setProperty("--rm-outline-width", `${width}px`);
+  }
+
+  if (prefersReducedMotion()) {
+    elements.forEach((element) => element.style.setProperty("--rm-outline-fill", "100%"));
+    return () => elements.forEach((element) => element.classList.remove("rm-outline"));
+  }
+
+  const stopFrame = onFrame(() => {
+    for (const element of elements) {
+      const box = element.getBoundingClientRect();
+      if (box.bottom < 0 || box.top > innerHeight) continue;
+      const progress = clamp(
+        mapRange(box.top, innerHeight * start, innerHeight * end, 0, 1),
+      );
+      element.style.setProperty("--rm-outline-fill", `${(progress * 100).toFixed(1)}%`);
+    }
+  });
+
+  return () => {
+    stopFrame();
+    elements.forEach((element) => {
+      element.classList.remove("rm-outline");
+      element.style.removeProperty("--rm-outline-fill");
+    });
+  };
+}
+
+/**
+ * A word that rolls to its replacement on a cube face.
+ *
+ * Both faces are real text in the flow, sharing a grid cell, so the element
+ * still sizes itself and the accessible name still reads correctly. The usual
+ * version absolutely positions the back face, which collapses the box to
+ * nothing and hides the second label from everything but a mouse.
+ *
+ *   <a data-rm-roll="Get in touch" href="/contact">Contact</a>
+ */
+export function rollText(target = "[data-rm-roll]", options = {}) {
+  const elements = resolveElements(target);
+  if (!elements.length) return () => {};
+
+  const { duration = 420, axis = "x" } = options;
+  const cleanups = [];
+
+  for (const element of elements) {
+    const front = element.textContent?.trim() ?? "";
+    if (!front) continue;
+    const back = dataString(element, "rmRoll", front);
+    const original = element.innerHTML;
+
+    element.classList.add("rm-roll", `is-${dataString(element, "rmAxis", axis) === "y" ? "y" : "x"}`);
+    element.style.setProperty("--rm-roll-duration", `${prefersReducedMotion() ? 0 : duration}ms`);
+
+    const faceA = document.createElement("span");
+    faceA.className = "rm-roll-face is-front";
+    faceA.textContent = front;
+
+    const faceB = document.createElement("span");
+    faceB.className = "rm-roll-face is-back";
+    faceB.setAttribute("aria-hidden", "true");
+    faceB.textContent = back;
+
+    element.replaceChildren(faceA, faceB);
+
+    cleanups.push(() => {
+      element.classList.remove("rm-roll", "is-x", "is-y");
+      element.innerHTML = original;
+    });
+  }
+
+  return () => cleanups.forEach((stop) => stop());
+}
+
+/**
+ * A live countdown, on rolling digit columns.
+ *
+ * The target is read from `datetime`, so the markup carries a real machine-
+ * readable date and the page still says something useful with no JavaScript at
+ * all. It ticks once a second — not every frame — because nothing below a
+ * second is visible on a clock.
+ *
+ *   <time data-rm-countdown datetime="2027-01-01T00:00:00Z">1 January</time>
+ */
+export function countdown(target = "[data-rm-countdown]", options = {}) {
+  const elements = resolveElements(target);
+  if (!elements.length) return () => {};
+
+  const { labels = ["days", "hours", "minutes", "seconds"], done = "Now" } = options;
+  const cleanups = [];
+
+  for (const element of elements) {
+    const iso = element.getAttribute("datetime") ?? dataString(element, "rmCountdown", "");
+    const target_ = Date.parse(iso);
+    if (Number.isNaN(target_)) continue;
+
+    const original = element.innerHTML;
+    element.classList.add("rm-countdown");
+
+    const parts = labels.map((name) => {
+      const unit = document.createElement("span");
+      unit.className = "rm-countdown-unit";
+      unit.innerHTML = '<b class="rm-countdown-value">00</b><i class="rm-countdown-label"></i>';
+      unit.querySelector(".rm-countdown-label").textContent = name;
+      return unit;
+    });
+    element.replaceChildren(...parts);
+
+    const tick = () => {
+      const left = target_ - Date.now();
+      if (left <= 0) {
+        element.textContent = done;
+        return false;
+      }
+      const seconds = Math.floor(left / 1000);
+      const values = [
+        Math.floor(seconds / 86400),
+        Math.floor((seconds % 86400) / 3600),
+        Math.floor((seconds % 3600) / 60),
+        seconds % 60,
+      ];
+      parts.forEach((unit, index) => {
+        unit.querySelector(".rm-countdown-value").textContent = String(values[index]).padStart(2, "0");
+      });
+      // The whole thing still reads as one string to a screen reader.
+      element.setAttribute(
+        "aria-label",
+        values.map((value, index) => `${value} ${labels[index]}`).join(", "),
+      );
+      return true;
+    };
+
+    tick();
+    const timer = setInterval(() => { if (!tick()) clearInterval(timer); }, 1000);
+
+    cleanups.push(() => {
+      clearInterval(timer);
+      element.classList.remove("rm-countdown");
+      element.innerHTML = original;
+      element.removeAttribute("aria-label");
+    });
+  }
+
+  return () => cleanups.forEach((stop) => stop());
+}
