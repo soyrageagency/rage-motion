@@ -5269,7 +5269,7 @@ html.rm-cursor-active * { cursor: none !important; }
   display: block;
   width: 100%;
   height: auto;
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
   overflow: visible;
 }
 
@@ -5376,7 +5376,7 @@ html.rm-cursor-active * { cursor: none !important; }
 }
 
 .rm-waterfall > li.is-total {
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
   font-weight: 600;
 }
 
@@ -5392,7 +5392,7 @@ html.rm-cursor-active * { cursor: none !important; }
   width: min(100%, 260px);
   height: auto;
   margin-inline: auto;
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
 }
 
 /* ── heatCalendar ───────────────────────────────────────────────────────── */
@@ -5412,7 +5412,7 @@ html.rm-cursor-active * { cursor: none !important; }
   display: block;
   width: auto;
   height: clamp(78px, 13vw, 116px);
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
 }
 
 /*
@@ -5430,7 +5430,7 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-bullet {
   position: relative;
   display: block;
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
 }
 
 .rm-bullet-band {
@@ -5525,7 +5525,7 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-spark-bars {
   display: inline-block;
   vertical-align: middle;
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
 }
 
 /* Sized by its line, not by its column: it belongs in a sentence. */
@@ -5592,7 +5592,7 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-range-bar {
   position: relative;
   display: block;
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
 }
 
 /* ── pieSlices ──────────────────────────────────────────────────────────── */
@@ -5611,7 +5611,7 @@ html.rm-cursor-active * { cursor: none !important; }
 .rm-pie-share {
   font: 500 0.78rem/1.4 var(--rm-mono, ui-monospace, monospace);
   font-variant-numeric: tabular-nums;
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
 }
 
 /* ── scatterPlot ────────────────────────────────────────────────────────── */
@@ -5656,7 +5656,7 @@ html.rm-cursor-active * { cursor: none !important; }
 
 .rm-meters-row {
   padding-block: 6px;
-  color: var(--rm-ink, #0e0e0e);
+  color: inherit;
 }
 
 .rm-meters-svg {
