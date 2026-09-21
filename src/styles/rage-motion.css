@@ -5342,6 +5342,1006 @@ html.rm-cursor-active * { cursor: none !important; }
  * MIT licensed (see LICENSE).
  */
 
+
+/* ══ Showpiece backgrounds and entrances ══════════════════════════════════════════════ */
+
+/*
+ * spark — showpiece backgrounds and entrances.
+ *
+ * Every component in this file is a background, and a background has exactly
+ * one hard requirement: it must never be the reason text above it cannot be
+ * read or cannot be reached. So every layer here is `pointer-events: none` and
+ * sits at `z-index: 0` behind its host's own content, every host gets
+ * `isolation: isolate` so blend modes stop at the panel instead of reaching
+ * the page, and no layer in this file is ever created by the stylesheet — the
+ * script inserts it, which is why nothing here starts at `opacity: 0` waiting
+ * to be switched on. A page whose JavaScript never ran has no layers at all
+ * and reads perfectly.
+ *
+ * Nothing in this file animates a width, a height, a padding or a background
+ * position. The drifting layers move on `transform` and `opacity`, which the
+ * compositor handles on its own thread; the two blurs are applied once and
+ * then only transformed, because a blur radius that changes is a fresh
+ * gaussian pass over a large surface on every single frame and it is the one
+ * property here that cannot be composited.
+ *
+ * The canvases carry no `color` of their own. A drawing surface pinned to a
+ * fixed ink is a surface that paints black lines on a dark page; the tint
+ * comes from an option, and `color: inherit` keeps anything drawn from
+ * `currentColor` in step with the panel it is in.
+ */
+
+/* ── Hosts ──────────────────────────────────────────────────────────────── */
+
+/*
+ * A positioned, isolated box for the layer to sit in. `isolation: isolate`
+ * matters more than it looks: without it the additive blending in glowOrbs and
+ * prismSplit composites against whatever happens to be painted behind the
+ * section, so the effect changes depending on what the page put there.
+ */
+.rm-bubble-field-host,
+.rm-fireworks-host,
+.rm-gravity-stars-host,
+.rm-hole-tunnel-host,
+.rm-link-web-host,
+.rm-ripple-pool-host,
+.rm-noise-wave-host,
+.rm-light-rays-host,
+.rm-prism-split-host,
+.rm-drift-shapes-host,
+.rm-glow-orbs-host {
+  position: relative;
+  isolation: isolate;
+}
+
+/* ── Canvas fields ──────────────────────────────────────────────────────── */
+
+/*
+ * One canvas per field, sized by the script and never by CSS: the element's
+ * bitmap has to be set in device pixels, so the stylesheet only says where the
+ * surface lives and how big it looks.
+ */
+.rm-bubble-field,
+.rm-fireworks,
+.rm-gravity-stars,
+.rm-hole-tunnel,
+.rm-link-web,
+.rm-ripple-pool {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border-radius: inherit;
+  color: inherit;
+}
+
+/* A field is hidden by the thing that hid it, not laid out anyway. */
+.rm-bubble-field[hidden],
+.rm-fireworks[hidden],
+.rm-gravity-stars[hidden],
+.rm-hole-tunnel[hidden],
+.rm-link-web[hidden],
+.rm-ripple-pool[hidden] { display: none; }
+
+/* ── Noise wave ─────────────────────────────────────────────────────────── */
+
+/*
+ * One `<path>`, stretched to the box. `preserveAspectRatio: none` is set on
+ * the element by the script and the viewBox is rewritten on resize, so the
+ * horizon is drawn in real pixels rather than scaled — a stretched stroke is a
+ * stroke of two different widths depending on which way the panel grew.
+ */
+.rm-noise-wave {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /*
+   * Clipped, and that is load-bearing. When the horizon is shaded, the path
+   * closes below the bottom edge so that one path can carry both the fill and
+   * the stroke — the segments that close it are outside the box, and this is
+   * what throws them away instead of drawing a border round the panel.
+   */
+  overflow: hidden;
+  border-radius: inherit;
+  color: inherit;
+}
+.rm-noise-wave[hidden] { display: none; }
+
+/* ── Light rays ─────────────────────────────────────────────────────────── */
+
+.rm-light-rays {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/*
+ * The fan is one repeating conic gradient, oversized so that rotating it never
+ * swings an empty corner into view, blurred once to soften the ray edges, and
+ * masked so the light falls off with distance from its source. The mask is
+ * what makes it read as light rather than as a pinwheel: rays that keep full
+ * strength to the edge of the box look like a graphic, not a beam.
+ *
+ * The fan and the bloom deliberately use different custom properties for the
+ * same light source, and that is the trap worth naming. `inset: -60%` makes
+ * this box 220% of the host in each axis, so every percentage here — the conic
+ * centre, the mask centre, the transform origin — resolves against the big box
+ * and not against the panel the author was thinking about. The script converts
+ * the host-space point once, as (p + 60) / 220, and writes the result as
+ * `--rm-rays-fan-*`; `--rm-rays-x/y` stay in host space for the bloom below,
+ * which is `inset: 0`. Reuse one pair on both and the rays converge far off
+ * the panel while the bloom sits where it was asked to.
+ */
+.rm-light-rays-fan {
+  position: absolute;
+  inset: -60%;
+  filter: blur(14px);
+  transform: rotate(var(--rm-rays-tilt, 0deg));
+  transform-origin: var(--rm-rays-fan-x, 50%) var(--rm-rays-fan-y, 20.91%);
+  mask: radial-gradient(
+    circle at var(--rm-rays-fan-x, 50%) var(--rm-rays-fan-y, 20.91%),
+    rgb(0 0 0 / 85%) 0%,
+    rgb(0 0 0 / 45%) 38%,
+    transparent 78%
+  );
+  animation: rm-light-rays-drift var(--rm-rays-speed, 26000ms) var(--rm-ease-in-out) infinite alternate;
+}
+
+/* The source itself: a soft bloom where the rays converge. */
+.rm-light-rays-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--rm-rays-x, 50%) var(--rm-rays-y, -14%),
+    rgb(255 255 255 / 22%) 0%,
+    transparent 46%
+  );
+}
+
+/* A few degrees either way. More than that and the source visibly swings. */
+@keyframes rm-light-rays-drift {
+  from { transform: rotate(calc(var(--rm-rays-tilt, 0deg) - 4deg)); }
+  to { transform: rotate(calc(var(--rm-rays-tilt, 0deg) + 4deg)); }
+}
+
+.rm-light-rays.is-still .rm-light-rays-fan { animation: none; }
+
+/* ── Prism split ────────────────────────────────────────────────────────── */
+
+.rm-prism-split {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/*
+ * Two copies of the panel's edge, nothing else. Each ghost is a border with no
+ * fill, offset in opposite directions along the split angle and blended with
+ * its neighbour, so the fringe appears exactly where a real lens would put it
+ * — on the boundary — for the cost of two painted borders. Copying the content
+ * would paint everything inside the panel three times over.
+ */
+.rm-prism-split-ghost {
+  position: absolute;
+  inset: 0;
+  border: var(--rm-prism-width, 1.5px) solid var(--rm-prism-tint, var(--rm-accent));
+  border-radius: inherit;
+  mix-blend-mode: var(--rm-prism-blend, plus-lighter);
+  transition: transform 420ms var(--rm-ease-out);
+}
+.rm-prism-split-ghost.is-a {
+  transform: translate(var(--rm-prism-dx, 3px), var(--rm-prism-dy, 1px));
+}
+.rm-prism-split-ghost.is-b {
+  transform: translate(calc(var(--rm-prism-dx, 3px) * -1), calc(var(--rm-prism-dy, 1px) * -1));
+}
+
+/*
+ * Hover and focus-within, always together. A keyboard visitor tabbing into the
+ * panel has arrived on it just as much as a pointer crossing it has, and a
+ * reaction that only exists for the mouse is a reaction half the visitors
+ * never see.
+ */
+.rm-prism-split-host:hover .rm-prism-split-ghost.is-a,
+.rm-prism-split-host:focus-within .rm-prism-split-ghost.is-a {
+  transform: translate(calc(var(--rm-prism-dx, 3px) * 2.4), calc(var(--rm-prism-dy, 1px) * 2.4));
+}
+.rm-prism-split-host:hover .rm-prism-split-ghost.is-b,
+.rm-prism-split-host:focus-within .rm-prism-split-ghost.is-b {
+  transform: translate(calc(var(--rm-prism-dx, 3px) * -2.4), calc(var(--rm-prism-dy, 1px) * -2.4));
+}
+
+.rm-prism-split.is-still .rm-prism-split-ghost { transition: none; }
+
+/* ── Drift shapes ───────────────────────────────────────────────────────── */
+
+.rm-drift-shapes {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/*
+ * One keyframe rule for every shape, parameterised per shape. The waypoints,
+ * the scales, the duration and the start offset are all custom properties the
+ * script writes, so a panel with six blobs has six parameter sets and one
+ * animation definition rather than six sets of keyframes for the style engine
+ * to parse and hold.
+ *
+ * The blur is static. It is the whole reason these read as soft, and animating
+ * it would be the most expensive thing on the page.
+ */
+.rm-drift-shapes i {
+  position: absolute;
+  display: block;
+  filter: blur(var(--rm-drift-soft, 60px));
+  animation-name: rm-drift-shapes-path;
+  animation-timing-function: var(--rm-ease-in-out);
+  animation-iteration-count: infinite;
+  animation-duration: 34000ms;
+  will-change: transform;
+}
+
+@keyframes rm-drift-shapes-path {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  33% {
+    transform: translate3d(var(--rm-drift-ax, 6%), var(--rm-drift-ay, -4%), 0)
+      scale(var(--rm-drift-sa, 1.05));
+  }
+  66% {
+    transform: translate3d(var(--rm-drift-bx, -5%), var(--rm-drift-by, 5%), 0)
+      scale(var(--rm-drift-sb, 0.96));
+  }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* Still, but present. The composition is the point; the drift is the bonus. */
+.rm-drift-shapes.is-still i { animation: none; }
+
+/* ── Glow orbs ──────────────────────────────────────────────────────────── */
+
+/*
+ * The layer isolates itself so the additive blending below composites the orbs
+ * against each other and against the panel, and stops there.
+ */
+.rm-glow-orbs {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/*
+ * `plus-lighter` adds the two layers channel by channel, which is what light
+ * does — two orbs crossing are brighter than either one. `screen` is the
+ * fallback: not the same arithmetic, but the same behaviour at the overlap,
+ * and both are better than the default, where the orb in front simply covers
+ * the one behind and the field looks like cut paper.
+ */
+.rm-glow-orbs i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(6px);
+  mix-blend-mode: screen;
+  animation-name: rm-glow-orbs-path;
+  animation-timing-function: var(--rm-ease-in-out);
+  animation-iteration-count: infinite;
+  animation-duration: 18000ms;
+  will-change: transform;
+}
+@supports (mix-blend-mode: plus-lighter) {
+  .rm-glow-orbs i { mix-blend-mode: plus-lighter; }
+}
+
+@keyframes rm-glow-orbs-path {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(var(--rm-orb-ax, 8%), var(--rm-orb-ay, -6%), 0); }
+  100% { transform: translate3d(var(--rm-orb-bx, -7%), var(--rm-orb-by, 7%), 0); }
+}
+
+.rm-glow-orbs.is-still i { animation: none; }
+
+/* ── Radial intro ───────────────────────────────────────────────────────── */
+
+/*
+ * There is deliberately no start state here.
+ *
+ * The circle that reveals this panel is written to the element's inline style
+ * by the script and taken off again the moment it finishes, so the only thing
+ * the stylesheet contributes is the promise that the clip is what will change.
+ * The content underneath is laid out, painted and readable from the first
+ * frame: a page whose script never ran, a browser without `clip-path` and a
+ * visitor who asked for less movement all get the finished panel, which is the
+ * entire argument for revealing with a clip instead of fading in from
+ * `opacity: 0`.
+ */
+.rm-radial-intro { will-change: clip-path; }
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+/*
+ * The script already chooses the right behaviour at mount — a still frame for
+ * the fields, nothing at all for the bursts and the ripples. This block is
+ * here for the visitor who changes the setting while the page is open: the
+ * layers are already in the document by then, and a CSS animation would carry
+ * on until the page was reloaded.
+ *
+ * Nothing is hidden and nothing is emptied. These are the backgrounds text
+ * sits on, and removing them would change the contrast under a paragraph
+ * somebody is in the middle of reading.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-light-rays-fan,
+  .rm-drift-shapes i,
+  .rm-glow-orbs i {
+    animation: none;
+  }
+
+  .rm-prism-split-ghost { transition: none; }
+}
+
+
+/* ══ Showpiece controls and patterns ══════════════════════════════════════════════ */
+
+/*
+ * Showpiece controls and patterns — flourish.js
+ *
+ * Every start state in here is the *readable* one. Nothing waits at opacity 0
+ * for a script to arrive, nothing is display:none until JavaScript says
+ * otherwise, and every `[hidden]` a component sets has a matching rule below
+ * so that hidden actually means hidden rather than merely invisible and still
+ * taking clicks.
+ *
+ * Durations come through custom properties that the JavaScript sets, so a
+ * reduced-motion visitor gets 0ms rather than a separate stylesheet. The media
+ * query at the foot is the belt to that braces.
+ *
+ * Part of rage-motion.
+ * Crafted by SoyRage Agency — https://soyrage.es/
+ */
+
+/* The announcer every component in this file shares: heard, never seen. */
+.rm-flourish-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── liquidButton ─────────────────────────────────────────────────────── */
+
+.rm-liquid-button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 13px 28px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-family: var(--rm-body);
+  cursor: pointer;
+  transition: color var(--rm-liquid-duration, 520ms) var(--rm-ease-out),
+    border-color var(--rm-liquid-duration, 520ms) var(--rm-ease-out);
+}
+.rm-liquid-button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-liquid-button.is-wet { border-color: var(--rm-accent); color: var(--rm-cream); }
+
+/* The filter definition only: no box, no space, nothing to lay out. */
+.rm-liquid-button-defs { position: absolute; width: 0; height: 0; pointer-events: none; }
+
+/*
+ * The filtered layer holds the blobs and nothing else. The label is a sibling
+ * above it, so the threshold never touches a glyph.
+ */
+.rm-liquid-button-goo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.rm-liquid-button-pool,
+.rm-liquid-button-drop {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: var(--rm-accent);
+}
+.rm-liquid-button-pool {
+  left: 50%;
+  bottom: 0;
+  width: 150%;
+  aspect-ratio: 2 / 1;
+  translate: -50% 100%;
+  transform-origin: 50% 100%;
+  transition: translate var(--rm-liquid-duration, 520ms) var(--rm-ease-out);
+}
+.rm-liquid-button.is-wet .rm-liquid-button-pool { translate: -50% 24%; }
+
+/* Placed by `translate` every frame, revealed by `scale` once. Two separate
+   properties so the follow is instant and only the growth is eased. */
+.rm-liquid-button-drop {
+  top: 0;
+  left: 0;
+  width: var(--rm-liquid-size, 46px);
+  aspect-ratio: 1;
+  translate: calc(var(--rm-liquid-x, 0px) - 50%) calc(var(--rm-liquid-y, 0px) - 50%);
+  scale: 0;
+  transition: scale var(--rm-liquid-duration, 520ms) var(--rm-ease-out);
+}
+.rm-liquid-button.is-wet .rm-liquid-button-drop { scale: 1; }
+
+.rm-liquid-button-label { position: relative; z-index: 1; }
+
+/* ── flipButton ───────────────────────────────────────────────────────── */
+
+.rm-flip-button {
+  display: inline-grid;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  perspective: 700px;
+}
+.rm-flip-button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-flip-button-card {
+  display: grid;
+  transform-style: preserve-3d;
+  rotate: var(--rm-flip-button-axis, 0 1 0) 0deg;
+  transition: rotate var(--rm-flip-button-duration, 460ms) var(--rm-ease-in-out);
+}
+.rm-flip-button.is-turned .rm-flip-button-card { rotate: var(--rm-flip-button-axis, 0 1 0) 180deg; }
+.rm-flip-button-face {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  padding: 11px 22px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: var(--rm-radius-pill);
+  backface-visibility: hidden;
+  font-family: var(--rm-body);
+}
+.rm-flip-button-face.is-back {
+  rotate: var(--rm-flip-button-axis, 0 1 0) 180deg;
+  border-color: transparent;
+  background: var(--rm-accent);
+  color: var(--rm-cream);
+}
+
+/* ── copyButton ───────────────────────────────────────────────────────── */
+
+.rm-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px 9px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: var(--rm-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-family: var(--rm-mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+.rm-copy-button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-copy-button.is-copied { border-color: var(--rm-accent); color: var(--rm-accent); }
+.rm-copy-button-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  overflow: visible;
+}
+/* `currentColor`, never a fixed ink: this icon has to work on a dark page. */
+.rm-copy-button-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* The one path that morphs. It needs no rule of its own beyond the stroke it
+   inherits above — it is named so the script can find it, and so that anybody
+   reading the stylesheet can see which path is the moving part. */
+.rm-copy-button-body { stroke-width: 1.7; }
+/* The clip at the top has no counterpart in the tick, so it fades rather than
+   interpolating into a corner that means nothing. */
+.rm-copy-button-tab {
+  opacity: 1;
+  transition: opacity 180ms var(--rm-ease-out);
+}
+.rm-copy-button.is-copied .rm-copy-button-tab { opacity: 0; }
+/* The paste target of last resort: off screen, never display:none, because a
+   field the browser cannot render is a field it will not let you select. */
+.rm-copy-button-shim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  padding: 0;
+  clip-path: inset(50%);
+}
+
+/* ── themeToggle ──────────────────────────────────────────────────────── */
+
+.rm-theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.rm-theme-toggle:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-theme-toggle-icon { width: 22px; height: 22px; }
+.rm-theme-toggle-disc {
+  fill: var(--rm-yellow);
+  transform-box: fill-box;
+  transform-origin: center;
+  scale: 1;
+  transition: scale var(--rm-theme-toggle-duration, 480ms) var(--rm-ease-in-out),
+    fill var(--rm-theme-toggle-duration, 480ms) var(--rm-ease-in-out);
+}
+.rm-theme-toggle.is-dark .rm-theme-toggle-disc { scale: 1.25; fill: var(--rm-cream); }
+.rm-theme-toggle-rays line {
+  stroke: var(--rm-yellow);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.rm-theme-toggle-rays {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 1;
+  scale: 1;
+  transition: opacity var(--rm-theme-toggle-duration, 480ms) var(--rm-ease-out),
+    scale var(--rm-theme-toggle-duration, 480ms) var(--rm-ease-in-out);
+}
+.rm-theme-toggle.is-dark .rm-theme-toggle-rays { opacity: 0; scale: 0.35; }
+/* The bite starts concentric with the disc, so it takes nothing at all, and
+   slides across to carve the crescent. One transform, no geometry. */
+.rm-theme-toggle-bite {
+  translate: 0 0;
+  transition: translate var(--rm-theme-toggle-duration, 480ms) var(--rm-ease-in-out);
+}
+.rm-theme-toggle.is-dark .rm-theme-toggle-bite { translate: 5px -5px; }
+
+/* ── countButton ──────────────────────────────────────────────────────── */
+
+.rm-count-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-family: var(--rm-body);
+  cursor: pointer;
+}
+.rm-count-button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-count-button.is-on { border-color: var(--rm-yellow); }
+.rm-count-button-star {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.rm-count-button-star path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  transition: fill 220ms var(--rm-ease-out), stroke 220ms var(--rm-ease-out);
+}
+.rm-count-button.is-on .rm-count-button-star path {
+  fill: var(--rm-yellow);
+  stroke: var(--rm-yellow);
+}
+/* Tabular figures, or the number jitters sideways while it counts. */
+.rm-count-button-figure {
+  font-family: var(--rm-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  opacity: 0.85;
+}
+.rm-count-button-word { font-size: 14px; }
+
+/* ── flipCard ─────────────────────────────────────────────────────────── */
+
+.rm-flip-card {
+  display: grid;
+  perspective: 1400px;
+  cursor: pointer;
+}
+.rm-flip-card:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 4px; }
+.rm-flip-card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  rotate: var(--rm-flip-card-axis, 0 1 0) 0deg;
+  transition: rotate var(--rm-flip-card-duration, 680ms) var(--rm-ease-in-out);
+}
+.rm-flip-card.is-turned .rm-flip-card-inner { rotate: var(--rm-flip-card-axis, 0 1 0) 180deg; }
+.rm-flip-card-face {
+  grid-area: 1 / 1;
+  padding: 22px;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  backface-visibility: hidden;
+}
+.rm-flip-card-face.is-back { rotate: var(--rm-flip-card-axis, 0 1 0) 180deg; }
+.rm-flip-card-face h3 { margin: 0 0 8px; font-family: var(--rm-display); }
+.rm-flip-card-face p { margin: 0; }
+
+/* ── managementBar ────────────────────────────────────────────────────── */
+
+.rm-management-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 900;
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+}
+/* The painted shell carries the scale; it holds no text, so scaling it is
+   free of the distortion that scaling a label would cause. */
+.rm-management-bar-shell {
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 82%, transparent);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.28);
+  color: var(--rm-cream);
+  will-change: transform;
+}
+/* The counter-scaled layer: whatever happens to the shell, the text is 1:1. */
+.rm-management-bar-body { display: grid; will-change: transform; }
+.rm-management-bar-face {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 10px 18px;
+  white-space: nowrap;
+  font-family: var(--rm-body);
+  font-size: 14px;
+}
+.rm-management-bar-face button {
+  padding: 6px 13px;
+  border: 1px solid color-mix(in srgb, currentColor 26%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.rm-management-bar-face button:hover { border-color: var(--rm-accent); }
+.rm-management-bar-face button:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+.rm-management-bar-face button.is-danger { color: var(--rm-terracotta); }
+
+/* ── pinList ──────────────────────────────────────────────────────────── */
+
+.rm-pin-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.rm-pin-list-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, currentColor 4%, transparent);
+  font-family: var(--rm-body);
+  touch-action: pan-y;
+}
+.rm-pin-list-row.is-pinned {
+  border-color: color-mix(in srgb, var(--rm-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--rm-accent) 10%, transparent);
+}
+/* Pinned is marked twice: a tint, and a word the tint cannot carry. */
+.rm-pin-list-row.is-pinned::after {
+  content: "Pinned";
+  margin-left: auto;
+  font-family: var(--rm-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rm-accent);
+}
+.rm-pin-list-row.is-lifting {
+  z-index: 2;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.22);
+  user-select: none;
+  cursor: grabbing;
+}
+.rm-pin-list-pin {
+  order: 99;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 160ms var(--rm-ease-out), rotate 220ms var(--rm-ease-out);
+}
+.rm-pin-list-pin svg { width: 16px; height: 16px; }
+.rm-pin-list-pin svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.rm-pin-list-pin:hover,
+.rm-pin-list-pin:focus-visible { opacity: 1; }
+.rm-pin-list-pin:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 1px; }
+.rm-pin-list-pin[aria-pressed="true"] { opacity: 1; color: var(--rm-accent); rotate: -20deg; }
+
+/* ── previewLinkCard ──────────────────────────────────────────────────── */
+
+.rm-preview-link { text-underline-offset: 3px; }
+/* Fixed at the origin and moved entirely by `transform`, so re-placing it
+   costs a composite rather than a layout. */
+.rm-preview-link-card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 950;
+  display: grid;
+  gap: 6px;
+  width: var(--rm-preview-link-width, 260px);
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, var(--rm-ink) 90%, transparent);
+  box-shadow: 0 16px 44px rgb(0 0 0 / 0.3);
+  color: var(--rm-cream);
+  pointer-events: none;
+  will-change: transform;
+}
+/* HIDDEN MEANS HIDDEN: the card has a `display`, so [hidden] needs saying. */
+.rm-preview-link-card[hidden] { display: none; }
+.rm-preview-link-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: calc(var(--rm-radius) - 4px);
+}
+.rm-preview-link-image[hidden] { display: none; }
+.rm-preview-link-title {
+  font-family: var(--rm-display);
+  font-size: 14px;
+  line-height: 1.3;
+}
+.rm-preview-link-where {
+  font-family: var(--rm-mono);
+  font-size: 11px;
+  color: var(--rm-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── fileTree ─────────────────────────────────────────────────────────── */
+
+/*
+ * One gradient draws every indent guide. `background-size` stops it at the
+ * deepest level the tree actually reaches, so there are no rails hanging in
+ * empty space to the right of the last folder.
+ */
+.rm-file-tree {
+  margin: 0;
+  padding-left: var(--rm-file-tree-indent, 18px);
+  list-style: none;
+  font-family: var(--rm-mono);
+  font-size: 13px;
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, currentColor 16%, transparent) 0 1px,
+    transparent 1px var(--rm-file-tree-indent, 18px)
+  );
+  background-repeat: no-repeat;
+  background-position: calc(var(--rm-file-tree-indent, 18px) * 0.5) 0;
+  background-size: calc(var(--rm-file-tree-depth, 0) * var(--rm-file-tree-indent, 18px)) 100%;
+}
+.rm-file-tree [role="group"] {
+  margin: 0;
+  padding-left: var(--rm-file-tree-indent, 18px);
+  list-style: none;
+}
+.rm-file-tree-row {
+  padding: 3px 0;
+  border-radius: 4px;
+  outline-offset: 2px;
+}
+.rm-file-tree-row:focus-visible { outline: 2px solid var(--rm-accent); }
+.rm-file-tree-row.is-folder { cursor: pointer; }
+/* The marker is the disclosure state, so it turns with `aria-expanded` and
+   nothing else has to be kept in step. */
+.rm-file-tree-row.is-folder::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 7px;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  vertical-align: 1px;
+  rotate: 0deg;
+  transition: rotate var(--rm-file-tree-duration, 300ms) var(--rm-ease-out);
+}
+.rm-file-tree-row.is-folder[aria-expanded="true"]::before { rotate: 90deg; }
+.rm-file-tree-row.is-file::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  margin-right: 7px;
+}
+/* 0fr -> 1fr: a transition to a height nobody had to measure. */
+.rm-file-tree-drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--rm-file-tree-duration, 300ms) var(--rm-ease-out);
+}
+.rm-file-tree-drawer.is-open { grid-template-rows: 1fr; }
+.rm-file-tree-drawer > * { min-height: 0; overflow: hidden; }
+
+/* ── presenceRow ──────────────────────────────────────────────────────── */
+
+.rm-presence-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--rm-body);
+  font-size: 13px;
+}
+.rm-presence-row-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px 3px 3px;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  transform-origin: center;
+}
+.rm-presence-row-person[hidden] { display: none; }
+.rm-presence-row-person img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.rm-presence-row-more { color: var(--rm-muted); font-size: 12px; }
+.rm-presence-row-more[hidden] { display: none; }
+
+/* ── morphIcon ────────────────────────────────────────────────────────── */
+
+.rm-morph-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: var(--rm-radius);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.rm-morph-icon:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+.rm-morph-icon.is-on { border-color: var(--rm-accent); color: var(--rm-accent); }
+.rm-morph-icon-art { width: 24px; height: 24px; }
+/* Stroke or fill depending on the pair; `currentColor` either way, so it
+   inherits the page's ink instead of insisting on black. */
+.rm-morph-icon.is-stroked .rm-morph-icon-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.rm-morph-icon.is-filled .rm-morph-icon-path { fill: currentColor; stroke: none; }
+
+/* ── hidden means hidden ──────────────────────────────────────────────── */
+
+/*
+ * An author `display` beats the user-agent rule for `[hidden]`. Every class in
+ * this file that both carries a `display` and can be hidden from JavaScript is
+ * listed here — without it the element is still laid out and still takes
+ * clicks, which is the bug that keeps coming back.
+ */
+.rm-management-bar-face[hidden],
+.rm-preview-link-card[hidden],
+.rm-preview-link-image[hidden],
+.rm-presence-row-person[hidden],
+.rm-presence-row-more[hidden] { display: none; }
+
+/* ── less movement ────────────────────────────────────────────────────── */
+
+/*
+ * The JavaScript already sets each duration property to 0ms for a visitor who
+ * has asked for less movement. This is the safety net for the transitions that
+ * do not read one, and it removes travel without removing a single state: the
+ * card still turns, the folder still opens, the tick still appears.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-liquid-button,
+  .rm-liquid-button-pool,
+  .rm-liquid-button-drop,
+  .rm-flip-button-card,
+  .rm-copy-button-tab,
+  .rm-theme-toggle-disc,
+  .rm-theme-toggle-rays,
+  .rm-theme-toggle-bite,
+  .rm-count-button-star path,
+  .rm-flip-card-inner,
+  .rm-pin-list-pin,
+  .rm-file-tree-row.is-folder::before,
+  .rm-file-tree-drawer { transition-duration: 1ms; }
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
 /*

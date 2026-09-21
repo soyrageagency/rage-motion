@@ -87,6 +87,12 @@ function layerFor(element, className, still) {
  * A `ResizeObserver` rather than a window resize listener, because a panel can
  * change size without the window doing anything: a sidebar opening, a font
  * arriving, a grid track reflowing.
+ *
+ * Assigning `canvas.width` resets the bitmap to transparent black, which is
+ * fine for a component painting every frame and fatal for one that paints a
+ * single still frame and then stops — the first genuine resize would wipe the
+ * background permanently. So `onResize` lets a caller hand back the repaint
+ * that has to follow every fit, and the still branches all use it.
  */
 function surface(element, className) {
   element.classList.add(`${className}-host`);
@@ -98,6 +104,7 @@ function surface(element, className) {
 
   let width = 1;
   let height = 1;
+  let repaint = null;
   const fit = () => {
     const box = element.getBoundingClientRect();
     const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -108,6 +115,7 @@ function surface(element, className) {
     // Draw in CSS pixels; the transform does the scaling once, so no maths
     // downstream has to know about the ratio.
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (repaint) repaint();
   };
   fit();
 
@@ -118,6 +126,8 @@ function surface(element, className) {
     canvas,
     ctx,
     fit,
+    /** Redraw to run after every resize. One handler, replaced if set twice. */
+    onResize(handler) { repaint = handler; },
     get width() { return width; },
     get height() { return height; },
     stop() {
@@ -273,7 +283,10 @@ export function bubbleField(target = "[data-rm-bubble-field]", options = {}) {
 
     if (prefersReducedMotion()) {
       // Ornament, but ornament text sits on: one still frame keeps the panel
-      // looking designed instead of suddenly empty.
+      // looking designed instead of suddenly empty. Registered as the resize
+      // repaint too, or the first reflow would clear the bitmap and there is
+      // no loop here to draw it again.
+      view.onResize(() => paint(0, 0));
       paint(0, 0);
       cleanups.push(() => view.stop());
       continue;
@@ -313,6 +326,10 @@ export function bubbleField(target = "[data-rm-bubble-field]", options = {}) {
  * The whole thing is one canvas with a hard cap on live sparks, because a
  * visitor who discovers that clicking launches a shell will click twenty times
  * in four seconds and the panel must not care.
+ *
+ * Focus launches a shell too, at the centre of whatever was focused, so the
+ * one interaction this component offers is not reserved for people holding a
+ * pointer.
  *
  *   <section data-rm-fireworks data-rm-every="2400">…</section>
  */
@@ -404,7 +421,18 @@ export function fireworks(target = "[data-rm-fireworks]", options = {}) {
       const box = element.getBoundingClientRect();
       burst(event.clientX - box.left, event.clientY - box.top);
     };
+    // Focus counts as a click. A launch bound to `pointerdown` alone is a
+    // launch that only exists for people holding a mouse, so tabbing onto
+    // anything inside the panel fires a shell at the centre of whatever has
+    // just been focused.
+    const onFocus = (event) => {
+      const box = element.getBoundingClientRect();
+      const spot = event.target.getBoundingClientRect?.();
+      if (!spot) return;
+      burst(spot.left + spot.width / 2 - box.left, spot.top + spot.height / 2 - box.top);
+    };
     element.addEventListener("pointerdown", onDown);
+    element.addEventListener("focusin", onFocus);
 
     const stop = whileVisible(element, () => {
       let last = performance.now();
@@ -424,6 +452,7 @@ export function fireworks(target = "[data-rm-fireworks]", options = {}) {
     cleanups.push(() => {
       stop();
       element.removeEventListener("pointerdown", onDown);
+      element.removeEventListener("focusin", onFocus);
       sparks = [];
       view.stop();
     });
@@ -518,6 +547,8 @@ export function gravityStars(target = "[data-rm-gravity-stars]", options = {}) {
 
     if (prefersReducedMotion()) {
       stopPointer();
+      // The still frame has to survive a resize: nothing else will repaint it.
+      view.onResize(() => paint(0, false));
       paint(0, false);
       cleanups.push(() => view.stop());
       continue;
@@ -600,6 +631,9 @@ export function holeTunnel(target = "[data-rm-hole-tunnel]", options = {}) {
     };
 
     if (prefersReducedMotion()) {
+      // Re-read the scroll depth on resize as well as repaint it: a reflow
+      // that changes the panel's height has also changed where it sits.
+      view.onResize(() => paint(progressNow() * turns));
       paint(progressNow() * turns);
       cleanups.push(() => view.stop());
       continue;
@@ -729,21 +763,36 @@ export function lightRays(target = "[data-rm-light-rays]", options = {}) {
     const spot = point(dataString(element, "rmOrigin", origin), 0.5, -0.14);
     const step = 360 / many;
 
+    // `data-rm-origin` is a point in the HOST's box, but the fan is inset by
+    // -60% so that rotating it never swings an empty corner into view — its
+    // own box is therefore 2.2 times the host in each axis and starts 60%
+    // earlier. A percentage inside the fan (the conic centre, the mask centre,
+    // the transform origin) resolves against that oversized box, so the host
+    // fraction p has to be rewritten as (p + 0.6) / 2.2 before it is handed
+    // over. Skip the conversion and the default `50% -14%` converges at host
+    // y = -91%: the rays arrive almost parallel and visibly do not come from
+    // the bloom, which sits in host space and needs no conversion at all.
+    const inFan = (fraction) => (((fraction + 0.6) / 2.2) * 100).toFixed(2);
+    const fanX = inFan(spot.x);
+    const fanY = inFan(spot.y);
+
     const fan = document.createElement("i");
     fan.className = "rm-light-rays-fan";
     // A hard-edged repeat, softened once by a static blur in the stylesheet.
     // Blurring per frame would be a filter recalculated every frame; blurring
     // once and then only rotating is a texture the compositor moves for free.
     fan.style.background =
-      `repeating-conic-gradient(from 0deg at ${(spot.x * 100).toFixed(1)}% ${(spot.y * 100).toFixed(1)}%, ` +
+      `repeating-conic-gradient(from 0deg at ${fanX}% ${fanY}%, ` +
       `transparent 0deg, ${dataString(element, "rmColor", color)} ${(step * 0.04 * thick).toFixed(3)}deg, ` +
       `transparent ${(step * 0.42).toFixed(3)}deg, transparent ${step.toFixed(3)}deg)`;
-    fan.style.setProperty("--rm-rays-x", `${(spot.x * 100).toFixed(1)}%`);
-    fan.style.setProperty("--rm-rays-y", `${(spot.y * 100).toFixed(1)}%`);
+    fan.style.setProperty("--rm-rays-fan-x", `${fanX}%`);
+    fan.style.setProperty("--rm-rays-fan-y", `${fanY}%`);
     fan.style.setProperty("--rm-rays-tilt", `${dataNumber(element, "rmAngle", angle)}deg`);
     fan.style.setProperty("--rm-rays-speed", `${Math.max(1000, dataNumber(element, "rmSpeed", speed))}ms`);
     layer.appendChild(fan);
 
+    // The bloom is `inset: 0`, so its box IS the host and the author's own
+    // percentages are already right for it.
     const glow = document.createElement("i");
     glow.className = "rm-light-rays-glow";
     glow.style.setProperty("--rm-rays-x", `${(spot.x * 100).toFixed(1)}%`);
@@ -965,17 +1014,10 @@ export function noiseWave(target = "[data-rm-noise-wave]", options = {}) {
 
     let width = 1;
     let tall = 1;
-    const fit = () => {
-      const box = element.getBoundingClientRect();
-      width = Math.max(1, Math.round(box.width));
-      tall = Math.max(1, Math.round(box.height));
-      svg.setAttribute("viewBox", `0 0 ${width} ${tall}`);
-    };
-    fit();
-    const resizeObserver = new ResizeObserver(fit);
-    resizeObserver.observe(element);
+    let phase = 0;
+    let drawn = NaN;
 
-    const paint = (phase) => {
+    const draw = () => {
       const step = Math.max(6, Math.round(width / 120));
       const base = tall * 0.62;
       let d = "";
@@ -989,7 +1031,39 @@ export function noiseWave(target = "[data-rm-noise-wave]", options = {}) {
       if (solid) d += `L${width + step} ${tall + 8}L-8 ${tall + 8}L-8 ${base.toFixed(1)}Z`;
       path.setAttribute("d", d);
     };
-    paint(0);
+
+    /**
+     * Repaint only when the phase has moved far enough to see.
+     *
+     * `speed="0"` is documented as holding the horizon still, and without this
+     * guard it is the most expensive way in the library to draw a static line:
+     * a hundred and twenty noise samples, a fresh path string and an attribute
+     * write every frame, all producing byte-identical data for the parser.
+     */
+    const paint = (next) => {
+      if (Math.abs(next - drawn) < 0.0002) return;
+      drawn = next;
+      phase = next;
+      draw();
+    };
+
+    const fit = () => {
+      const box = element.getBoundingClientRect();
+      width = Math.max(1, Math.round(box.width));
+      tall = Math.max(1, Math.round(box.height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${tall}`);
+      // The `d` is in pixel coordinates, so the viewBox changing leaves the
+      // horizon in the old ones — drawn short of, or beyond, the new edge.
+      // Redrawing here is also the only thing that keeps the still frame
+      // correct under reduced motion, where no loop ever runs.
+      draw();
+    };
+    // `fit` has just drawn phase 0, which is also the still frame, so record
+    // it rather than asking for the same path a second time.
+    fit();
+    drawn = 0;
+    const resizeObserver = new ResizeObserver(fit);
+    resizeObserver.observe(element);
 
     const undo = () => {
       resizeObserver.disconnect();
@@ -1117,6 +1191,9 @@ export function linkWeb(target = "[data-rm-link-web]", options = {}) {
 
     if (prefersReducedMotion()) {
       stopPointer();
+      // Step zero, so no node moves; registered on resize as well, because a
+      // reflow clears the bitmap and there is no loop to fill it back in.
+      view.onResize(() => paint(0));
       paint(0);
       cleanups.push(() => view.stop());
       continue;

@@ -142,6 +142,14 @@ export {
   liveBadge, bufferRing, miniPlayer, keyboardHints,
 } from "./components/player.js";
 export {
+  bubbleField, fireworks, gravityStars, holeTunnel, radialIntro, lightRays,
+  prismSplit, driftShapes, noiseWave, linkWeb, ripplePool, glowOrbs,
+} from "./components/spark.js";
+export {
+  liquidButton, flipButton, copyButton, themeToggle, countButton, flipCard,
+  managementBar, pinList, previewLinkCard, fileTree, presenceRow, morphIcon,
+} from "./components/flourish.js";
+export {
   masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
   crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
   imageWall, flipGrid, peelStack, focusGrid, ribbon, contactSheet,
@@ -280,6 +288,14 @@ import {
   volumeDial, pipToggle, queueList, nowPlaying, transcriptSync, thumbStrip,
   liveBadge, bufferRing, miniPlayer, keyboardHints,
 } from "./components/player.js";
+import {
+  bubbleField, fireworks, gravityStars, holeTunnel, radialIntro, lightRays,
+  prismSplit, driftShapes, noiseWave, linkWeb, ripplePool, glowOrbs,
+} from "./components/spark.js";
+import {
+  liquidButton, flipButton, copyButton, themeToggle, countButton, flipCard,
+  managementBar, pinList, previewLinkCard, fileTree, presenceRow, morphIcon,
+} from "./components/flourish.js";
 import {
   masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
   crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
@@ -717,6 +733,32 @@ export function init(options = {}) {
     bufferRing("[data-rm-buffer-ring]", options.bufferRing),
     miniPlayer("[data-rm-mini-player]", options.miniPlayer),
     keyboardHints("[data-rm-keyboard-hints]", options.keyboardHints),
+
+    bubbleField("[data-rm-bubble-field]", options.bubbleField),
+    fireworks("[data-rm-fireworks]", options.fireworks),
+    gravityStars("[data-rm-gravity-stars]", options.gravityStars),
+    holeTunnel("[data-rm-hole-tunnel]", options.holeTunnel),
+    radialIntro("[data-rm-radial-intro]", options.radialIntro),
+    lightRays("[data-rm-light-rays]", options.lightRays),
+    prismSplit("[data-rm-prism-split]", options.prismSplit),
+    driftShapes("[data-rm-drift-shapes]", options.driftShapes),
+    noiseWave("[data-rm-noise-wave]", options.noiseWave),
+    linkWeb("[data-rm-link-web]", options.linkWeb),
+    ripplePool("[data-rm-ripple-pool]", options.ripplePool),
+    glowOrbs("[data-rm-glow-orbs]", options.glowOrbs),
+
+    liquidButton("[data-rm-liquid-button]", options.liquidButton),
+    flipButton("[data-rm-flip-button]", options.flipButton),
+    copyButton("[data-rm-copy-button]", options.copyButton),
+    themeToggle("[data-rm-theme-toggle]", options.themeToggle),
+    countButton("[data-rm-count-button]", options.countButton),
+    flipCard("[data-rm-flip-card]", options.flipCard),
+    managementBar("[data-rm-management-bar]", options.managementBar),
+    pinList("[data-rm-pin-list]", options.pinList),
+    previewLinkCard("[data-rm-preview-link]", options.previewLinkCard),
+    fileTree("[data-rm-file-tree]", options.fileTree),
+    presenceRow("[data-rm-presence-row]", options.presenceRow),
+    morphIcon("[data-rm-morph-icon]", options.morphIcon),
 
     masonry("[data-rm-masonry]", options.masonry),
     swipeStack("[data-rm-swipe-stack]", options.swipeStack),

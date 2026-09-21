@@ -41,6 +41,8 @@ const SECTIONS = [
   ["schedule", "Calendars and time"],
   ["console", "Admin and data tables"],
   ["player", "Media playback"],
+  ["spark", "Showpiece backgrounds"],
+  ["flourish", "Showpiece controls"],
 ];
 
 /*

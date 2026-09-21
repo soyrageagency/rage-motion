@@ -19,15 +19,48 @@
   </picture>
 </a>
 
-**Award-grade motion for the web, with zero dependencies.** 480 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
+**504 animation components. Zero dependencies. Every one of them keyboard-operable.**
+
+Most motion libraries hand you a folder of fades and a runtime to load them. This is 504 components with actual technique in them — variable-font axes that bend to the pointer, words that morph letter by letter with a real FLIP, carousels built on the browser's own scrolling, liquid navigation, generative fields, view transitions — and not one line of anything you did not write.
+
+It ships an MCP server, so the assistant you already use writes *these* components instead of improvising its own.
+
+**Three promises, and they are tested rather than claimed:**
+
+|  |  |
+|:--|:--|
+| **Nothing moves the layout** | Only `transform`, `opacity`, `filter`, `clip-path` and colour. No component here can push the page around while you point at it. |
+| **Nothing is hidden by CSS** | Every start state is applied from JavaScript, so a page whose script never loads is un-animated, never blank. A browser check asserts it on every commit. |
+| **Reduced motion keeps the content** | `prefers-reduced-motion` jumps to the finished state. There is deliberately no blanket `animation: none`, because that leaves anything revealed by an animation stuck at its start, invisible. |
+
+Take one file, or install the lot.
 
 *"A headline that reacts to the cursor." · "A carousel that works with a keyboard." · "A menu that traps focus properly." · "A counter that rolls like an odometer."*
 
 <br/>
 
-<img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/hero.png" alt="The rage-motion demo — a hero headline whose variable-font weight follows the pointer, over a generative wave field" width="88%">
+<img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/hero.png" alt="The rage-motion demo: a section rail listing every family down the left, a headline whose variable-font weight follows the pointer, and the install command ready to copy" width="92%">
 
-<sub>🎛️ The live demo is the documentation: every component running, with the markup to copy. <a href="https://soyrageagency.github.io/rage-motion/">Open it ↗</a></sub>
+<sub>🎛️ **The live demo is the documentation.** Every one of the 504 components running, with the markup to copy, a rail down the side for the 41 families, and ⌘K to jump to any component by name. <a href="https://soyrageagency.github.io/rage-motion/">Open it ↗</a></sub>
+
+<br/>
+
+<table>
+<tr>
+<td width="50%"><img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/catalogue.png" alt="Fifty-two button looks on one component, laid out as a grid of live examples" width="100%"></td>
+<td width="50%"><img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/palette.png" alt="The command palette filtered to the scroll components, each one linking to its own live example" width="100%"></td>
+</tr>
+<tr>
+<td><sub><b>One component, fifty-two looks.</b> Adding one is a line in a table and a rule in the stylesheet, not another file to keep correct.</sub></td>
+<td><sub><b>⌘K finds any of the 504.</b> Built from what is on the page, so it cannot list something that is not there.</sub></td>
+</tr>
+<tr>
+<td colspan="2"><img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/showpiece.png" alt="Showpiece backgrounds: rising bubbles, fireworks, a star field leaning toward the pointer and a receding tunnel, each drawn on a single canvas" width="100%"></td>
+</tr>
+<tr>
+<td colspan="2"><sub><b>The showy ones are one canvas each.</b> A field of particles built from one DOM node per particle is the version that stutters on a phone.</sub></td>
+</tr>
+</table>
 
 <br/><br/>
 
@@ -136,7 +169,7 @@ stop();   // puts everything back exactly as it was
 
 ---
 
-## The 480 components
+## The 504 components
 
 **Entrances** — `reveal`, with **50 named start states**: up · down · left · right and their `-far` variants · glide · fade · scale · zoom · shrink · pop · rise · drop · spring-up · spring-left · blur · blur-only · blur-up · blur-scale · drift-left · drift-right · tilt-left · tilt-right · roll-left · roll-right · swing · twist · spin · skew-x · skew-y · flip-x · flip-y · unfold · fold-up · door · door-right · corner · lift-3d · curtain-up · curtain-down · curtain-left · curtain-right · iris · wipe-diagonal · mask · slat · none
 
@@ -234,6 +267,12 @@ stop();   // puts everything back exactly as it was
 
 **Media playback** — Wrapping the real video and audio elements, keyboard-complete.
 `playerBar` · `scrubber` · `waveform` · `chapterList` · `captionToggle` · `rateMenu` · `volumeDial` · `pipToggle` · `queueList` · `nowPlaying` · `transcriptSync` · `thumbStrip` · `liveBadge` · `bufferRing` · `miniPlayer` · `keyboardHints`
+
+**Showpiece backgrounds** — Bubbles, fireworks, gravity, tunnels — one layer or one canvas each.
+`bubbleField` · `fireworks` · `gravityStars` · `holeTunnel` · `radialIntro` · `lightRays` · `prismSplit` · `driftShapes` · `noiseWave` · `linkWeb` · `ripplePool` · `glowOrbs`
+
+**Showpiece controls** — Liquid fills, morphing icons, pin lists, preview cards.
+`liquidButton` · `flipButton` · `copyButton` · `themeToggle` · `countButton` · `flipCard` · `managementBar` · `pinList` · `previewLinkCard` · `fileTree` · `presenceRow` · `morphIcon`
 
 **Pages** — `pageTransition` · `transitionTo`
 

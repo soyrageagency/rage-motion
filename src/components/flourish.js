@@ -47,14 +47,55 @@ const SVG = "http://www.w3.org/2000/svg";
 /** A short id, for the filter and mask references that need one. */
 const uid = (prefix) => `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
 
-/** A visually hidden announcer, created once per component and reused. */
+/**
+ * A visually hidden announcer, created once per component and reused.
+ *
+ * The role follows the tone rather than being fixed: `role="status"` carries an
+ * implicit polite live region and `role="alert"` an assertive one, so pairing
+ * `aria-live="assertive"` with `role="status"` hands the browser two different
+ * answers to the same question. It is also a `<p>`, which is flow content, so
+ * it is always held by something that can take flow content — never inside a
+ * `<button>` or a `<ul>`, where it would be invalid markup and, worse, would
+ * join the control's own name-from-content the moment it had anything to say.
+ */
 function announcer(holder, tone = "polite") {
   const said = document.createElement("p");
   said.className = "rm-flourish-live";
   said.setAttribute("aria-live", tone);
-  said.setAttribute("role", "status");
+  said.setAttribute("role", tone === "assertive" ? "alert" : "status");
   holder.appendChild(said);
   return said;
+}
+
+/** Say something, and say it again even when the words have not changed. */
+function say(region, words) {
+  if (!region) return;
+  // Clearing the region and filling it in the same task announces nothing new:
+  // both writes land before the next rendering opportunity, so the tree only
+  // ever sees the net change and an identical repeat is dropped. A trailing
+  // zero-width space makes each message a genuinely different string without
+  // changing a syllable of what is read out.
+  region.textContent = region.textContent === words ? `${words}​` : words;
+}
+
+/**
+ * Set an attribute now and put back exactly what was there on cleanup.
+ *
+ * A component that removes `aria-label` or `aria-pressed` when it stops has
+ * quietly deleted the author's own markup, which is worse than the leftover it
+ * was tidying — and several controls in here *read* `aria-pressed` for their
+ * start state, so deleting it on the way out destroys the very thing the
+ * example told the author to write. The difference between "there was nothing
+ * here" and "there was something else here" is the whole job, so it is
+ * recorded rather than assumed.
+ */
+function setAttr(element, name, value) {
+  const had = element.getAttribute(name);
+  element.setAttribute(name, value);
+  return () => {
+    if (had === null) element.removeAttribute(name);
+    else element.setAttribute(name, had);
+  };
 }
 
 /**
@@ -214,10 +255,14 @@ export function liquidButton(target = "[data-rm-liquid-button]", options = {}) {
       stopFrame ??= onFrame(write);
     };
     const onMove = (event) => { if (stopFrame) track(event); };
+    // The frame task always goes — the pointer really has left — but the fill
+    // only drains if the button is not also the focused element. Tab to it, then
+    // sweep the mouse across and off, and without this guard the focus state
+    // vanishes while the focus ring is still sitting there.
     const onLeave = () => {
-      button.classList.remove("is-wet");
       stopFrame?.();
       stopFrame = null;
+      if (!button.matches(":focus-visible")) button.classList.remove("is-wet");
     };
     // Focus gets the fill without the drop: there is no pointer to merge with.
     const onFocus = () => button.classList.add("is-wet");
@@ -294,7 +339,11 @@ export function flipButton(target = "[data-rm-flip-button]", options = {}) {
     card.append(front, back);
     button.appendChild(card);
 
+    // The start state is read from the markup, so the markup is also what gets
+    // put back — an author who wrote `aria-pressed="false"` still has it after
+    // this component has been and gone.
     let on = button.getAttribute("aria-pressed") === "true";
+    const undoPressed = setAttr(button, "aria-pressed", String(on));
     const show = () => {
       button.setAttribute("aria-pressed", String(on));
       button.classList.toggle("is-turned", on);
@@ -318,7 +367,7 @@ export function flipButton(target = "[data-rm-flip-button]", options = {}) {
         button.appendChild(face);
       }
       card.remove();
-      button.removeAttribute("aria-pressed");
+      undoPressed();
       button.style.removeProperty("--rm-flip-button-axis");
       button.style.removeProperty("--rm-flip-button-duration");
       button.classList.remove("rm-flip-button", "is-turned");
@@ -372,7 +421,11 @@ export function copyButton(target = "[data-rm-copy-button]", options = {}) {
     button.prepend(icon);
 
     const body = icon.querySelector(".rm-copy-button-body");
-    const said = announcer(button);
+    // Outside the control, never inside it. The region stays in the
+    // accessibility tree on purpose, so a `<p>` living in the `<button>` would
+    // become part of the button's name-from-content — "Copy Copied to
+    // clipboard" — which is exactly the double announcement described above.
+    const said = announcer(button.parentElement ?? document.body);
     const ms = dataNumber(button, "rmDuration", duration);
     const back = dataNumber(button, "rmReset", reset);
     const message = dataString(button, "rmDone", done);
@@ -398,6 +451,11 @@ export function copyButton(target = "[data-rm-copy-button]", options = {}) {
           return true;
         }
       } catch { /* A denied permission is not a reason to do nothing at all. */ }
+      // Selecting the shim moves focus into it, and removing it then drops
+      // focus on `<body>` — so whoever pressed Copy loses their place in the
+      // page on precisely the path where they get least confirmation. Where
+      // focus was is remembered and handed back.
+      const was = document.activeElement;
       const shim = document.createElement("textarea");
       shim.value = text;
       shim.setAttribute("readonly", "");
@@ -407,6 +465,7 @@ export function copyButton(target = "[data-rm-copy-button]", options = {}) {
       let ok = false;
       try { ok = document.execCommand("copy"); } catch { ok = false; }
       shim.remove();
+      if (was instanceof HTMLElement) was.focus();
       return ok;
     };
 
@@ -420,10 +479,8 @@ export function copyButton(target = "[data-rm-copy-button]", options = {}) {
       running?.cancel();
       button.classList.add("is-copied");
       running = morphPath(body, CLIP, TICK, ms);
-      // One write, one announcement. Setting a live region to the string it
-      // already holds says nothing, so it is cleared before it is filled.
-      said.textContent = "";
-      said.textContent = message;
+      // One announcement per press, including the second press in a row.
+      say(said, message);
 
       timer = setTimeout(() => {
         button.classList.remove("is-copied");
@@ -521,6 +578,11 @@ export function themeToggle(target = "[data-rm-theme-toggle]", options = {}) {
     let on = had ? had === onName
       : (typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches);
 
+    // Recorded before the first write, so a page that already labelled its own
+    // switch keeps that label when the component stops.
+    const undoPressed = setAttr(button, "aria-pressed", String(on));
+    const undoLabel = setAttr(button, "aria-label", dataString(button, "rmLabel", label));
+
     const show = () => {
       button.setAttribute("aria-pressed", String(on));
       button.setAttribute("aria-label", dataString(button, "rmLabel", label));
@@ -537,8 +599,8 @@ export function themeToggle(target = "[data-rm-theme-toggle]", options = {}) {
       if (had === null) root.removeAttribute(attr);
       else root.setAttribute(attr, had);
       icon.remove();
-      button.removeAttribute("aria-pressed");
-      button.removeAttribute("aria-label");
+      undoPressed();
+      undoLabel();
       button.style.removeProperty("--rm-theme-toggle-duration");
       button.classList.remove("rm-theme-toggle", "is-dark");
     });
@@ -578,6 +640,9 @@ export function countButton(target = "[data-rm-count-button]", options = {}) {
     const ms = dataNumber(button, "rmDuration", duration);
     let total = dataNumber(button, "rmValue", value);
     let on = button.getAttribute("aria-pressed") === "true";
+    // Read from the markup, so put the markup back rather than deleting it.
+    const undoPressed = setAttr(button, "aria-pressed", String(on));
+    const undoLabel = setAttr(button, "aria-label", `${name}: ${figure(total)}`);
 
     const star = document.createElementNS(SVG, "svg");
     star.setAttribute("viewBox", "0 0 24 24");
@@ -652,8 +717,8 @@ export function countButton(target = "[data-rm-count-button]", options = {}) {
       star.remove();
       word.remove();
       face.remove();
-      button.removeAttribute("aria-pressed");
-      button.removeAttribute("aria-label");
+      undoPressed();
+      undoLabel();
       button.classList.remove("rm-count-button", "is-on");
     });
   }
@@ -786,9 +851,11 @@ export function managementBar(target = "[data-rm-management-bar]", options = {})
     if (!idle || !busy) continue;
 
     bar.classList.add("rm-management-bar");
-    bar.setAttribute("role", "toolbar");
-    bar.setAttribute("aria-label", dataString(bar, "rmLabel", label));
-    bar.setAttribute("aria-orientation", "horizontal");
+    // Recorded, not assumed: the author may already have written a role or a
+    // label on this element, and tidying up is not licence to delete it.
+    const undoRole = setAttr(bar, "role", "toolbar");
+    const undoLabel = setAttr(bar, "aria-label", dataString(bar, "rmLabel", label));
+    const undoAxis = setAttr(bar, "aria-orientation", "horizontal");
 
     const shell = document.createElement("div");
     shell.className = "rm-management-bar-shell";
@@ -873,9 +940,9 @@ export function managementBar(target = "[data-rm-management-bar]", options = {})
       }
       shell.remove();
       said.remove();
-      bar.removeAttribute("role");
-      bar.removeAttribute("aria-label");
-      bar.removeAttribute("aria-orientation");
+      undoRole();
+      undoLabel();
+      undoAxis();
       bar.classList.remove("rm-management-bar", "is-busy");
     });
   }
@@ -913,7 +980,10 @@ export function pinList(target = "[data-rm-pin-list]", options = {}) {
     list.classList.add("rm-pin-list");
     const ms = dataNumber(list, "rmDuration", duration);
     const throwAt = dataNumber(list, "rmDistance", distance);
-    const said = announcer(list);
+    // Beside the list, not in it: a `<ul>` takes only `<li>`, and `reorder()`
+    // appends every row on every pin, which would otherwise leave a stray
+    // paragraph sitting as the list's first child.
+    const said = announcer(list.parentElement ?? list);
     const order = new Map(rows.map((row, i) => [row, i]));
     const pinned = new Set();
     const pins = [];
@@ -931,8 +1001,8 @@ export function pinList(target = "[data-rm-pin-list]", options = {}) {
       row.classList.toggle("is-pinned", on);
       row.querySelector(".rm-pin-list-pin")?.setAttribute("aria-pressed", String(on));
       reorder();
-      said.textContent = "";
-      said.textContent = `${name} ${on ? "pinned to the top" : "unpinned"}`;
+      // Pin, unpin, pin the same row: the third one has to be heard too.
+      say(said, `${name} ${on ? "pinned to the top" : "unpinned"}`);
     };
 
     for (const row of rows) {
@@ -1083,7 +1153,6 @@ export function previewLinkCard(target = "[data-rm-preview-link]", options = {})
     // Measured after it is laid out, or its own height is zero and it lands
     // one card's worth too high.
     place(link);
-    card.classList.add("is-open");
     if (prefersReducedMotion()) return;
     card.animate(
       [{ opacity: 0, scale: "0.96" }, { opacity: 1, scale: "1" }],
@@ -1093,7 +1162,8 @@ export function previewLinkCard(target = "[data-rm-preview-link]", options = {})
 
   const hide = () => {
     clearTimeout(timer);
-    card.classList.remove("is-open");
+    // `hidden` plus the `[hidden]` rule is the whole of the card's visibility,
+    // so there is no state class to keep in step with it.
     card.hidden = true;
   };
 
@@ -1169,7 +1239,9 @@ export function fileTree(target = "[data-rm-file-tree]", options = {}) {
 
   for (const tree of trees) {
     tree.classList.add("rm-file-tree");
-    tree.setAttribute("role", "tree");
+    // Recorded rather than assumed: a list that already declared a role of its
+    // own gets it back, instead of ending up with no role at all.
+    const undoTreeRole = setAttr(tree, "role", "tree");
     tree.style.setProperty("--rm-file-tree-indent", `${dataNumber(tree, "rmIndent", indent)}px`);
     tree.style.setProperty(
       "--rm-file-tree-duration",
@@ -1300,7 +1372,7 @@ export function fileTree(target = "[data-rm-file-tree]", options = {}) {
         row.removeAttribute("aria-expanded");
         row.removeAttribute("tabindex");
       }
-      tree.removeAttribute("role");
+      undoTreeRole();
       tree.style.removeProperty("--rm-file-tree-indent");
       tree.style.removeProperty("--rm-file-tree-duration");
       tree.style.removeProperty("--rm-file-tree-depth");
@@ -1336,17 +1408,20 @@ export function presenceRow(target = "[data-rm-presence-row]", options = {}) {
 
   for (const row of rows) {
     row.classList.add("rm-presence-row");
-    row.setAttribute("role", "list");
-    row.setAttribute("aria-label", dataString(row, "rmLabel", label));
+    const undoRole = setAttr(row, "role", "list");
+    const undoLabel = setAttr(row, "aria-label", dataString(row, "rmLabel", label));
 
-    const said = announcer(row);
+    // Beside the row, not inside it. A `<ul>` takes only `<li>`, and this one
+    // is also a declared `role="list"`, so a stray paragraph in there would be
+    // a non-`listitem` child of a list — a failure twice over.
+    const said = announcer(row.parentElement ?? row);
     const ms = dataNumber(row, "rmDuration", duration);
     const many = Math.max(1, dataNumber(row, "rmMax", max));
-    const started = [...row.children].filter((node) => node instanceof Element && node !== said);
+    const started = [...row.children].filter((node) => node instanceof Element);
     let more = null;
 
     const people = () => [...row.children]
-      .filter((node) => node instanceof Element && node !== more && node !== said);
+      .filter((node) => node instanceof Element && node !== more);
 
     const trim = () => {
       const all = people();
@@ -1379,15 +1454,17 @@ export function presenceRow(target = "[data-rm-presence-row]", options = {}) {
       word.textContent = name;
       one.append(face, word);
 
-      // Always ahead of the announcer and the overflow sentence, both of which
-      // live at the end of the row.
+      // Always ahead of the overflow sentence, which lives at the end of the
+      // row — and appended plainly when there is no overflow yet.
       flipRows(people(), () => {
-        row.insertBefore(one, said);
+        if (more && more.parentElement === row) row.insertBefore(one, more);
+        else row.appendChild(one);
         trim();
       }, ms);
 
-      said.textContent = "";
-      said.textContent = `${name} joined`;
+      // Two people with the same name, or the same person rejoining, both have
+      // to be heard rather than swallowed as a repeat.
+      say(said, `${name} joined`);
       if (!prefersReducedMotion() && !one.hidden) {
         one.animate(
           [{ opacity: 0, transform: "scale(0.6)" }, { opacity: 1, transform: "none" }],
@@ -1402,8 +1479,7 @@ export function presenceRow(target = "[data-rm-presence-row]", options = {}) {
       if (!one) return;
       const go = () => {
         flipRows(people().filter((node) => node !== one), () => { one.remove(); trim(); }, ms);
-        said.textContent = "";
-        said.textContent = `${name} left`;
+        say(said, `${name} left`);
       };
       if (prefersReducedMotion()) { go(); return; }
       one.animate(
@@ -1424,8 +1500,8 @@ export function presenceRow(target = "[data-rm-presence-row]", options = {}) {
           one.hidden = false;
         } else one.remove();
       }
-      row.removeAttribute("role");
-      row.removeAttribute("aria-label");
+      undoRole();
+      undoLabel();
       row.classList.remove("rm-presence-row");
     });
   }
@@ -1511,12 +1587,19 @@ export function morphIcon(target = "[data-rm-morph-icon]", options = {}) {
 
     const path = icon.querySelector(".rm-morph-icon-path");
     const ms = dataNumber(button, "rmDuration", duration);
+    // `data-rm-label-on` rather than anything about being "done": this is the
+    // name of the second state, not a row that has been finished, and the kit
+    // already spells that other meaning `data-rm-done` elsewhere.
     const names = [
       dataString(button, "rmLabel", pair.names[0]),
-      dataString(button, "rmDone", pair.names[1]),
+      dataString(button, "rmLabelOn", pair.names[1]),
     ];
 
     let on = button.getAttribute(flag) === "true";
+    // Whichever of the two state attributes this pair uses is read for the
+    // start state, so it is also the one put back rather than deleted.
+    const undoFlag = setAttr(button, flag, String(on));
+    const undoLabel = setAttr(button, "aria-label", names[on ? 1 : 0]);
     let running = null;
 
     const show = (moving) => {
@@ -1536,8 +1619,8 @@ export function morphIcon(target = "[data-rm-morph-icon]", options = {}) {
       running?.cancel();
       button.removeEventListener("click", onClick);
       icon.remove();
-      button.removeAttribute(flag);
-      button.removeAttribute("aria-label");
+      undoFlag();
+      undoLabel();
       button.classList.remove("rm-morph-icon", "is-filled", "is-stroked", "is-on");
     });
   }

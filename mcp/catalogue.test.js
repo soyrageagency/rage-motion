@@ -128,10 +128,25 @@ test("every image in an example has a source and a description", () => {
    */
   const bad = [];
   for (const component of CATALOGUE) {
+    /*
+     * An empty alt is a real and correct declaration — it says this picture
+     * adds nothing a screen reader needs, which is true whenever the thing it
+     * depicts is already named in text beside it. presenceRow puts the
+     * person's name in a span next to their photograph; giving that
+     * photograph alt text would make a screen reader read "Ana Ana".
+     *
+     * So: the attribute must always be there, because a missing alt gets the
+     * file name read out instead. It may be empty only where the example also
+     * carries visible text to do the naming.
+     */
+    const labelled = />[^<>]*[A-Za-z]{2}[^<>]*</.test(component.example);
     // impeccable-disable-next-line broken-image: this pattern is the check
-    for (const [tag] of component.example.matchAll(/<img\b[^>]*>/g)) {
-      if (!/\bsrc="[^"]+"/.test(tag)) bad.push(`${component.name}: no src — ${tag}`);
-      else if (!/\balt="[^"]+"/.test(tag)) bad.push(`${component.name}: no alt text — ${tag}`);
+    for (const [tag] of component.example.matchAll(/<img[^>]*>/g)) {
+      if (!/src="[^"]+"/.test(tag)) bad.push(`${component.name}: no src — ${tag}`);
+      else if (!/alt=/.test(tag)) bad.push(`${component.name}: no alt attribute — ${tag}`);
+      else if (!/alt="[^"]+"/.test(tag) && !labelled) {
+        bad.push(`${component.name}: empty alt with nothing naming it — ${tag}`);
+      }
     }
   }
   assert.deepEqual(bad, [], `images in examples:\n  ${bad.join("\n  ")}`);

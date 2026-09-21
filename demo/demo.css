@@ -2113,17 +2113,21 @@ code { font-size: 0.9em; }
 }
 
 /*
- * The rail shows only where there is room for it.
+ * The rail shows from 1200px, and the page makes room for it.
  *
- * The shell is 1240px and centred, so it already leaves a margin each side.
- * Padding `main` for the rail and leaving the shell centred inside that
- * padding produces two gaps instead of one: the rail sits in the first and the
- * content is pushed off the optical centre. So the rail appears at the width
- * where the natural margin is wide enough to hold it — 1240 plus two rails
- * plus air — and the shell keeps centring on the viewport, untouched.
+ * It was gated at 1660px so the 1240px shell could stay untouched and centred
+ * on the viewport. That was the wrong trade: 1280, 1440 and 1536 are what
+ * people actually have, so the rail was invisible to almost everybody and the
+ * page was still forty-one sections navigated by four header links.
+ *
+ * So `main` is padded by the rail's width and the shell centres inside what is
+ * left. At 1280px that is a 1032px shell — three columns of cells instead of
+ * four — which is a better page than a wider one you cannot navigate.
  */
-@media (min-width: 1660px) {
+@media (min-width: 1200px) {
   .deck { display: flex; }
+  main { padding-left: 208px; }
+  .bar { padding-left: 208px; }
 }
 
 /* ── The palette, now that it holds four hundred things ──────────────────── */
@@ -2165,3 +2169,18 @@ code { font-size: 0.9em; }
   text-decoration: none;
 }
 .drawer-nav a:hover, .drawer-nav a:focus-visible { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+
+/*
+ * A fixed component demonstrates itself inside its own cell.
+ *
+ * Several of these are floating bars, docked players and corner toasts, and
+ * `position: fixed` is right for all of them — that is what they are. In a
+ * catalogue it means they escape their cell and sit over the page for good: a
+ * management bar pinned across the cursor dock, four corner toasts stacked in
+ * the same corner.
+ *
+ * `contain: paint` makes the cell a containing block for fixed descendants, so
+ * each one floats within the box that is demonstrating it. One property, and
+ * the component is not modified to suit the page showing it.
+ */
+.built-body, .cell-body { contain: paint; }

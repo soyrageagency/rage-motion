@@ -67,7 +67,8 @@
     "check:dist": "node scripts/build-demo.mjs && node scripts/check.mjs --dist",
     "mcp": "node mcp/server.js",
     "assets": "node scripts/assets.mjs",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "shots": "node scripts/shots.mjs"
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

@@ -77,6 +77,8 @@ const MENUS = "src/components/menus.js";
 const INPUTS = "src/components/inputs.js";
 const CURSORS2 = "src/components/cursors.js";
 const GALLERIES = "src/components/galleries.js";
+const MOD_SPARK = "src/components/spark.js";
+const MOD_FLOURISH = "src/components/flourish.js";
 const MOD_EDITOR = "src/components/editor.js";
 const MOD_SCHEDULE = "src/components/schedule.js";
 const MOD_CONSOLE = "src/components/console.js";
@@ -7016,6 +7018,418 @@ export const CATALOGUE = [
       option("skip", "number", "5", "data-rm-skip: seconds moved by the left and right arrows, and the figure printed in the list."),
       option("jump", "number", "10", "data-rm-jump: seconds moved by J and L, the larger of the two seeks."),
       option("label", "string", "\"Keyboard shortcuts\"", "data-rm-label: the button's text and the panel's accessible name."),
+    ],
+  },
+
+  // ── Showpiece backgrounds and entrances ──
+  {
+    name: "bubbleField",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-bubble-field",
+    summary: "Bubbles rising and wobbling on one canvas, with buoyancy that actually depends on size.",
+    notes:
+      "The physics is the component. Buoyancy grows with a bubble's volume while drag grows with its surface area, so in water the big ones rise faster — and a big bubble carries too much momentum to be pushed about by the small eddies that throw a tiny one sideways, so its wander is inversely proportional to its radius. The usual implementation gives every bubble one speed and one wobble amplitude, which is falling snow played backwards: everybody reads it as fake without being able to say why. Sizes are drawn from a skewed distribution rather than a flat one, because a tank of identically sized bubbles gives the trick away just as quickly. Positions are held as fractions of the box and converted to pixels at paint time, so resizing the panel keeps the field instead of dumping every bubble outside the new bounds.",
+    example: "<section class=\"tank\" data-rm-bubble-field data-rm-many=\"34\" data-rm-size=\"30\" data-rm-speed=\"0.9\" data-rm-color=\"rgba(255,255,255,0.45)\">\n  <h2>Slow fermentation</h2>\n  <p>Eighteen days in open cedar, then six weeks cold.</p>\n  <a class=\"btn\" href=\"/process\">Read the process</a>\n</section>",
+    usage: "import { bubbleField } from \"@soyrageagency/rage-motion\";\nbubbleField();",
+    options: [
+      option("count", "number", "26", "How many bubbles. Capped at 80 — one canvas, but every bubble is still a stroke and a fill. Also `data-rm-many`."),
+      option("size", "number", "26", "Radius in pixels of the largest bubble; the rest are graded down from it. Also `data-rm-size`."),
+      option("speed", "number", "1", "Multiplier on the rise rate. 0.5 is a thick liquid, 2 is fizz. Also `data-rm-speed`."),
+      option("color", "string", "\"rgba(255,255,255,0.5)\"", "Outline and highlight colour. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "fireworks",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-fireworks",
+    summary: "Shells that burst where you click or focus, and on an interval, with gravity, drag and additive sparks.",
+    notes:
+      "A burst only reads as a firework if the sparks decelerate and then fall, so each one carries a velocity, gravity pulls it down and drag takes its speed away — which is what turns an expanding sphere into a weeping willow. Drag is applied as a per-second factor raised to the frame time rather than multiplied once per frame, so the shape of a burst is the same on a 60Hz laptop and a 144Hz monitor; the naive version quietly has different physics on different hardware. Sparks are drawn additively as short segments from their previous position to their current one, which gives motion blur and brightening overlaps for free, where the usual dot-per-spark build needs three times the particle count to look like anything. Launch angles are evenly spaced with a jitter instead of fully random, because random angles clump and a clumped shell looks like a splatter. Everything lives on one canvas with a hard cap on live sparks, because somebody who discovers that clicking launches a shell will click twenty times in four seconds — and focus launches one as well, at the centre of whatever was focused, so the interaction is not reserved for people holding a pointer.",
+    example: "<section class=\"finale\" data-rm-fireworks data-rm-many=\"56\" data-rm-every=\"2400\" data-rm-gravity=\"60\" data-rm-color=\"#f4d738,#2aa7e4,#f1eee9\">\n  <p class=\"eyebrow\">New year, new kiln</p>\n  <h2>The studio reopens on the 6th</h2>\n  <a class=\"btn\" href=\"/classes\">Book a bench</a>\n</section>",
+    usage: "import { fireworks } from \"@soyrageagency/rage-motion\";\nfireworks();",
+    options: [
+      option("count", "number", "48", "Sparks per shell, 8 to 160. Also `data-rm-many`."),
+      option("every", "number", "2600", "Milliseconds between automatic shells; 0 launches only on click. Also `data-rm-every`."),
+      option("gravity", "number", "52", "Downward pull in pixels per second squared. Also `data-rm-gravity`."),
+      option("drag", "number", "0.55", "Fraction of speed lost per second. High values give short, soft bursts. Also `data-rm-friction`."),
+      option("color", "string", "\"#f4d738,#2aa7e4,#d28c65,#f1eee9\"", "Comma-separated palette; each shell takes one colour. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "gravityStars",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-gravity-stars",
+    summary: "A star field that leans toward the pointer, the pull falling off with distance so the field deforms.",
+    notes:
+      "Every star has a home and is displaced from it toward the pointer by an amount that falls off with the square of the distance, capped well below one so it can never arrive. That cap is the entire difference between a field that deforms — which is what gravity looks like — and a swarm that follows the mouse, which is what you get when the pull is unbounded and every star ends up in a knot under the cursor. The pointer position is eased toward its target and its influence fades in and out, so entering and leaving the panel are not two visible discontinuities. Stars twinkle on their own phase and their own pace, which stops several hundred identical dots reading as a flat printed texture. It is one canvas: a field like this built from absolutely positioned spans is a layer and a style recalculation per star, every frame.",
+    example: "<section class=\"sky\" data-rm-gravity-stars data-rm-many=\"120\" data-rm-pull=\"0.34\" data-rm-radius=\"280\" data-rm-color=\"#f1eee9\">\n  <h1>Night firing</h1>\n  <p>Wood-fired reduction, twenty-two hours, three of us awake.</p>\n</section>",
+    usage: "import { gravityStars } from \"@soyrageagency/rage-motion\";\ngravityStars();",
+    options: [
+      option("count", "number", "90", "How many stars, 8 to 400. Also `data-rm-many`."),
+      option("size", "number", "1.6", "Base radius in pixels; each star varies around it. Also `data-rm-size`."),
+      option("radius", "number", "260", "Falloff distance in pixels — how far the pointer's influence reaches. Also `data-rm-radius`."),
+      option("pull", "number", "0.3", "Maximum fraction of the way to the pointer a star can travel. Above about 0.5 the field stops reading as gravity. Also `data-rm-pull`."),
+      option("color", "string", "\"#f1eee9\"", "Star colour. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "holeTunnel",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-hole-tunnel",
+    summary: "Concentric rings receding to a vanishing point, with scroll driving the depth.",
+    notes:
+      "Ring radius grows as a power of how near the ring is, so the gaps open up as rings come toward you and close to nothing at the vanishing point — space them evenly and you get a dartboard, because even spacing is precisely the cue the eye uses to decide something is flat. The vanishing point is configurable and deliberately off-centre by default, which gives the tunnel a direction rather than making it a hole straight ahead. Scroll supplies the depth, read once per frame from the element's own box instead of from a scroll event: scroll events fire faster than frames and every one of them would be a layout read, so one read per frame in the shared loop is the same information far cheaper. The paint is skipped entirely when the progress has not changed enough to see, so a panel sitting still costs one rectangle comparison a frame, and the whole loop stops when the section leaves the screen.",
+    example: "<section class=\"tunnel\" data-rm-hole-tunnel data-rm-many=\"22\" data-rm-depth=\"2.8\" data-rm-origin=\"56% 38%\" data-rm-color=\"rgba(42,167,228,0.5)\">\n  <h2>Down the spout</h2>\n  <p>A century of pipework under the Ebro, mapped in eleven days.</p>\n</section>",
+    usage: "import { holeTunnel } from \"@soyrageagency/rage-motion\";\nholeTunnel();",
+    options: [
+      option("count", "number", "18", "How many rings in the tunnel, 4 to 60. Also `data-rm-many`."),
+      option("depth", "number", "2.4", "Ring cycles travelled over one full scroll past the panel. Also `data-rm-depth`."),
+      option("origin", "string", "\"50% 45%\"", "The vanishing point, as two percentages. Anything unreadable falls back to the default. Also `data-rm-origin`."),
+      option("color", "string", "\"rgba(42,167,228,0.55)\"", "Ring colour. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "radialIntro",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-radial-intro",
+    summary: "A panel revealed by a circle growing from a point you choose, over content that is already there.",
+    notes:
+      "The content is never faded in: it is laid out, painted and readable from the first frame, and the entrance is a `clip-path` circle growing from a point you pick. That is the whole argument for doing it this way rather than the usual opacity ramp, which needs the content to start invisible and therefore has a failure mode — a script that throws, a bundle that never arrives — where it stays invisible and the page is blank. The clip is removed the instant it finishes, because a `clip-path` left on an element for the life of the page silently cuts off anything that later overflows it, and a dropdown clipped by an entrance three components away is a bug nobody finds. A panel already on screen plays immediately; one below the fold waits for arrival, since a reveal that finished before you got there is a reveal nobody saw. Under reduced motion it jumps straight to fully open, which is the finished state and not merely a skipped animation.",
+    example: "<section class=\"intro\" data-rm-radial-intro data-rm-origin=\"22% 78%\" data-rm-duration=\"1100\">\n  <figure>\n    <img src=\"/photos/wheel-room.jpg\" alt=\"Six potters' wheels in a whitewashed room, morning light from the left\">\n    <figcaption>The wheel room, first week of March.</figcaption>\n  </figure>\n  <h1>Twelve benches, one kiln, no rush</h1>\n  <p>Applications for the spring intake close on the 30th.</p>\n  <a class=\"btn\" href=\"/apply\">Apply</a>\n</section>",
+    usage: "import { radialIntro } from \"@soyrageagency/rage-motion\";\nradialIntro();",
+    options: [
+      option("duration", "number", "1000", "How long the circle takes to cover the panel. Also `data-rm-duration`."),
+      option("delay", "number", "0", "Milliseconds before it starts. The panel is clipped during the wait, so keep it short. Also `data-rm-delay`."),
+      option("origin", "string", "\"50% 50%\"", "Where the circle opens from, as two percentages. Also `data-rm-origin`."),
+    ],
+  },
+  {
+    name: "lightRays",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-light-rays",
+    summary: "God rays from a source off the edge of the panel: one masked gradient, drifting.",
+    notes:
+      "One element, one `repeating-conic-gradient` from the source point, one mask that fades the light out with distance, and a slow rotation about that same point. The conic repeat is the trick — it gives you every ray at once as a single paint, where the shaft-per-ray build is a dozen skewed divs each with its own blur and its own compositing layer. The source sits outside the box on purpose, which is what makes the light feel as though it comes from somewhere rather than from the middle of the panel — and since the fan is oversized so rotation never swings an empty corner into view, that point has to be rewritten into the fan's larger box before it is used, or the rays converge somewhere off the panel while the bloom stays where it was asked to. The mask matters just as much: rays that hold full strength all the way to the edge look like a pinwheel, and the falloff is what makes them read as light. Only `transform` and `opacity` are animated and the blur is applied once, so the whole thing lives on the compositor and never repaints.",
+    example: "<header class=\"hero\" data-rm-light-rays data-rm-origin=\"18% -18%\" data-rm-many=\"14\" data-rm-spread=\"1.8\" data-rm-color=\"rgba(244,215,56,0.28)\">\n  <p class=\"eyebrow\">Open studio</p>\n  <h1>Saturdays, ten until four</h1>\n  <p>Come and put your hands in something.</p>\n</header>",
+    usage: "import { lightRays } from \"@soyrageagency/rage-motion\";\nlightRays();",
+    options: [
+      option("count", "number", "16", "How many rays around the full circle, 3 to 60. Also `data-rm-many`."),
+      option("spread", "number", "1.4", "Ray thickness multiplier. Also `data-rm-spread`."),
+      option("angle", "number", "0", "Degrees of base rotation, so the fan can be aimed. Also `data-rm-angle`."),
+      option("speed", "number", "26000", "Milliseconds for one pass of the drift, minimum 1000. Also `data-rm-speed`."),
+      option("origin", "string", "\"50% -14%\"", "The light source, as two percentages; negative values put it outside the box. Also `data-rm-origin`."),
+      option("color", "string", "\"rgba(255,255,255,0.3)\"", "Ray colour. Keep it translucent. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "prismSplit",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-prism-split",
+    summary: "A chromatic split on the edges of a panel, from two offset copies and a blend mode.",
+    notes:
+      "Two copies of the panel's edge, offset in opposite directions along an angle you choose and blended additively — which is exactly what a lens does when its colour channels disagree, for the cost of two painted borders. What it deliberately does not copy is the content: the obvious build clones the panel twice and tints each clone, which paints everything inside three times, duplicates every string for assistive technology and doubles the cost of anything animating within. A filter chain is the other tempting route, and a chain of two offsets plus a blend rasters the whole subtree again on every frame it changes. The fringe only ever appears at the boundary anyway, so the boundary is the only thing worth copying. Hover and focus-within both widen the split, because a keyboard visitor who has reached the panel has arrived on it just as much as a pointer crossing it.",
+    example: "<article class=\"card\" data-rm-prism-split data-rm-shift=\"4\" data-rm-angle=\"18\" data-rm-blend=\"plus-lighter\">\n  <h3>Glaze log 041</h3>\n  <p>Tenmoku over a thin slip, cone 10 reduction. Broke to rust on the rim.</p>\n  <a href=\"/logs/041\">Open the log</a>\n</article>",
+    usage: "import { prismSplit } from \"@soyrageagency/rage-motion\";\nprismSplit();",
+    options: [
+      option("shift", "number", "3", "How far each copy is offset, in pixels, 0 to 24. Also `data-rm-shift`."),
+      option("angle", "number", "12", "Direction of the split, in degrees. Also `data-rm-angle`."),
+      option("blend", "string", "\"plus-lighter\"", "One of plus-lighter, screen, difference, exclusion or normal. Anything else falls back to the default rather than being passed to CSS, where a typo silently means normal. Also `data-rm-blend`."),
+      option("width", "number", "1.5", "Thickness of each copied edge, in pixels. Also `data-rm-size`."),
+      option("color", "string", "\"rgba(42,167,228,0.85),rgba(210,140,101,0.85)\"", "The two channel colours, comma separated. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "driftShapes",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-drift-shapes",
+    summary: "A few large soft shapes moving slowly on their own paths: the quiet background, one layer, no canvas.",
+    notes:
+      "Four or five blurred blobs, one layer, no canvas and no per-frame JavaScript at all. Each shape gets its own waypoints, scales, duration and start offset written as custom properties, and all of them share a single keyframe rule that reads those properties — so ten shapes are one animation definition with ten parameter sets, rather than ten sets of keyframes for the style engine to parse and keep. The blur is applied once and never touched, because animating a blur radius is the classic way to make a soft background expensive: every frame becomes a fresh gaussian pass over a large surface, and it is the one property involved that cannot be composited. Shapes are given irregular border radii and slightly different aspect ratios so the field does not read as a row of circles. Under reduced motion the composition stays and only the drift stops, since this is the background a paragraph is sitting on.",
+    example: "<section class=\"quiet\" data-rm-drift-shapes data-rm-many=\"4\" data-rm-size=\"52\" data-rm-soft=\"72\" data-rm-color=\"rgba(210,140,101,0.45),rgba(42,167,228,0.38)\">\n  <h2>What we actually do</h2>\n  <p>Small runs, honest materials, and a kiln we know the moods of.</p>\n</section>",
+    usage: "import { driftShapes } from \"@soyrageagency/rage-motion\";\ndriftShapes();",
+    options: [
+      option("count", "number", "4", "How many shapes, 1 to 10. More than about six and they stop being shapes. Also `data-rm-many`."),
+      option("size", "number", "46", "Shape width as a percentage of the panel. Also `data-rm-size`."),
+      option("speed", "number", "34000", "Milliseconds for one loop of a path, minimum 4000. Also `data-rm-speed`."),
+      option("soft", "number", "60", "Blur radius in pixels, applied once. Also `data-rm-soft`."),
+      option("color", "string", "\"rgba(210,140,101,0.5),rgba(42,167,228,0.42),rgba(244,215,56,0.34)\"", "Comma-separated palette, taken in turn. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "noiseWave",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-noise-wave",
+    summary: "A horizon line deformed by a seeded noise function, drawn as one SVG path.",
+    notes:
+      "The noise is value noise built by hand: a ring of seeded values sampled with a smoothstep between neighbours, plus a second octave at a little over twice the frequency and a third of the weight, which is what gives a ridge line both its big shape and its small detail. A sum of sines is the usual shortcut and it cannot do this — sines are periodic, so the horizon visibly repeats and everybody spots the loop within a few seconds. The smoothstep rather than a linear blend matters too: interpolate the lattice linearly and every lattice point shows up as a kink. The whole horizon is one `<path>` whose `d` is rewritten each frame, sampled about every ten pixels, where the node-per-segment version is hundreds of elements for the same line. The seed is an option, so the same panel always draws the same ridge and a composition can be judged rather than reshuffled on reload.",
+    example: "<section class=\"horizon\" data-rm-noise-wave data-rm-shade=\"solid\" data-rm-amp=\"44\" data-rm-seed=\"19\" data-rm-speed=\"0.05\" data-rm-color=\"rgba(42,167,228,0.6)\">\n  <h2>Sierra de Guara</h2>\n  <p>Four days walking, one notebook, no signal after the second morning.</p>\n</section>",
+    usage: "import { noiseWave } from \"@soyrageagency/rage-motion\";\nnoiseWave();",
+    options: [
+      option("amp", "number", "34", "How far the horizon deviates from its baseline, in pixels. Also `data-rm-amp`."),
+      option("seed", "number", "7", "Which ridge you get. Change it until the shape suits the panel. Also `data-rm-seed`."),
+      option("speed", "number", "0.04", "How fast the line travels through the noise; 0 holds it still, and costs one paint rather than one a frame. Also `data-rm-speed`."),
+      option("shade", "string", "\"line\"", "\"line\" strokes the horizon; \"solid\" also fills beneath it with a fade. Anything else is treated as \"line\". Also `data-rm-shade`."),
+      option("color", "string", "\"rgba(42,167,228,0.7)\"", "Stroke colour, and the top of the fill when shaded. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "linkWeb",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-link-web",
+    summary: "Points joined by lines when they come within range of each other, on one canvas.",
+    notes:
+      "The constellation, done with a real distance check: every pair is measured, and a link's opacity falls from one at touching to zero at the range limit, so lines fade in and out instead of snapping on and off. The comparison runs on squared distances, which removes one square root per pair — at seventy points that is nearly two and a half thousand pairs a frame, and the square root is the most expensive thing in the loop. That quadratic is also why the count is capped: seventy points is a handsome web, four hundred is eighty thousand pairs a frame and a phone that gets warm. Points bounce at the edges rather than wrapping, because a point that leaves one side and reappears on the other drags its links right across the panel on the way. The pointer joins in as one more node, which is the part that makes the field feel as though it noticed you.",
+    example: "<section class=\"graph\" data-rm-link-web data-rm-many=\"70\" data-rm-radius=\"150\" data-rm-speed=\"16\" data-rm-color=\"rgba(241,238,233,0.7)\">\n  <h2>Everyone who touched this piece</h2>\n  <p>Eleven people, four workshops, one glaze that came from a neighbour.</p>\n</section>",
+    usage: "import { linkWeb } from \"@soyrageagency/rage-motion\";\nlinkWeb();",
+    options: [
+      option("count", "number", "64", "How many points, 4 to 120. The work grows with the square of this. Also `data-rm-many`."),
+      option("radius", "number", "140", "How close two points must be, in pixels, before a line is drawn. Also `data-rm-radius`."),
+      option("speed", "number", "14", "Drift speed in pixels per second. Also `data-rm-speed`."),
+      option("size", "number", "2", "Point radius in pixels. Also `data-rm-size`."),
+      option("color", "string", "\"rgba(241,238,233,0.75)\"", "Point and line colour. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "ripplePool",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-ripple-pool",
+    summary: "Expanding rings where the pointer has been, fading as they grow, on one canvas.",
+    notes:
+      "Rings are spawned by distance travelled, not by pointer event. A high-rate mouse delivers several hundred `pointermove` events a second and one ring each is a wall of overlapping circles arriving faster than they can fade; every twenty-odd pixels of travel gives an evenly spaced wake instead, at whatever speed the hand is moving. They are drawn rather than made of elements, because a DOM node per ripple means a node created and destroyed dozens of times a second, each with its own layer and its own animation, and the garbage collector notices long before the visitor stops moving. The radius eases out while the line thins and fades, since a ring expanding at constant speed and constant width reads as a mechanical circle rather than water. Focus counts as a visit: tabbing through the panel drops a ring at whatever has just been focused, so the effect is not one that only exists for people holding a mouse.",
+    example: "<section class=\"pool\" data-rm-ripple-pool data-rm-life=\"1600\" data-rm-speed=\"170\" data-rm-spacing=\"26\" data-rm-color=\"rgba(42,167,228,0.55)\">\n  <h2>Throw something</h2>\n  <p>Move across this and it moves back.</p>\n  <a class=\"btn\" href=\"/book\">Book a taster</a>\n</section>",
+    usage: "import { ripplePool } from \"@soyrageagency/rage-motion\";\nripplePool();",
+    options: [
+      option("life", "number", "1400", "How long a ring lives, in milliseconds, minimum 200. Also `data-rm-life`."),
+      option("speed", "number", "150", "How fast a ring grows, in pixels per second of its life. Also `data-rm-speed`."),
+      option("count", "number", "24", "Most rings alive at once; the oldest is dropped past this. Also `data-rm-many`."),
+      option("spacing", "number", "22", "Pixels of pointer travel between rings. Small values give a solid wake. Also `data-rm-spacing`."),
+      option("color", "string", "\"rgba(241,238,233,0.6)\"", "Ring colour. Also `data-rm-color`."),
+    ],
+  },
+  {
+    name: "glowOrbs",
+    category: "spark",
+    file: MOD_SPARK,
+    attribute: "data-rm-glow-orbs",
+    summary: "A few soft orbs drifting, whose light overlaps additively where they cross.",
+    notes:
+      "The point of this one is what happens where two orbs meet. Blended with `plus-lighter` the overlap is the sum of both, so crossing orbs brighten the way real light does; blended normally the one in front simply covers the one behind and the whole thing looks like cut paper, which is the version most of these backgrounds ship as. `screen` is the fallback where `plus-lighter` is not supported — different arithmetic, same behaviour at the overlap, and far better than flat. Each orb is one radial gradient on one element, drifting on a single shared keyframe rule parameterised per orb, with a negative delay so the field is already composed on the first frame instead of every orb starting from the same corner. The layer isolates itself, which is not cosmetic: without it the additive blending composites against whatever the page happens to have painted behind the section, so the effect changes depending on its surroundings.",
+    example: "<section class=\"lit\" data-rm-glow-orbs data-rm-many=\"3\" data-rm-size=\"46\" data-rm-speed=\"20000\" data-rm-color=\"rgba(42,167,228,0.7),rgba(244,215,56,0.55)\">\n  <h2>Kiln 3 is up to temperature</h2>\n  <p>Cone 10 by midnight if the wind holds.</p>\n</section>",
+    usage: "import { glowOrbs } from \"@soyrageagency/rage-motion\";\nglowOrbs();",
+    options: [
+      option("count", "number", "3", "How many orbs, 1 to 8. The overlap is the effect, so three or four is usually right. Also `data-rm-many`."),
+      option("size", "number", "40", "Orb diameter as a percentage of the panel's width; the orb stays square, so it never flattens into an ellipse on a wide section. Also `data-rm-size`."),
+      option("speed", "number", "18000", "Milliseconds for one drift cycle, minimum 3000. Also `data-rm-speed`."),
+      option("color", "string", "\"rgba(42,167,228,0.75),rgba(244,215,56,0.6),rgba(210,140,101,0.7)\"", "Comma-separated palette, one colour per orb in turn. Also `data-rm-color`."),
+    ],
+  },
+
+  // ── Showpiece controls and patterns ──
+  {
+    name: "liquidButton",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-liquid-button",
+    summary: "A gooey fill that merges with the pointer.",
+    notes:
+      "Two blobs — a pool at the bottom of the button and a drop under the pointer — share one feGaussianBlur and one feColorMatrix whose alpha row is steep enough to work as a threshold; blurring both shapes and then re-hardening the result is what makes them reach for each other and fuse. The filter goes on a wrapper that holds nothing but the blobs, never on the button itself: text is antialiased, so a blur spreads those soft edges into the glyph interiors and the threshold rounds what is left into lumps. The label sits in a sibling layer above the filtered one and stays crisp at any blur radius. The drop is placed by translate and revealed by scale, two separate properties, so following the pointer is instant while only the growth is eased. Focus gets the fill without the drop, because there is no pointer to merge with — the merging is a bonus for a mouse, not the state itself.",
+    example: "<button type=\"button\" data-rm-liquid-button data-rm-blur=\"8\" data-rm-size=\"52\">Start a project</button>\n<button type=\"button\" data-rm-liquid-button data-rm-duration=\"700\">Read the brief</button>",
+    usage: "import { liquidButton } from \"@soyrageagency/rage-motion\";\nliquidButton();",
+    options: [
+      option("duration", "number", "520", "How long the pool takes to rise and the drop to swell, in milliseconds. Also settable per button with data-rm-duration."),
+      option("blur", "number", "7", "The filter's blur radius, clamped to 1–20. Higher merges from further away and softens the silhouette; data-rm-blur."),
+      option("size", "number", "46", "Diameter of the drop that follows the pointer, in pixels; data-rm-size."),
+    ],
+  },
+  {
+    name: "flipButton",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-flip-button",
+    summary: "One 3D card, two real faces, one of them announced.",
+    notes:
+      "The two element children already inside the button become the two faces of a single preserve-3d card turned by one rotate3d, so both states are real content in the page — \"Follow\" and \"Following\" are both selectable and both translatable, rather than the second being a string living in a script. Exactly one face is announced at a time: the face pointing away is aria-hidden and inert, and the button itself carries aria-pressed. The version that leaves both faces exposed makes a screen reader read \"Follow Following\" as one control, which says nothing about which of the two is currently true. Nothing is animated but the rotation, so the button never changes size and the row it sits in never reflows.",
+    example: "<button type=\"button\" data-rm-flip-button aria-pressed=\"false\">\n  <span>Follow</span>\n  <span>Following</span>\n</button>\n<button type=\"button\" data-rm-flip-button data-rm-axis=\"x\" data-rm-duration=\"600\">\n  <span>Add to basket</span>\n  <span>In your basket</span>\n</button>",
+    usage: "import { flipButton } from \"@soyrageagency/rage-motion\";\nflipButton();",
+    options: [
+      option("duration", "number", "460", "One turn, in milliseconds; data-rm-duration."),
+      option("axis", "string", "\"y\"", "\"y\" turns it left to right, \"x\" end over end. Anything else falls back to \"y\"; data-rm-axis."),
+    ],
+  },
+  {
+    name: "copyButton",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-copy-button",
+    summary: "Copies, and the clipboard becomes a tick.",
+    notes:
+      "The icon is one path with five corners, and the copied state is those same five corners rearranged into a tick: the rectangle's bottom-left corner walks down to become the heel, its right side straightens into the long arm, and the little clip at the top fades out. Because it is one element interpolating rather than two images crossfading, there is never a frame showing two icons at half opacity. The paths are written with matching commands on purpose — mismatched commands are what makes a morph snap — and the destination is set on the attribute before the animation starts, so the finished shape is correct even where a browser cannot interpolate d. The result is announced once through a live region written after the copy resolves, and the button's own name never changes: relabelling the control somebody has just pressed makes several screen readers announce the press twice and leaves the name wrong for whoever arrives next. The attribute takes a selector or the literal text, and a refused clipboard permission falls back to a selected off-screen field rather than doing nothing.",
+    example: "<pre id=\"install-line\"><code>npm i @soyrageagency/rage-motion</code></pre>\n<button type=\"button\" data-rm-copy-button=\"#install-line\" data-rm-done=\"Install command copied\">Copy</button>\n<button type=\"button\" data-rm-copy-button=\"hola@soyrage.es\" data-rm-reset=\"3000\">Copy address</button>",
+    usage: "import { copyButton } from \"@soyrageagency/rage-motion\";\ncopyButton();",
+    options: [
+      option("duration", "number", "380", "How long the clipboard takes to become a tick, in milliseconds; data-rm-duration."),
+      option("done", "string", "\"Copied to clipboard\"", "The sentence written to the live region once the copy succeeds; data-rm-done."),
+      option("reset", "number", "2200", "How long the tick stays before morphing back, in milliseconds; data-rm-reset."),
+    ],
+  },
+  {
+    name: "themeToggle",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-theme-toggle",
+    summary: "A sun that a moving mask turns into a moon.",
+    notes:
+      "One disc and one mask. A second circle inside the mask starts concentric with the disc, taking nothing at all, and slides across to bite a crescent out of it while the rays shrink into the middle behind. So the sun does not fade into a moon, it becomes one, and there is no frame in which the icon is two half-transparent icons stacked up. The bite travels by transform rather than by animating cx, which keeps the whole thing on the compositor. The starting state is read from whatever the page already says and only then from prefers-color-scheme: assuming light flashes a white icon on a dark page for one frame, which is the tell of a switch bolted on afterwards. Persistence is deliberately left to the page through onChange — a component that writes to storage is a component with opinions about somebody's session.",
+    example: "<button type=\"button\" data-rm-theme-toggle data-rm-label=\"Dark theme\"></button>\n<button type=\"button\" data-rm-theme-toggle data-rm-attribute=\"data-mode\" data-rm-dark=\"night\" data-rm-light=\"day\" data-rm-label=\"Night mode\"></button>",
+    usage: "import { themeToggle } from \"@soyrageagency/rage-motion\";\nthemeToggle();",
+    options: [
+      option("attribute", "string", "\"data-theme\"", "The attribute set on <html>. Restored to whatever it was on cleanup; data-rm-attribute."),
+      option("dark", "string", "\"dark\"", "The value written for the pressed state; data-rm-dark."),
+      option("light", "string", "\"light\"", "The value written for the unpressed state; data-rm-light."),
+      option("label", "string", "\"Dark theme\"", "The accessible name. An icon-only control without one announces itself as \"button\"; data-rm-label."),
+      option("duration", "number", "480", "How long the mask takes to cross, in milliseconds; data-rm-duration."),
+      option("onChange", "function", "undefined", "Called with the new value after every press, for the page to persist however it likes."),
+    ],
+  },
+  {
+    name: "countButton",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-count-button",
+    summary: "A figure that spins up and stays readable doing it.",
+    notes:
+      "The number is tweened as a number and written as text, so every single frame shows a plausible figure — 1,284 arrives through 400 and through 900. The rolling-digit-strip version looks expensive and is unreadable for the whole second it runs, which is a strange thing to do to the one piece of information the control exists to carry. The ramp rides the library's shared frame loop inside whileVisible, so a page of counts is not tweening anything in a section nobody has scrolled to, and the task returns immediately unless a ramp is actually in flight. The accessible name is set to the final value straight away, because nobody should have to sit and listen to a count being counted, and the figure itself is aria-hidden. Pressing it moves the count by one and flips aria-pressed, so the state is a fact rather than a shade of yellow.",
+    example: "<button type=\"button\" data-rm-count-button data-rm-value=\"1284\" data-rm-label=\"Star this project\">Stars</button>\n<button type=\"button\" data-rm-count-button data-rm-value=\"87\" data-rm-duration=\"1400\" data-rm-label=\"Like this post\">Likes</button>",
+    usage: "import { countButton } from \"@soyrageagency/rage-motion\";\ncountButton();",
+    options: [
+      option("duration", "number", "900", "How long the ramp to the value takes, in milliseconds. 0 writes the figure at once; data-rm-duration."),
+      option("label", "string", "\"Star\"", "The word used in the accessible name, as in \"Star: 1,284\"; data-rm-label."),
+      option("value", "number", "0", "The figure to count up to; data-rm-value."),
+    ],
+  },
+  {
+    name: "flipCard",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-flip-card",
+    summary: "A card that turns on hover and on focus alike.",
+    notes:
+      "Both faces are in the markup, so the back of the card is text a search engine indexes and a screen reader reads in place rather than a string a script paints on later. The turn is one rotate3d on a preserve-3d wrapper — a single compositor transform, not a crossfade between two absolutely positioned copies of the same box. The keyboard is the part the usual hover-only version gets wrong twice over: here the card is reachable, focusin turns it exactly as hovering does, and the face pointing away is inert so its links are not sitting invisibly in the tab order behind the front. The moment the card turns, the back stops being inert, so carrying on tabbing walks straight into it. The card is only given a tabindex if the author has not already put something focusable inside, or the card and its own link become two tab stops for one thing.",
+    example: "<article data-rm-flip-card data-rm-duration=\"720\">\n  <div>\n    <img src=\"/work/atlas-cover.jpg\" alt=\"The Atlas identity printed on a folded poster\">\n    <h3>Atlas</h3>\n    <p>Identity and site, 2025.</p>\n  </div>\n  <div>\n    <h3>What we did</h3>\n    <p>Wordmark, a twelve-column grid and a build that ships in one file.</p>\n    <a href=\"/work/atlas\">Read the case study</a>\n  </div>\n</article>",
+    usage: "import { flipCard } from \"@soyrageagency/rage-motion\";\nflipCard();",
+    options: [
+      option("duration", "number", "680", "One turn, in milliseconds; data-rm-duration."),
+      option("axis", "string", "\"y\"", "\"y\" turns it left to right, \"x\" end over end. Anything else falls back to \"y\"; data-rm-axis."),
+    ],
+  },
+  {
+    name: "managementBar",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-management-bar",
+    summary: "A bar that morphs between nothing and a selection.",
+    notes:
+      "\"Nothing selected\" and \"Three selected, here is what you can do\" are two different widths, and the honest route between them is a FLIP: measure the pill, swap the faces, measure again, then play the difference back as a translate and a scale. Transitioning width instead relayouts and repaints everything inside the bar on every frame of the change. The scale goes on the painted shell — background, border, shadow, and no text whatsoever — while the body inside it is scaled by the inverse; that is the part people leave out, and it is exactly why their morphing bar squashes its own label horizontally on the way across. It is a real role=\"toolbar\": the arrow keys walk the buttons with a roving tabindex so the whole bar is one tab stop, Escape clears the selection, and the count is announced politely once per change rather than on every tick of a checkbox.",
+    example: "<div data-rm-management-bar data-rm-label=\"Photo actions\">\n  <p data-rm-bar-face=\"idle\">Select photos to get started</p>\n  <div data-rm-bar-face=\"selected\">\n    <strong><span data-rm-bar-count>0</span> selected</strong>\n    <button type=\"button\">Download</button>\n    <button type=\"button\">Move to album</button>\n    <button type=\"button\" class=\"is-danger\">Delete</button>\n  </div>\n</div>",
+    usage: "import { managementBar } from \"@soyrageagency/rage-motion\";\nmanagementBar();",
+    options: [
+      option("duration", "number", "420", "How long the shell takes to morph between the two faces, in milliseconds; data-rm-duration."),
+      option("label", "string", "\"Selection actions\"", "The toolbar's accessible name; data-rm-label."),
+      option("onClear", "function", "undefined", "Called after Escape clears the selection, so the page can untick its own rows."),
+    ],
+  },
+  {
+    name: "pinList",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-pin-list",
+    summary: "Pinned rows travel to the top and stay marked.",
+    notes:
+      "Pinning reorders the real DOM and then plays every row back from where it was, so the pinned one visibly climbs past the others instead of teleporting — and because the order in the document is the order on the screen, the list still makes sense to anything that is not looking at it. Animating order would not animate at all, and transitioning top relayouts the column on every frame. There are two ways in on purpose: the drag is the nice one, and the button is the one that works with a keyboard, a switch, a screen reader and a trackpad somebody is not confident with. A drag-only affordance is a feature half your visitors simply do not have. The pin carries aria-pressed and a name of its own, and the pinned state is marked twice, by a tint and by the word \"Pinned\", because a state carried only by colour is a state some people cannot see.",
+    example: "<ul data-rm-pin-list data-rm-distance=\"40\">\n  <li>Brief — Atlas.pdf</li>\n  <li>Invoice 0148.pdf</li>\n  <li>Shoot list.md</li>\n  <li>Contract, signed.pdf</li>\n</ul>",
+    usage: "import { pinList } from \"@soyrageagency/rage-motion\";\npinList();",
+    options: [
+      option("duration", "number", "420", "How long a row takes to travel to its new place, in milliseconds; data-rm-duration."),
+      option("distance", "number", "34", "How far a row must be dragged, in pixels, before releasing it pins or unpins; data-rm-distance."),
+    ],
+  },
+  {
+    name: "previewLinkCard",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-preview-link",
+    summary: "A link floats a card that never leaves the viewport.",
+    notes:
+      "One card, created once and moved between links, rather than one card per link. A page of forty footnotes is then forty attributes and one node; the per-link version is forty absolutely positioned cards, forty images the browser may well decide to fetch, and a stutter the first time you scroll. Position is arithmetic on two rectangles — centred on the link, clamped to the viewport with a margin, and flipped to below the link when there is no room above it — because a card that opens off the edge of a phone is a card nobody sees. It moves entirely by transform from a fixed origin, so re-placing it costs a composite rather than a layout. It is announced to nobody: the card is aria-hidden and never takes focus, since the link already says where it goes. Hovering waits out a delay, focus opens it at once, because a keyboard has no way to hover patiently.",
+    example: "<p>We rebuilt <a href=\"/work/atlas\" data-rm-preview-link data-rm-card-title=\"Atlas — identity and site\" data-rm-card-image=\"/work/atlas-cover.jpg\">Atlas</a> in eleven weeks, then did the same for <a href=\"/work/marisol\" data-rm-preview-link data-rm-card-title=\"Marisol — a restaurant that takes bookings\" data-rm-card-image=\"/work/marisol-cover.jpg\" data-rm-width=\"300\">Marisol</a>.</p>",
+    usage: "import { previewLinkCard } from \"@soyrageagency/rage-motion\";\npreviewLinkCard();",
+    options: [
+      option("delay", "number", "140", "How long a pointer must rest on the link before the card opens, in milliseconds; data-rm-delay."),
+      option("width", "number", "260", "The card's width in pixels; data-rm-width."),
+      option("offset", "number", "12", "The gap between the link and the card, in pixels; data-rm-offset."),
+      option("cardTitle", "string", "the link's own text", "The heading on the card, for when the link text is a word in a sentence and the card wants the full title; data-rm-card-title."),
+      option("cardImage", "string", "\"\" (no picture, and the image element stays hidden)", "The URL of the preview image. Left out, the card is just a title and the destination; data-rm-card-image."),
+    ],
+  },
+  {
+    name: "fileTree",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-file-tree",
+    summary: "Folders opening to their own height, with arrow keys.",
+    notes:
+      "A folder does not know how tall it is, and nothing in CSS used to be able to animate to an unknown height. grid-template-rows: 0fr -> 1fr can: the drawer is a one-row grid and the row goes from no share of the space to all of it, so the transition runs between two track sizes rather than between two pixel heights somebody had to measure first. Where a browser cannot interpolate it the folder snaps open — never stuck shut. The indent guides are one repeating-linear-gradient on the tree, stopped by background-size at the deepest level the tree actually reaches; the obvious implementation puts a bordered spacer inside every row at every level, which on a real project tree is a few thousand elements drawing a few thousand hairlines. It is a genuine role=\"tree\": one tab stop with a roving tabindex, arrows down and up through what is visible, right to open or descend, left to close or climb, Home and End, and aria-expanded on every folder. A closed drawer is inert, so the rows inside it are not quietly still in the tab order.",
+    example: "<ul data-rm-file-tree data-rm-indent=\"20\" data-rm-open=\"2\">\n  <li>src\n    <ul>\n      <li>core\n        <ul>\n          <li>motion.js</li>\n          <li>split.js</li>\n        </ul>\n      </li>\n      <li>components\n        <ul>\n          <li>flourish.js</li>\n          <li>notify.js</li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n  <li>README.md</li>\n</ul>",
+    usage: "import { fileTree } from \"@soyrageagency/rage-motion\";\nfileTree();",
+    options: [
+      option("indent", "number", "18", "One level of indent in pixels, which is also the spacing of the guide gradient; data-rm-indent."),
+      option("duration", "number", "300", "How long a folder takes to open, in milliseconds; data-rm-duration."),
+      option("open", "number", "1", "How many levels start expanded. 0 starts everything shut; data-rm-open."),
+    ],
+  },
+  {
+    name: "presenceRow",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-presence-row",
+    summary: "People arriving at a document, announced once each.",
+    notes:
+      "Every avatar has the person's name beside it as real text, and the image carries alt=\"\" because the name is already there — an avatar with the name in its alt and the same name next to it is the name read out twice. The overflow is a sentence, \"and three others\", not a circle with a number in it that a screen reader walks straight past. An arrival is announced once, politely, through one live region the row owns; putting aria-live on the list itself announces the whole row again every time anybody moves, because a FLIP reorders real nodes and the live region dutifully reads every one of them back to you. Arrivals and departures shift the row with that same FLIP, so nobody's face jumps, and the people the author wrote in the markup are readable with the script never having run at all.",
+    example: "<ul data-rm-presence-row data-rm-max=\"4\" data-rm-label=\"People editing this brief\">\n  <li><img src=\"/people/ana.jpg\" alt=\"\"><span>Ana</span></li>\n  <li><img src=\"/people/hector.jpg\" alt=\"\"><span>Héctor</span></li>\n  <li><img src=\"/people/mireia.jpg\" alt=\"\"><span>Mireia</span></li>\n</ul>",
+    usage: "import { presenceRow } from \"@soyrageagency/rage-motion\";\npresenceRow();",
+    options: [
+      option("duration", "number", "420", "How long an arrival or departure takes to settle, in milliseconds; data-rm-duration."),
+      option("max", "number", "5", "How many people are shown before the rest become \"and N others\"; data-rm-max."),
+      option("label", "string", "\"People in this document\"", "The list's accessible name; data-rm-label."),
+    ],
+  },
+  {
+    name: "morphIcon",
+    category: "flourish",
+    file: MOD_FLOURISH,
+    attribute: "data-rm-morph-icon",
+    summary: "One path interpolating between two shapes.",
+    notes:
+      "A rotating hamburger is the version that can only ever become an X, because all it can do is rotate the three bars it already has. Here both states are path data carrying the same commands in the same order, so the top bar travels into one diagonal, the bottom into the other, and the middle bar collapses into a point that is genuinely nowhere. The same skeleton turns a play triangle into two pause bars, a plus into a minus and a chevron over. Every pair is written with matching commands on purpose — where one shape has fewer corners it gets a degenerate point, a line to where it already is — because interpolating mismatched paths is what makes a morph jump halfway through, and that is the reason most of these end up done as two crossfading icons instead. The destination is written to the attribute before the animation starts, so the shape is right even where a browser cannot interpolate d. It is a real toggle: aria-expanded for the pairs that open something, aria-pressed for the ones that are simply on or off, and a name for each state, because an icon-only control with no name is a control nobody can use.",
+    example: "<button type=\"button\" data-rm-morph-icon=\"menu\" data-rm-label=\"Open the menu\" data-rm-label-on=\"Close the menu\"></button>\n<button type=\"button\" data-rm-morph-icon=\"play\" data-rm-label=\"Play the showreel\" data-rm-label-on=\"Pause the showreel\"></button>\n<button type=\"button\" data-rm-morph-icon=\"plus\" data-rm-duration=\"260\"></button>\n<button type=\"button\" data-rm-morph-icon=\"chevron\"></button>",
+    usage: "import { morphIcon } from \"@soyrageagency/rage-motion\";\nmorphIcon();",
+    options: [
+      option("duration", "number", "380", "How long one shape takes to become the other, in milliseconds; data-rm-duration."),
+      option("shape", "string", "\"menu\"", "Which pair: \"menu\", \"play\", \"plus\" or \"chevron\". An unrecognised name falls back to \"menu\". Set per button as the attribute's own value, data-rm-morph-icon=\"play\"."),
+      option("state", "string", "\"\" (the pair's own choice)", "Which state attribute the button carries: \"pressed\" forces aria-pressed, anything else leaves the pair's natural one — aria-expanded for \"menu\", \"plus\" and \"chevron\", aria-pressed for \"play\". Use it when the icon toggles a setting rather than opening something; data-rm-state."),
+      option("label", "string", "the pair's first name: \"Open menu\", \"Play\", \"Expand\" or \"Show more\"", "The accessible name while the icon is in its first state; data-rm-label."),
+      option("labelOn", "string", "the pair's second name: \"Close menu\", \"Pause\", \"Collapse\" or \"Show less\"", "The accessible name while the icon is in its second state, so the name says which of the two is true rather than what the button is called; data-rm-label-on."),
     ],
   },
 
