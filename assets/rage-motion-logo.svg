@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="rage-motion">
+  <title>rage-motion</title>
+  <!--
+    The lockup: the mark, then the name.
+
+    The mark is the library's own easing curve — cubic-bezier(0.22, 1, 0.36, 1),
+    the ease every entrance in the kit is built on — drawn as an easing editor
+    would draw it, and it comes out as a lowercase r. The wordmark is set in the
+    same weight as the curve's stroke so the two read as one object.
+
+    `currentColor` throughout except the curve, so one file works on a light
+    README and a dark one.
+  -->
+  <g transform="translate(8 16)">
+    <defs>
+      <clipPath id="rmLogoFrame">
+        <rect x="7" y="7" width="50" height="50" rx="14"/>
+      </clipPath>
+    </defs>
+    <rect x="7" y="7" width="50" height="50" rx="14"
+          fill="none" stroke="currentColor" stroke-opacity="0.24" stroke-width="2.5"/>
+    <g clip-path="url(#rmLogoFrame)">
+      <line x1="11" y1="55" x2="22" y2="12"
+            stroke="currentColor" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+      <path d="M11 55 C 22 12, 29 12, 53 12"
+            fill="none" stroke="#2aa7e4" stroke-width="7" stroke-linecap="round"/>
+    </g>
+    <circle cx="22" cy="12" r="4" fill="currentColor"/>
+  </g>
+
+  <text x="86" y="60"
+        font-family="'Bricolage Grotesque', 'Archivo Expanded', system-ui, sans-serif"
+        font-size="42" font-weight="600" letter-spacing="-1.6"
+        fill="currentColor">rage-motion</text>
+
+  <text x="88" y="82"
+        font-family="ui-monospace, SFMono-Regular, 'JetBrains Mono', Consolas, monospace"
+        font-size="11.5" letter-spacing="1.4"
+        fill="currentColor" fill-opacity="0.45">cubic-bezier(0.22, 1, 0.36, 1)</text>
+</svg>

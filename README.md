@@ -6,12 +6,16 @@
 
 <br/>
 
-# ✦ rage-motion
+<img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/rage-motion-logo.svg" alt="rage-motion" width="420">
+
+<sub>The mark is the library's own easing curve — <code>cubic-bezier(0.22, 1, 0.36, 1)</code>, the ease every entrance in the kit is built on — drawn as an easing editor draws it. It comes out as a lowercase r.</sub>
+
+<br/>
 
 <a href="https://soyrage.es/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/soyrage-mark-dark.svg">
-    <img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/soyrage-mark.svg" alt="SoyRage Agency" width="64">
+    <img src="https://raw.githubusercontent.com/soyrageagency/rage-motion/main/assets/soyrage-mark.svg" alt="Made by SoyRage Agency" width="44">
   </picture>
 </a>
 
@@ -185,33 +189,6 @@ stop();   // puts everything back exactly as it was
 **Data, drawn** — `sparkline` · `bars` · `donut` · `gauge` · `stat` · `stars`
 
 **Menu shapes** — `circleNav` · `curtainNav` · `hoverSpread` · `breadcrumbs` · `treeNav` · `splitNav` · `stackNav` · `dotNav`
-
-**Notifications** — Twenty ways to tell somebody something, every one announced as well as drawn.
-`toastStack` · `snackbar` · `banner` · `inlineAlert` · `pushCard` · `bell` · `counter` · `presenceDot` · `ribbonAlert` · `statusBar` · `progressToast` · `undoBar` · `confirmSheet` · `countdownNote` · `stackedAvatars` · `typingDots` · `liveTicker` · `pillAlert` · `cornerToast` · `soundBadge`
-
-**Task lists and boards** — Checkable, reorderable, filterable — all keyboard-operable.
-`taskList` · `taskCheck` · `taskReorder` · `taskGroup` · `kanban` · `taskProgress` · `taskFilter` · `subtasks` · `taskDue` · `taskPriority` · `taskAssignee` · `taskSwipe` · `taskUndo` · `taskCount` · `taskEmpty` · `taskSearch` · `taskBulk` · `taskTimer` · `taskStreak` · `taskNote`
-
-**More numbers, drawn** — Twenty more charts, each reading its figures out of the markup.
-`areaChart` · `stepChart` · `candlestick` · `waterfall` · `radar` · `heatCalendar` · `bulletChart` · `funnel` · `treemap` · `progressRings` · `comparisonBars` · `sparkBars` · `deltaBadge` · `bigNumber` · `rangeBar` · `pieSlices` · `scatterPlot` · `timelineChart` · `meterRow` · `numberTicker`
-
-**More creative forms** — Eleven more, including the error summary that links to each field.
-`strengthMeter` · `sliderPair` · `ratingSlider` · `colourField` · `dateField` · `signaturePad` · `switchRow` · `quantityStepper` · `consentBox` · `formProgress` · `errorSummary`
-
-**Profile and identity** — Avatars, cards, menus and presence.
-`avatar` · `avatarUpload` · `profileCard` · `profileHeader` · `userMenu` · `accountSwitcher` · `presenceRing` · `followButton` · `bioReveal` · `socialRow` · `statsRow` · `badgeRow` · `profileTabs` · `coverParallax` · `identityChip`
-
-**More scroll animation** — Fifteen more, one scroll read a frame between them.
-`scrollCounter` · `scrollRotate` · `scrollScale` · `scrollBlur` · `scrollColour` · `pinSteps` · `scrollDraw` · `depthLayers` · `scrollSnapSections` · `revealMaskScroll` · `marqueeScroll` · `scrollGradient` · `scrollSplit` · `scrollZoomPin` · `scrollTypeScale`
-
-**Ecommerce — product** — Cards, galleries, variants, reviews. Presentation only.
-`productCard` · `productGallery` · `productZoom` · `colourSwatches` · `sizePicker` · `priceTag` · `discountBadge` · `stockMeter` · `ratingStars` · `reviewSummary` · `addToCart` · `wishlistHeart` · `compareTray` · `quickView` · `productTabs` · `variantPicker` · `breadcrumbTrail` · `sortBar` · `filterPanel` · `resultCount`
-
-**Ecommerce — cart and checkout** — Drawers, totals, steps and orders. No payment data, ever.
-`cartDrawer` · `cartLine` · `cartTotals` · `cartEmpty` · `cartBadge` · `miniCart` · `freeShippingBar` · `couponField` · `checkoutSteps` · `orderSummary` · `paymentMethods` · `addressForm` · `deliveryOptions` · `giftNote` · `orderConfirm` · `orderTracking` · `returnRequest` · `invoiceRow` · `saveForLater` · `recentlyViewed`
-
-**Thirty more** — Pricing, testimonials, help, onboarding, tables, docs, status and layout.
-`pricingTable` · `planToggle` · `featureMatrix` · `savingsBadge` · `quoteCard` · `logoWall` · `ratingRow` · `faqList` · `helpTip` · `shortcutSheet` · `tourStep` · `checklistCard` · `welcomeCard` · `footerColumns` · `announcementRow` · `megaFooter` · `sortableTable` · `stickyHeaderTable` · `rowExpand` · `tableEmpty` · `codeBlock` · `diffView` · `apiRow` · `uptimeDots` · `changelogFeed` · `bentoGrid` · `splitPanel` · `stickyAside` · `dividerMark` · `sectionMark`
 
 **Notifications** — Twenty ways to tell somebody something, every one announced as well as drawn.
 `toastStack` · `snackbar` · `banner` · `inlineAlert` · `pushCard` · `bell` · `counter` · `presenceDot` · `ribbonAlert` · `statusBar` · `progressToast` · `undoBar` · `confirmSheet` · `countdownNote` · `stackedAvatars` · `typingDots` · `liveTicker` · `pillAlert` · `cornerToast` · `soundBadge`

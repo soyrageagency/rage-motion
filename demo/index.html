@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rage-motion — 155 web animation components, zero dependencies</title>
+<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="mask-icon" href="./assets/favicon.svg" color="#2aa7e4">
+  <title>rage-motion — 155 web animation components, zero dependencies</title>
 <meta name="description" content="A catalogue of 155 web animation components with real technique: variable-font pressure, word morphing, carousels on native scrolling, liquid navigation, generative fields. Zero dependencies, honours prefers-reduced-motion, installs into Claude or Cursor over MCP.">
 <meta name="color-scheme" content="dark">
 
@@ -25,9 +27,23 @@
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
 <header class="bar" data-rm-condense data-rm-frosted>
   <a class="brand" href="#top">
-    <svg viewBox="0 0 320 360" width="18" height="20" aria-hidden="true" focusable="false">
-      <path fill="currentColor" fill-rule="evenodd" d="M70 40 L200 40 L238 78 L238 120 L150 170 L235 330 L150 235 L150 335 L105 335 Z M118 78 L195 78 L165 128 L118 128 Z"/>
-      <path fill="#2aa7e4" d="M205 95 L315 78 L210 118 Z"/>
+    <!--
+      The mark is the library's own easing curve, drawn as an easing editor
+      draws it — and it comes out as a lowercase r. It draws itself once on
+      load, because a motion kit whose logo is a static picture is a motion kit
+      that does not believe its own argument.
+    -->
+    <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <clipPath id="brandFrame"><rect x="7" y="7" width="50" height="50" rx="14"/></clipPath>
+      <rect class="brand-frame" x="7" y="7" width="50" height="50" rx="14"
+            fill="none" stroke="currentColor" stroke-opacity="0.24" stroke-width="2.5"/>
+      <g clip-path="url(#brandFrame)">
+        <line class="brand-handle" x1="11" y1="55" x2="22" y2="12"
+              stroke="currentColor" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+        <path class="brand-curve" d="M11 55 C 22 12, 29 12, 53 12"
+              fill="none" stroke="#2aa7e4" stroke-width="7" stroke-linecap="round"/>
+      </g>
+      <circle class="brand-point" cx="22" cy="12" r="4" fill="currentColor"/>
     </svg>
     rage-motion
   </a>

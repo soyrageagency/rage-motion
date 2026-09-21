@@ -1985,3 +1985,51 @@ code { font-size: 0.9em; }
   .marquee-wall { grid-template-columns: 1fr; }
   .marquee-column { display: none; }
 }
+
+/* ── The mark ────────────────────────────────────────────────────────────── */
+
+/*
+ * It draws itself once, on load.
+ *
+ * The curve is revealed with stroke-dashoffset rather than scaled into place,
+ * so the line keeps its weight for the whole draw — a scaled path has the
+ * wrong stroke for every frame but the last, which is exactly the mistake the
+ * kit's own tracing component exists to avoid. The control point lands after
+ * the curve reaches it, which is the order the maths implies.
+ */
+.brand-mark { width: 22px; height: 22px; display: block; }
+.brand-curve {
+  /*
+   * The real length of this path is 68.5 user units, measured rather than
+   * guessed — slack in the dash array is time the curve spends already drawn.
+   *
+   * And the draw uses the in-out curve, not the kit's own ease-out. An ease-out
+   * is right for something arriving, because it front-loads the distance; on a
+   * line being drawn it means the whole stroke appears in the first sixth of
+   * the duration and then nothing happens, which reads as a glitch rather than
+   * as drawing.
+   */
+  stroke-dasharray: 68.5;
+  stroke-dashoffset: 68.5;
+  animation: rm-brand-draw 1100ms var(--rm-ease-in-out) 160ms forwards;
+}
+.brand-point {
+  transform-origin: 22px 12px;
+  transform: scale(0);
+  animation: rm-brand-land 520ms var(--rm-ease-out) 1080ms forwards;
+}
+.brand-handle, .brand-frame { opacity: 0; animation: rm-brand-fade 600ms linear 200ms forwards; }
+@keyframes rm-brand-draw { to { stroke-dashoffset: 0; } }
+@keyframes rm-brand-land { to { transform: scale(1); } }
+@keyframes rm-brand-fade { to { opacity: 1; } }
+
+/*
+ * Reduced motion gets the finished mark, not a missing one. Every value here
+ * is the end of its own animation — which is the whole rule the library is
+ * built on, applied to its own logo.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .brand-curve { stroke-dashoffset: 0; animation: none; }
+  .brand-point { transform: scale(1); animation: none; }
+  .brand-handle, .brand-frame { opacity: 1; animation: none; }
+}
