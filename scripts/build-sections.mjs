@@ -37,6 +37,10 @@ const SECTIONS = [
   ["extras", "Thirty more"],
   ["storefront", "Ecommerce — storefront"],
   ["account", "Ecommerce — account and support"],
+  ["editor", "Writing and editing"],
+  ["schedule", "Calendars and time"],
+  ["console", "Admin and data tables"],
+  ["player", "Media playback"],
 ];
 
 /*
@@ -57,7 +61,7 @@ const plate = () => `./assets/tiles/${TILES[served++ % TILES.length]}.svg`;
  */
 function realPictures(markup) {
   let out = markup.replace(
-    /(src|poster|data-rm-image|data-rm-src)="([^"]*\.(?:jpe?g|png|webp|avif|svg|gif))"/g,
+    /(src|poster|data-rm-image|data-rm-src|data-rm-avatar|data-rm-cover|data-rm-photo)="([^"]*\.(?:jpe?g|png|webp|avif|svg|gif))"/g,
     (whole, attribute, path) => (path.includes("assets/") ? whole : `${attribute}="${plate()}"`),
   );
 
@@ -67,7 +71,11 @@ function realPictures(markup) {
    * exactly what a video looks like before it plays — and the source goes.
    */
   out = out.replace(/<source[^>]*>/g, "");
-  out = out.replace(/\ssrc="[^"]*\.(?:mp4|webm|mov|ogv|m4v)"/g, "");
+  // Video, audio, captions and streams alike: this repository has no media,
+  // and a source pointing at a file that is not there is a 404 in everybody's
+  // console. The element stays — an <audio> with no source still draws its
+  // controls, which is what these components are demonstrating.
+  out = out.replace(/\ssrc="[^"]*\.(?:mp4|webm|mov|ogv|m4v|mp3|ogg|wav|m4a|flac|vtt|srt|m3u8|mpd)"/g, "");
   return out;
 }
 

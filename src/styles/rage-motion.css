@@ -5309,6 +5309,4480 @@ html.rm-cursor-active * { cursor: none !important; }
  * MIT licensed (see LICENSE).
  */
 
+
+/* ══ Ecommerce — product and catalogue ══════════════════════════════════════════════ */
+
+/*
+ * Ecommerce — product and catalogue.
+ *
+ * Three techniques here are worth explaining, because they look like mistakes
+ * until you know what they are avoiding.
+ *
+ * 1. Nothing that moves has a width or a height in a transition. The stock
+ *    meter, the review bars and the tab underline all move by `transform`, and
+ *    the elements they live on are already at their final size before anything
+ *    animates. A `width` transition on a bar re-lays-out its whole row sixty
+ *    times a second for a decoration; a `scaleX` on the same bar is one
+ *    composited layer the browser can hand to the GPU.
+ *
+ * 2. Radio and checkbox inputs are shrunk to a nearly transparent pixel, never
+ *    `display: none` and never `visibility: hidden`. A hidden input is not
+ *    focusable, so hiding one the lazy way removes the arrow keys, the focus
+ *    ring and the form value — the three reasons for using a real input at
+ *    all. Left in place at a pixel it keeps every one of them, and the visible
+ *    chip picks the focus ring back up with `:has(input:focus-visible)`.
+ *
+ * 3. The panels that open — the filter disclosure, the quick view, the compare
+ *    tray — are all on their own layer, out of the flow. That is what lets them
+ *    animate without moving the catalogue behind them. It also means their
+ *    closed state is the `hidden` attribute rather than a zero size, so before
+ *    the script runs the page is complete and readable rather than collapsed.
+ *
+ * Crafted by SoyRage Agency — https://soyrage.es/
+ * MIT licensed (see LICENSE).
+ */
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/*
+ * Read but not drawn. Not `display: none`, which removes it from the
+ * accessibility tree along with everything else — this is the difference
+ * between a strike-through that is announced and one that is only a picture.
+ */
+.rm-shop-said,
+.rm-shop-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Any real input this kit hides keeps its focus, its keys and its value. */
+.rm-swatches-chip input,
+.rm-size-picker-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0.001; /* not 0: some engines skip focus on a fully transparent box */
+  pointer-events: none;
+}
+
+/* ── Product card ───────────────────────────────────────────────────────── */
+
+.rm-product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  transition:
+    transform var(--rm-product-card-duration, 420ms) var(--rm-ease-out),
+    box-shadow var(--rm-product-card-duration, 420ms) var(--rm-ease-out);
+}
+.rm-product-card.is-lifted {
+  transform: translateY(var(--rm-product-card-lift, -6px));
+  box-shadow: 0 18px 40px -22px color-mix(in srgb, var(--rm-ink) 60%, transparent);
+}
+.rm-product-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: calc(var(--rm-radius) - 8px);
+}
+
+/*
+ * One stretched link. The pseudo element is the hit area for the whole card,
+ * and everything else in the card is lifted above it so its own clicks survive
+ * — which is the part that a card wrapped in a single <a> cannot do at all.
+ */
+.rm-product-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 0;
+}
+.rm-product-card > :is(button, a:not(.rm-product-card-link), label, input, select),
+.rm-product-card :is(button, label, input, select) {
+  position: relative;
+  z-index: 1;
+}
+.rm-product-card-link { text-decoration: none; color: inherit; }
+.rm-product-card-link:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Product gallery ────────────────────────────────────────────────────── */
+
+.rm-product-gallery { display: grid; gap: 0.7rem; font-family: var(--rm-body); }
+.rm-product-gallery-main {
+  display: block;
+  width: 100%;
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, var(--rm-ink) 6%, var(--rm-cream));
+}
+.rm-product-gallery-strip {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.rm-product-gallery-thumb {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: calc(var(--rm-radius) / 2.4);
+  background: none;
+  cursor: pointer;
+  transition: transform 240ms var(--rm-ease-out), border-color 240ms var(--rm-ease-out);
+}
+.rm-product-gallery-thumb img {
+  display: block;
+  width: 72px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.rm-product-gallery-thumb:hover,
+.rm-product-gallery-thumb:focus-visible { transform: translateY(-3px); }
+.rm-product-gallery-thumb.is-current { border-color: var(--rm-accent); }
+.rm-product-gallery-thumb:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Product zoom ───────────────────────────────────────────────────────── */
+
+/*
+ * The frame is the lens. It clips, and the one real <img> inside it scales
+ * around whichever point the pointer or the arrow keys have chosen — so there
+ * is no second copy of the photograph to download, decode or announce.
+ */
+.rm-product-zoom {
+  position: relative;
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  cursor: zoom-in;
+}
+.rm-product-zoom.is-zoomed { cursor: zoom-out; }
+.rm-product-zoom-image {
+  display: block;
+  width: 100%;
+  will-change: transform;
+}
+.rm-product-zoom-toggle {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  padding: 0.35rem 0.8rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 82%, transparent);
+  color: var(--rm-cream);
+  font: 500 0.78rem/1.4 var(--rm-body);
+  cursor: pointer;
+}
+.rm-product-zoom-toggle[aria-pressed="true"] { background: var(--rm-accent); }
+.rm-product-zoom:focus-visible,
+.rm-product-zoom-toggle:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Colour swatches ────────────────────────────────────────────────────── */
+
+.rm-swatches {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: var(--rm-body);
+}
+.rm-swatches legend { padding: 0; margin-bottom: 0.5rem; font-weight: 600; }
+.rm-swatches-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 5%, transparent);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.rm-swatches-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rm-ink) 22%, transparent);
+}
+/*
+ * One ring for the whole group, placed from a measurement and moved with a
+ * FLIP. It is appended last, so it paints over the chips — which is what an
+ * outline should do — and `pointer-events: none` is what makes that safe: it
+ * can lie across a label without ever swallowing the click meant for it.
+ */
+.rm-swatches-ring {
+  position: absolute;
+  border-radius: var(--rm-radius-pill);
+  box-shadow: 0 0 0 2px var(--rm-accent);
+  pointer-events: none;
+  will-change: transform;
+}
+.rm-swatches-chip:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Size picker ────────────────────────────────────────────────────────── */
+
+.rm-size-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: var(--rm-body);
+}
+.rm-size-picker legend { padding: 0; margin-bottom: 0.5rem; font-weight: 600; }
+.rm-size-picker-option {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 3rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: calc(var(--rm-radius) / 3);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rm-ink) 25%, transparent);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.rm-size-picker-option:has(input:checked) {
+  box-shadow: inset 0 0 0 2px var(--rm-ink);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+}
+/* Struck and dimmed for the eye; the JS adds ", out of stock" for everyone else. */
+.rm-size-picker-option.is-gone {
+  color: var(--rm-muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    color-mix(in srgb, var(--rm-ink) 7%, transparent) 5px 10px
+  );
+}
+.rm-size-picker-option:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Price tag ──────────────────────────────────────────────────────────── */
+
+.rm-price-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  overflow: hidden; /* the roll leaves and arrives inside this box */
+  font-family: var(--rm-body);
+  font-variant-numeric: tabular-nums; /* digits of one width: no jitter as it rolls */
+}
+.rm-price-tag-now { font-family: var(--rm-display); font-size: 1.35rem; }
+.rm-price-tag.is-reduced .rm-price-tag-now { color: var(--rm-terracotta); }
+.rm-price-tag-was { color: var(--rm-muted); font-size: 0.95rem; }
+
+/* ── Discount badge ─────────────────────────────────────────────────────── */
+
+.rm-discount-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-yellow);
+  color: var(--rm-ink);
+  font: 700 0.75rem/1.5 var(--rm-mono);
+  letter-spacing: 0.02em;
+  transform-origin: center; /* it scales out of its own middle, so nothing shifts */
+}
+
+/* ── Stock meter ────────────────────────────────────────────────────────── */
+
+.rm-stock-meter { display: grid; gap: 0.35rem; font-family: var(--rm-body); font-size: 0.85rem; }
+.rm-stock-meter-track {
+  display: block;
+  height: 6px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 10%, transparent);
+  overflow: hidden;
+}
+/* Full width already; only the scale changes, so the row never re-lays-out. */
+.rm-stock-meter-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-stock-meter-value, 0));
+  transform-origin: left center;
+  transition: transform var(--rm-stock-meter-duration, 520ms) var(--rm-ease-out);
+}
+.rm-stock-meter.is-low .rm-stock-meter-track i { background: var(--rm-terracotta); }
+.rm-stock-meter.is-low .rm-stock-meter-words { color: var(--rm-terracotta); font-weight: 600; }
+.rm-stock-meter.is-gone .rm-stock-meter-words { color: var(--rm-muted); }
+
+/* ── Rating stars ───────────────────────────────────────────────────────── */
+
+.rm-rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-family: var(--rm-body);
+}
+.rm-rating-stars-shape { position: relative; display: inline-block; letter-spacing: 0.08em; }
+.rm-rating-stars-back { color: color-mix(in srgb, var(--rm-ink) 18%, transparent); }
+/* The filled copy sits exactly on top and is clipped to the score — so 4.3
+   stars is genuinely four and a third, on its own layer, with no reflow. */
+.rm-rating-stars-front {
+  position: absolute;
+  inset: 0;
+  color: var(--rm-yellow);
+  white-space: nowrap;
+}
+.rm-rating-stars-number { color: var(--rm-muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+
+/* ── Review summary ─────────────────────────────────────────────────────── */
+
+.rm-review-summary {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--rm-body);
+  font-size: 0.85rem;
+}
+.rm-review-summary-row { display: grid; grid-template-columns: 4.5rem 1fr 5rem; gap: 0.6rem; align-items: center; }
+.rm-review-summary-bar {
+  height: 8px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 9%, transparent);
+  overflow: hidden;
+}
+.rm-review-summary-bar i {
+  display: block;
+  height: 100%;
+  background: var(--rm-yellow);
+  transform: scaleX(var(--rm-review-summary-share, 0));
+  transform-origin: left center;
+}
+.rm-review-summary-count { color: var(--rm-muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ── Add to cart ────────────────────────────────────────────────────────── */
+
+/*
+ * All three faces share one grid cell, so the button is already as wide as its
+ * widest state and swapping between them cannot resize it mid-click. Inactive
+ * faces are `visibility: hidden` rather than transparent, because
+ * invisible-but-present text is still read aloud and still found by
+ * find-in-page — a tick nobody can see should not be in either. That is also
+ * why the JS marks all three `aria-hidden` and gives the button a fixed
+ * `aria-label`: with the faces in the tree the visible one *is* the button's
+ * name, and the name would change under the live region saying the same thing.
+ */
+.rm-add-to-cart {
+  display: inline-grid;
+  place-items: center;
+  padding: 0.7rem 1.4rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font: 600 0.9rem/1.3 var(--rm-body);
+  cursor: pointer;
+}
+.rm-add-to-cart-face { grid-area: 1 / 1; visibility: hidden; }
+.rm-add-to-cart-face.is-on { visibility: visible; }
+.rm-add-to-cart[aria-disabled="true"] { cursor: progress; }
+.rm-add-to-cart:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+/* ── Wishlist heart ─────────────────────────────────────────────────────── */
+
+.rm-wishlist {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rm-cream) 88%, transparent);
+  color: var(--rm-ink);
+  cursor: pointer;
+}
+.rm-wishlist-heart { display: grid; place-items: center; width: 22px; height: 22px; }
+.rm-wishlist-heart svg { width: 100%; height: 100%; }
+.rm-wishlist.is-on { color: var(--rm-terracotta); }
+.rm-wishlist.is-on svg path { fill: currentColor; }
+/* The burst is its own layer; the heart never moves the card it sits on. */
+.rm-wishlist-ring {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 2px solid var(--rm-terracotta);
+  pointer-events: none;
+  transform: scale(0.5);
+}
+.rm-wishlist:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Compare tray ───────────────────────────────────────────────────────── */
+
+/* Fixed, so the first product added does not push the catalogue upward. */
+.rm-compare-tray {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  translate: -50% 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  box-shadow: 0 20px 46px -24px rgb(0 0 0 / 0.7);
+  font-family: var(--rm-body);
+}
+.rm-compare-tray-list { display: flex; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.rm-compare-tray-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.25rem;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-cream) 14%, transparent);
+  font-size: 0.8rem;
+}
+.rm-compare-tray-item img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.rm-compare-tray-drop {
+  border: 0;
+  border-radius: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  background: none;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rm-compare-tray-drop:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Quick view ─────────────────────────────────────────────────────────── */
+
+.rm-quick-view-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--rm-ink) 62%, transparent);
+  backdrop-filter: blur(3px);
+}
+.rm-quick-view {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  z-index: 81;
+  width: min(46rem, calc(100vw - 2rem));
+  max-height: min(44rem, calc(100vh - 2rem));
+  overflow: auto;
+  padding: 1.6rem;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-quick-view-close {
+  position: absolute;
+  right: 0.9rem;
+  top: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rm-ink) 8%, transparent);
+  color: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rm-quick-view-close:focus-visible,
+.rm-quick-view:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Product tabs ───────────────────────────────────────────────────────── */
+
+.rm-product-tabs { font-family: var(--rm-body); }
+.rm-product-tabs-bar {
+  position: relative;
+  display: flex;
+  gap: 0.3rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--rm-ink) 14%, transparent);
+  overflow-x: auto;
+}
+.rm-product-tabs-tab {
+  border: 0;
+  background: none;
+  padding: 0.7rem 0.9rem;
+  color: var(--rm-muted);
+  font: 600 0.9rem/1.3 var(--rm-body);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.rm-product-tabs-tab.is-current { color: var(--rm-ink); }
+.rm-product-tabs-tab:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: -3px; }
+/*
+ * One underline for the whole bar. Its box is set once from a measurement and
+ * the movement between tabs is a transform, so an indicator sliding across six
+ * tabs costs nothing in layout.
+ */
+.rm-product-tabs-line {
+  position: absolute;
+  bottom: -1px;
+  height: 2px;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  pointer-events: none;
+  will-change: transform;
+}
+.rm-product-tabs-panel { padding: 1rem 0; }
+.rm-product-tabs-panel:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 4px; }
+
+/* ── Variant picker ─────────────────────────────────────────────────────── */
+
+.rm-variant-picker { display: grid; gap: 1rem; font-family: var(--rm-body); }
+.rm-variant-picker.is-unavailable .rm-swatches-ring { box-shadow: 0 0 0 2px var(--rm-terracotta); }
+/* aria-disabled, not disabled — it can still be reached, and still explains itself. */
+.rm-variant-picker .is-off { opacity: 0.55; }
+.rm-variant-picker .is-off::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    color-mix(in srgb, var(--rm-ink) 45%, transparent) 50%,
+    transparent calc(50% + 1px)
+  );
+  pointer-events: none;
+}
+
+/* ── Breadcrumb trail ───────────────────────────────────────────────────── */
+
+.rm-breadcrumb-trail { font-family: var(--rm-body); font-size: 0.85rem; }
+.rm-breadcrumb-trail-list {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+}
+.rm-breadcrumb-trail-list > li { display: flex; align-items: center; gap: 0.4rem; }
+.rm-breadcrumb-trail-list > li + li::before { content: "/"; color: var(--rm-muted); }
+.rm-breadcrumb-trail-list a { color: var(--rm-muted); text-decoration: none; }
+.rm-breadcrumb-trail-list a:hover,
+.rm-breadcrumb-trail-list a:focus-visible { color: var(--rm-ink); text-decoration: underline; }
+.rm-breadcrumb-trail-list .is-current { color: var(--rm-ink); font-weight: 600; }
+/* A real button, not an ellipsis: the folded levels can be got back. */
+.rm-breadcrumb-trail-more button {
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  padding: 0.1rem 0.5rem;
+  background: color-mix(in srgb, var(--rm-ink) 9%, transparent);
+  color: var(--rm-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.rm-breadcrumb-trail-more button:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Sort bar ───────────────────────────────────────────────────────────── */
+
+.rm-sort-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--rm-body);
+  font-size: 0.85rem;
+}
+/* The native control, dressed — never replaced. */
+.rm-sort-bar-select {
+  appearance: none;
+  padding: 0.45rem 2rem 0.45rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 20%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background:
+    linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 15px) 55% / 5px 5px no-repeat,
+    linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 10px) 55% / 5px 5px no-repeat,
+    var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.rm-sort-bar-select:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Filter panel ───────────────────────────────────────────────────────── */
+
+.rm-filter-panel { position: relative; font-family: var(--rm-body); font-size: 0.85rem; }
+.rm-filter-panel-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 20%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.rm-filter-panel.is-open .rm-filter-panel-trigger { border-color: var(--rm-ink); }
+.rm-filter-panel-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-accent);
+  color: var(--rm-cream);
+  font: 700 0.7rem/1 var(--rm-mono);
+}
+/*
+ * Absolutely positioned on purpose. A disclosure that opens in the flow has to
+ * animate a height, and animating a height re-lays-out every product below it
+ * on every frame. Out of the flow, opening is a clip-path and the grid behind
+ * does not move at all.
+ */
+.rm-filter-panel-body {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.4rem);
+  z-index: 40;
+  display: grid;
+  gap: 0.4rem;
+  min-width: 12rem;
+  padding: 0.8rem;
+  border-radius: calc(var(--rm-radius) / 1.6);
+  background: var(--rm-cream);
+  box-shadow: 0 22px 48px -26px rgb(0 0 0 / 0.55);
+}
+.rm-filter-panel-body label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.rm-filter-panel-trigger:focus-visible,
+.rm-filter-panel-body input:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+
+/* ── Result count ───────────────────────────────────────────────────────── */
+
+.rm-result-count {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  margin: 0;
+  overflow: hidden; /* the old digits leave inside this box, not beside it */
+  font-family: var(--rm-body);
+  font-size: 0.9rem;
+}
+.rm-result-count-face {
+  display: inline-block;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.rm-result-count-face.is-leaving { position: absolute; }
+.rm-result-count-noun { color: var(--rm-muted); }
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+/*
+ * Everything above still ends in its finished state; only the travel goes. The
+ * bars stay filled, the underline stays under the chosen tab and the tray stays
+ * open — nothing here is allowed to leave content invisible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-product-card,
+  .rm-product-gallery-thumb,
+  .rm-stock-meter-track i {
+    transition-duration: 1ms;
+  }
+  .rm-product-card.is-lifted { transform: none; }
+  .rm-product-gallery-thumb:hover,
+  .rm-product-gallery-thumb:focus-visible { transform: none; }
+}
+
+
+/* ══ Writing and editing surfaces ══════════════════════════════════════════════ */
+
+/*
+ * Writing and editing surfaces — stylesheet.
+ *
+ * Four things in here are worth explaining, because they are the reason none
+ * of this chrome disturbs the text it decorates.
+ *
+ * Every floating panel — the bubble menu, the slash menu, the mention picker —
+ * is `position: fixed` at the origin and moved with a `transform` the script
+ * sets. Nothing is positioned with `top` and `left` on a per-frame basis, so
+ * following a caret costs a composited transform rather than a layout.
+ *
+ * Nothing is hidden by this file. Every panel here is visible by default and
+ * the script hides it on mount, so a page whose JavaScript never arrives shows
+ * a list of commands and a row of buttons rather than a blank column. The flip
+ * side is the block of `[hidden]` rules below: an author `display` beats the
+ * user-agent rule for `[hidden]`, so a `display: flex` panel that the script
+ * hides would still be laid out and would still take clicks. Each one is
+ * spelled out.
+ *
+ * The comment thread opens with `grid-template-rows: 0fr → 1fr`, the only
+ * honest way to transition to a height nobody can know in advance, and the
+ * autosave badge stacks its three words in one grid cell so the badge is as
+ * wide as the longest of them before anything happens and never resizes the
+ * header it sits in.
+ *
+ * The code block sets `color: inherit`. A fixed ink on a surface people paste
+ * their own snippets into draws black text on a dark page.
+ *
+ * Crafted by SoyRage Agency — https://soyrage.es/
+ * MIT licensed (see LICENSE).
+ */
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/* Real text with no visual weight. Not `display: none`, which is silence. */
+.rm-editor-quiet,
+.rm-editor-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * HIDDEN MEANS HIDDEN.
+ *
+ * Every class below carries a `display`, and the script sets `hidden` on it.
+ * Without these rules the panel is invisible to nobody: it still occupies its
+ * place in the layout and still swallows the clicks meant for the text.
+ */
+.rm-bubble-menu[hidden],
+.rm-slash-menu[hidden],
+.rm-slash-menu-option[hidden],
+.rm-slash-menu-empty[hidden],
+.rm-mention-picker[hidden],
+.rm-mention-picker-option[hidden],
+.rm-mention-picker-empty[hidden],
+.rm-selection-toolbar[hidden],
+.rm-outline-pane-group[hidden],
+.rm-autosave-badge-retry[hidden] {
+  display: none;
+}
+
+/* ── Toolbar ────────────────────────────────────────────────────────────── */
+
+.rm-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 6%, transparent);
+  font-family: var(--rm-body);
+}
+.rm-editor-toolbar.is-vertical {
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: var(--rm-radius);
+}
+
+.rm-editor-toolbar-button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.86rem;
+  line-height: 1.1;
+  cursor: pointer;
+  transition: background-color 160ms var(--rm-ease-out), color 160ms var(--rm-ease-out);
+}
+.rm-editor-toolbar-button:hover {
+  background: color-mix(in srgb, var(--rm-ink) 10%, transparent);
+}
+/*
+ * The pressed state is a fill and an ink, never a colour on its own — and
+ * never a weight. The bar is a wrapping flex row, so bolding a label widens
+ * that button, slides every button to its right and can re-wrap the whole
+ * row: pressing Bold would move Italic out from under the pointer, which is
+ * exactly what the scale feedback in the script exists to avoid.
+ */
+.rm-editor-toolbar-button[aria-pressed="true"] {
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+}
+.rm-editor-toolbar-button:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+/* ── Bubble menu ────────────────────────────────────────────────────────── */
+
+.rm-bubble-menu {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 60;
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 28%);
+  font-family: var(--rm-body);
+}
+.rm-bubble-menu button {
+  padding: 6px 11px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.rm-bubble-menu button:hover,
+.rm-bubble-menu button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--rm-cream) 22%, transparent);
+}
+.rm-bubble-menu button:focus-visible {
+  outline: 2px solid var(--rm-yellow);
+  outline-offset: 1px;
+}
+
+/* ── Slash menu and mention picker ──────────────────────────────────────── */
+
+.rm-slash-menu,
+.rm-mention-picker {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 60;
+  display: block;
+  max-height: 16rem;
+  width: max-content;
+  min-width: 13rem;
+  max-width: min(22rem, 90vw);
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+  border-radius: 14px;
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 22%);
+  font-family: var(--rm-body);
+}
+
+.rm-slash-menu-option,
+.rm-mention-picker-option {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 0.88rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+/*
+ * The active option is `aria-selected`, not a class. One attribute drives the
+ * paint and the announcement, so they can never disagree.
+ */
+.rm-slash-menu-option[aria-selected="true"],
+.rm-mention-picker-option[aria-selected="true"] {
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+}
+
+/* An `<li>` now, so it needs its own marker suppressed. */
+.rm-slash-menu-empty,
+.rm-mention-picker-empty {
+  display: block;
+  margin: 0;
+  list-style: none;
+  padding: 10px;
+  color: var(--rm-muted);
+  font-size: 0.84rem;
+}
+
+/* ── Block handles ──────────────────────────────────────────────────────── */
+
+.rm-block-handle {
+  /* Room in the margin for the grips, so no paragraph loses any width. */
+  padding-inline-start: 2rem;
+}
+
+.rm-block-handle-block {
+  position: relative;
+}
+
+.rm-block-handle-grip {
+  position: absolute;
+  inset-inline-start: -1.9rem;
+  inset-block-start: 0.15em;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--rm-muted);
+  cursor: grab;
+  /*
+   * Without this the first vertical drag on a touch screen is claimed by the
+   * scroller, the browser fires `pointercancel` and the drag dies before a
+   * block moves — a handle that looks draggable and is not. It is a 1.4rem
+   * button in the margin, so the page loses no scrollable area worth having.
+   */
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 160ms var(--rm-ease-out), background-color 160ms var(--rm-ease-out);
+}
+.rm-block-handle-grip svg { width: 15px; height: 15px; fill: currentColor; }
+
+/*
+ * The grip fades in on hover *and* on focus. A handle that only answers the
+ * pointer is a handle half the audience never learns exists.
+ */
+.rm-block-handle-block:hover .rm-block-handle-grip,
+.rm-block-handle-grip:focus-visible {
+  opacity: 1;
+}
+.rm-block-handle-grip:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 1px;
+  background: color-mix(in srgb, var(--rm-accent) 16%, transparent);
+}
+
+.rm-block-handle-block.is-picked {
+  outline: 2px dashed var(--rm-accent);
+  outline-offset: 4px;
+}
+.rm-block-handle-block.is-dragging {
+  position: relative;
+  z-index: 5;
+  cursor: grabbing;
+  filter: drop-shadow(0 12px 22px rgb(0 0 0 / 20%));
+}
+
+/* ── Code block ─────────────────────────────────────────────────────────── */
+
+.rm-fenced-code {
+  position: relative;
+  margin: 0;
+  padding: 1.15rem 1.2rem;
+  overflow-x: auto;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--rm-ink) 8%, transparent);
+  /* Never a fixed ink: the snippet inherits whatever the page is using. */
+  color: inherit;
+  font-family: var(--rm-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+.rm-fenced-code.is-numbered { padding-inline-start: 3.1rem; }
+
+.rm-fenced-code-chrome {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rm-fenced-code-lang {
+  padding: 2px 9px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 12%, transparent);
+  color: var(--rm-muted);
+  font-family: var(--rm-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/*
+ * Both words occupy the same cell, so the button is as wide as "Copied" from
+ * the start and confirming a copy never resizes the corner.
+ */
+.rm-fenced-code-copy {
+  display: grid;
+  padding: 4px 11px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-family: var(--rm-body);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.rm-fenced-code-copy > span {
+  grid-area: 1 / 1;
+  transition: opacity 180ms var(--rm-ease-out);
+}
+.rm-fenced-code-copy > span.is-done { opacity: 0; }
+.rm-fenced-code-copy.is-done > span { opacity: 0; }
+.rm-fenced-code-copy.is-done > span.is-done { opacity: 1; }
+.rm-fenced-code-copy:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+.rm-fenced-code-gutter {
+  position: absolute;
+  inset-block-start: 1.15rem;
+  inset-inline-start: 0.9rem;
+  display: grid;
+  color: var(--rm-muted);
+  font-size: 0.78rem;
+  line-height: 1.74;
+  text-align: end;
+  user-select: none;
+}
+.rm-fenced-code-gutter i { font-style: normal; }
+
+/* ── Markdown preview ───────────────────────────────────────────────────── */
+
+.rm-markdown-preview {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: 1fr 1fr;
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, var(--rm-ink) 12%, transparent);
+  overflow: hidden;
+}
+@media (max-width: 42rem) {
+  .rm-markdown-preview { grid-template-columns: 1fr; }
+}
+
+.rm-markdown-preview-source,
+.rm-markdown-preview-view {
+  max-height: 60vh;
+  padding: 1.2rem;
+  overflow-y: auto;
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  overscroll-behavior: contain;
+}
+.rm-markdown-preview-source {
+  border: 0;
+  resize: none;
+  font-family: var(--rm-mono);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+.rm-markdown-preview-source:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: -2px;
+}
+.rm-markdown-preview-view { font-family: var(--rm-body); line-height: 1.6; }
+
+/* ── Find and replace ───────────────────────────────────────────────────── */
+
+/*
+ * The matches, painted by the CSS Custom Highlight API. No element is created,
+ * so the document being searched is never touched — which is why the caret and
+ * the undo stack survive a search.
+ */
+::highlight(rm-find-match) {
+  background-color: color-mix(in srgb, var(--rm-yellow) 70%, transparent);
+  color: var(--rm-ink);
+}
+
+.rm-find-replace {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--rm-ink) 6%, transparent);
+  font-family: var(--rm-body);
+}
+
+.rm-find-replace-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.rm-find-replace-field {
+  flex: 1 1 8rem;
+  min-width: 0;
+  padding: 7px 11px;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 20%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.86rem;
+}
+.rm-find-replace-field:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 1px;
+}
+
+.rm-find-replace-count {
+  min-width: 5.5rem;
+  color: var(--rm-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.rm-find-replace-step,
+.rm-find-replace-action {
+  padding: 6px 11px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 10%, transparent);
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.rm-find-replace-step:hover,
+.rm-find-replace-action:hover {
+  background: color-mix(in srgb, var(--rm-ink) 18%, transparent);
+}
+.rm-find-replace-step:focus-visible,
+.rm-find-replace-action:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+/* ── Comment thread ─────────────────────────────────────────────────────── */
+
+.rm-comment-thread-anchor {
+  background: color-mix(in srgb, var(--rm-yellow) 55%, transparent);
+  border-radius: 3px;
+  box-shadow: 0 1px 0 var(--rm-terracotta);
+  cursor: pointer;
+}
+.rm-comment-thread-anchor:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+.rm-comment-thread {
+  border-radius: 14px;
+  background: var(--rm-cream);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rm-ink) 14%, transparent);
+  font-family: var(--rm-body);
+}
+
+.rm-comment-thread-toggle {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+.rm-comment-thread-toggle::after {
+  content: "\203a";
+  color: var(--rm-muted);
+  transition: rotate 220ms var(--rm-ease-out);
+}
+.rm-comment-thread.is-open .rm-comment-thread-toggle::after { rotate: 90deg; }
+.rm-comment-thread-toggle:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: -2px;
+}
+
+/* A height nobody can know in advance, transitioned honestly. */
+.rm-comment-thread-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 280ms var(--rm-ease-in-out);
+}
+.rm-comment-thread.is-open .rm-comment-thread-body { grid-template-rows: 1fr; }
+.rm-comment-thread-inner {
+  min-height: 0;
+  overflow: hidden;
+  padding-inline: 14px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+.rm-comment-thread.is-open .rm-comment-thread-inner { padding-block-end: 12px; }
+
+.rm-comment-thread-resolve {
+  margin-block-start: 10px;
+  padding: 5px 12px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 10%, transparent);
+  color: inherit;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.rm-comment-thread-resolve[aria-pressed="true"] {
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+}
+.rm-comment-thread.is-resolved .rm-comment-thread-toggle { color: var(--rm-muted); }
+.rm-comment-thread-resolve:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+/* ── Suggestion ─────────────────────────────────────────────────────────── */
+
+.rm-suggestion {
+  border-radius: 3px;
+  padding-inline: 2px;
+  text-decoration: none;
+}
+.rm-suggestion.is-insert {
+  background: color-mix(in srgb, var(--rm-accent) 22%, transparent);
+  box-shadow: 0 1px 0 var(--rm-accent);
+}
+.rm-suggestion.is-delete {
+  background: color-mix(in srgb, var(--rm-terracotta) 26%, transparent);
+  text-decoration: line-through;
+}
+
+.rm-suggestion-actions {
+  display: inline-flex;
+  gap: 4px;
+  margin-inline-start: 5px;
+  vertical-align: baseline;
+}
+/*
+ * Accepting and rejecting are irreversible in opposite directions, so these
+ * two must not be mis-tappable. 1.5rem clears the 24px floor of WCAG 2.5.8
+ * while the glyph inside stays small, and the gap above is widened to match.
+ */
+.rm-suggestion-accept,
+.rm-suggestion-reject {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-family: var(--rm-body);
+  font-size: 0.68rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rm-suggestion-accept { background: var(--rm-accent); }
+.rm-suggestion-reject { background: var(--rm-muted); }
+.rm-suggestion-accept:focus-visible,
+.rm-suggestion-reject:focus-visible {
+  outline: 2px solid var(--rm-ink);
+  outline-offset: 2px;
+}
+
+/* ── Version chip ───────────────────────────────────────────────────────── */
+
+.rm-version-chip {
+  display: inline-flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 6px 13px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, var(--rm-ink) 8%, transparent);
+  color: inherit;
+  font-family: var(--rm-body);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background-color 180ms var(--rm-ease-out);
+}
+.rm-version-chip-name { font-weight: 600; }
+.rm-version-chip-when { color: var(--rm-muted); font-size: 0.74rem; }
+.rm-version-chip[aria-current="true"] {
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+}
+.rm-version-chip[aria-current="true"] .rm-version-chip-when {
+  color: color-mix(in srgb, var(--rm-cream) 70%, transparent);
+}
+.rm-version-chip:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+}
+
+/* ── Outline pane ───────────────────────────────────────────────────────── */
+
+.rm-outline-pane { font-family: var(--rm-body); }
+
+.rm-outline-pane-tree,
+.rm-outline-pane-group {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rm-outline-pane-group { padding-inline-start: 0.85rem; }
+
+.rm-outline-pane-item {
+  display: block;
+  padding: 5px 9px;
+  border-inline-start: 2px solid transparent;
+  border-radius: 0 8px 8px 0;
+  color: var(--rm-muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.rm-outline-pane-item:hover { color: var(--rm-ink); }
+.rm-outline-pane-item:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: -2px;
+}
+/* Where you are: a rule, a weight and an ink — three signals, not one colour. */
+.rm-outline-pane-item[aria-current="location"] {
+  border-inline-start-color: var(--rm-accent);
+  background: color-mix(in srgb, var(--rm-accent) 10%, transparent);
+  color: var(--rm-ink);
+  font-weight: 600;
+}
+
+/* ── Word count ─────────────────────────────────────────────────────────── */
+
+.rm-word-count {
+  font-family: var(--rm-body);
+  font-size: 0.78rem;
+  color: var(--rm-muted);
+  font-variant-numeric: tabular-nums;
+}
+.rm-word-count-number { font-weight: 600; }
+.rm-word-count.is-near { color: var(--rm-terracotta); }
+/* Colour only: a heavier weight would undo the tabular-nums above it. */
+.rm-word-count.is-over { color: var(--rm-terracotta); }
+
+/* ── Autosave badge ─────────────────────────────────────────────────────── */
+
+.rm-autosave-badge {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  margin: 0;
+  font-family: var(--rm-body);
+  font-size: 0.78rem;
+  color: var(--rm-muted);
+}
+
+/* All three words in one cell: the badge never changes width. */
+.rm-autosave-badge-stack { display: grid; }
+.rm-autosave-badge-state {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 200ms var(--rm-ease-out);
+}
+.rm-autosave-badge-state.is-on { opacity: 1; }
+.rm-autosave-badge.is-failed { color: var(--rm-terracotta); font-weight: 600; }
+
+.rm-autosave-badge-retry {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-terracotta);
+  color: var(--rm-cream);
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+.rm-autosave-badge-retry:focus-visible {
+  outline: 2px solid var(--rm-ink);
+  outline-offset: 2px;
+}
+
+/* ── Selection toolbar ──────────────────────────────────────────────────── */
+
+.rm-selection-toolbar {
+  position: fixed;
+  inset-inline: 0;
+  z-index: 55;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  margin-inline: auto;
+  padding: 6px;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  box-shadow: 0 12px 34px rgb(0 0 0 / 30%);
+  font-family: var(--rm-body);
+}
+.rm-selection-toolbar.is-bottom { inset-block-end: max(1rem, env(safe-area-inset-bottom)); }
+.rm-selection-toolbar.is-top { inset-block-start: 1rem; }
+
+.rm-selection-toolbar button {
+  padding: 7px 13px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.rm-selection-toolbar button:hover {
+  background: color-mix(in srgb, var(--rm-cream) 20%, transparent);
+}
+.rm-selection-toolbar button:focus-visible {
+  outline: 2px solid var(--rm-yellow);
+  outline-offset: 1px;
+}
+
+/* ── Typewriter mode ────────────────────────────────────────────────────── */
+
+.rm-typewriter {
+  /* Room to scroll the last line up to the anchor, rather than stopping at it. */
+  padding-block-end: 45vh;
+  scroll-behavior: auto;
+}
+
+/*
+ * Focus dimming is opacity alone: nothing moves, and the dimmed paragraphs are
+ * still selectable, still searchable and still read aloud in full.
+ */
+.rm-typewriter.is-dimmed > * {
+  opacity: 0.38;
+  transition: opacity 320ms var(--rm-ease-out);
+}
+.rm-typewriter.is-dimmed > .is-focus-line { opacity: 1; }
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+/*
+ * Transitions removed, never states. Everything above still ends where it was
+ * going to end; it simply gets there at once.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-editor-toolbar-button,
+  .rm-block-handle-grip,
+  .rm-fenced-code-copy > span,
+  .rm-comment-thread-toggle::after,
+  .rm-comment-thread-body,
+  .rm-version-chip,
+  .rm-autosave-badge-state,
+  .rm-typewriter.is-dimmed > * {
+    transition-duration: 1ms;
+  }
+}
+
+
+/* ══ Calendars and time ══════════════════════════════════════════════ */
+
+/* ── Schedule ───────────────────────────────────────────────────────────── */
+
+/*
+ * Four techniques carry this file, and each one exists to avoid a reflow.
+ *
+ * Anything placed by time — a day's events, a chip in a lane, the now line —
+ * is positioned as a percentage of its container's hour window. Percentages
+ * mean the day rescales with its box without any JavaScript running on resize,
+ * and the values arrive as custom properties so the arithmetic lives in one
+ * place rather than being baked into a style attribute.
+ *
+ * Anything that fills — the range band, the duration bar — is `scaleX` on a
+ * full-width rule with `transform-origin: left`. A width transition reflows
+ * every sibling on every frame; a scale is one composited layer.
+ *
+ * The one box here that genuinely changes size is the recurrence builder's
+ * weekday row, and it does it by interpolating a grid track from `0fr` to
+ * `1fr`. The inner box needs `min-height: 0`, or the track can never reach
+ * zero — that single missing line is why this technique is usually reported
+ * as not working.
+ *
+ * Selection markers move rather than blink: `.rm-month-grid-marker` is one
+ * element that the script FLIPs from cell to cell, so what you see is a
+ * selection travelling instead of two unrelated colour changes.
+ *
+ * Nothing in this file hides anything at rest. There is no rule holding a
+ * panel at zero opacity waiting to be revealed, because a page whose
+ * JavaScript failed must still be a page you can read a calendar on. The two
+ * `[hidden]` rules below are the opposite case and are mandatory: both classes
+ * are given a `display` here, and an author `display` beats the user agent's
+ * rule for `[hidden]`, so without them a hidden now-line would still be laid
+ * out and a hidden warning would still take a row.
+ */
+
+/* Announced, never drawn. Not `display: none`, which is not announced at all. */
+.rm-schedule-live,
+.rm-schedule-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── monthGrid ──────────────────────────────────────────────────────────── */
+
+.rm-month-grid {
+  border-collapse: collapse;
+  width: 100%;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-month-grid caption {
+  padding-bottom: 10px;
+  font-family: var(--rm-display);
+  font-size: 1.1rem;
+  text-align: left;
+}
+.rm-month-grid th {
+  padding: 6px 0;
+  color: var(--rm-muted);
+  font-family: var(--rm-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rm-month-grid-day {
+  position: relative;
+  padding: 0;
+  height: 42px;
+  text-align: center;
+  cursor: pointer;
+  isolation: isolate;
+}
+.rm-month-grid-day > time {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.rm-month-grid-day:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: -2px;
+  border-radius: var(--rm-radius, 8px);
+}
+.rm-month-grid-day.is-today > time { font-weight: 700; }
+.rm-month-grid-day.is-today::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 6px;
+  z-index: 1;
+  margin: 0 auto;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rm-terracotta);
+}
+.rm-month-grid-day.is-chosen { color: var(--rm-cream); }
+
+/* One marker for the whole grid; the script moves it and plays the difference. */
+.rm-month-grid-marker {
+  position: absolute;
+  inset: 3px;
+  z-index: 0;
+  border-radius: var(--rm-radius, 8px);
+  background: var(--rm-accent);
+}
+
+/* ── weekGrid ───────────────────────────────────────────────────────────── */
+
+.rm-week-grid {
+  border-collapse: collapse;
+  width: 100%;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  table-layout: fixed;
+}
+.rm-week-grid-head {
+  padding: 10px 6px;
+  border-bottom: 2px solid color-mix(in srgb, var(--rm-muted) 35%, transparent);
+  cursor: pointer;
+  text-align: left;
+  transition: color 240ms var(--rm-ease-out);
+}
+.rm-week-grid-head:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: -2px;
+}
+.rm-week-grid-head.is-today { color: var(--rm-terracotta); }
+.rm-week-grid-head.is-chosen {
+  border-bottom-color: var(--rm-accent);
+  color: var(--rm-accent);
+}
+.rm-week-grid td {
+  padding: 8px 6px;
+  vertical-align: top;
+  transition: background-color 260ms var(--rm-ease-out);
+}
+.rm-week-grid td.is-chosen {
+  background: color-mix(in srgb, var(--rm-accent) 10%, transparent);
+}
+.rm-week-grid td > ul,
+.rm-week-grid td > ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.rm-week-grid li {
+  padding: 6px 8px;
+  border-radius: var(--rm-radius, 8px);
+  background: color-mix(in srgb, var(--rm-yellow) 30%, transparent);
+  font-size: 0.82rem;
+}
+
+/* ── dayTimeline ────────────────────────────────────────────────────────── */
+
+.rm-day-timeline {
+  position: relative;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 0 12px;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-day-timeline-ruler {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-height: calc(var(--rm-day-timeline-hours, 12) * 54px);
+}
+.rm-day-timeline-ruler li {
+  position: absolute;
+  top: var(--rm-day-timeline-at, 0%);
+  right: 0;
+  transform: translateY(-50%);
+  color: var(--rm-muted);
+  font-family: var(--rm-mono);
+  font-size: 0.7rem;
+}
+.rm-day-timeline-ruler li::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 6px);
+  width: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--rm-muted) 40%, transparent);
+}
+.rm-day-timeline > ol,
+.rm-day-timeline > ul {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-height: calc(var(--rm-day-timeline-hours, 12) * 54px);
+  border-left: 1px solid color-mix(in srgb, var(--rm-muted) 30%, transparent);
+}
+
+.rm-day-timeline-event {
+  position: absolute;
+  top: var(--rm-day-timeline-top, 0%);
+  height: var(--rm-day-timeline-size, 6%);
+  left: 8px;
+  right: 0;
+  overflow: hidden;
+  padding: 6px 10px;
+  border-left: 3px solid var(--rm-accent);
+  border-radius: 0 var(--rm-radius, 8px) var(--rm-radius, 8px) 0;
+  background: color-mix(in srgb, var(--rm-accent) 12%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+.rm-day-timeline-event time { font-family: var(--rm-mono); font-size: 0.72rem; color: var(--rm-muted); }
+
+/* ── nowLine ────────────────────────────────────────────────────────────── */
+
+/*
+ * Mandatory, not tidiness. This class has a `display`, and an author display
+ * beats the user agent's `[hidden] { display: none }`, so on a day that is not
+ * today the line would otherwise still be drawn across the grid.
+ */
+.rm-now-line[hidden] { display: none; }
+
+.rm-now-line {
+  position: absolute;
+  top: var(--rm-now-line-at, 50%);
+  left: 0;
+  right: 0;
+  display: block;
+  height: 0;
+  border-top: 2px solid var(--rm-terracotta);
+  pointer-events: none;
+  transition: top 600ms var(--rm-ease-out);
+}
+.rm-now-line::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rm-terracotta);
+}
+
+/* ── miniCalendar ───────────────────────────────────────────────────────── */
+
+.rm-mini-calendar {
+  border-collapse: collapse;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  font-size: 0.78rem;
+}
+.rm-mini-calendar th {
+  padding: 3px 0;
+  color: var(--rm-muted);
+  font-family: var(--rm-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+}
+.rm-mini-calendar-day {
+  position: relative;
+  padding: 4px 6px 10px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.rm-mini-calendar-day.is-today {
+  font-weight: 700;
+  color: var(--rm-terracotta);
+}
+.rm-mini-calendar-dots {
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+.rm-mini-calendar-dots i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--rm-accent);
+}
+/* More than fits: the count is in the label, so the mark is only a hint. */
+.rm-mini-calendar-dots.is-overflowing::after {
+  content: "+";
+  margin-left: 1px;
+  color: var(--rm-accent);
+  font-family: var(--rm-mono);
+  font-size: 0.55rem;
+  line-height: 0.5;
+}
+
+/* ── dateRange ──────────────────────────────────────────────────────────── */
+
+.rm-date-range-note[hidden] { display: none; }
+
+.rm-date-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  align-items: end;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-date-range label { display: block; font-size: 0.78rem; color: var(--rm-muted); }
+.rm-date-range input[type="date"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 45%, transparent);
+  border-radius: var(--rm-radius, 8px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.rm-date-range-bar {
+  grid-column: 1 / -1;
+  position: relative;
+  display: block;
+  height: 4px;
+  border-radius: var(--rm-radius-pill, 999px);
+  background: color-mix(in srgb, var(--rm-muted) 25%, transparent);
+  overflow: hidden;
+}
+.rm-date-range-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-date-range-fill, 0));
+  transform-origin: left;
+  transition: transform 420ms var(--rm-ease-out);
+}
+.rm-date-range-note {
+  grid-column: 1 / -1;
+  display: block;
+  margin: 0;
+  color: var(--rm-terracotta);
+  font-size: 0.8rem;
+}
+
+/* ── timePicker ─────────────────────────────────────────────────────────── */
+
+.rm-time-picker {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 6px 14px;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-time-picker label { font-size: 0.78rem; color: var(--rm-muted); }
+.rm-time-picker input[type="time"] {
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 45%, transparent);
+  border-radius: var(--rm-radius, 8px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-family: var(--rm-mono);
+}
+/*
+ * `color: inherit`, never a fixed ink. The face is drawn entirely with
+ * `currentColor`, so a fixed value here would draw a black clock on a dark
+ * page.
+ */
+.rm-time-picker-face {
+  grid-row: 1 / 3;
+  grid-column: 2;
+  width: 96px;
+  height: 96px;
+  color: inherit;
+  cursor: grab;
+  touch-action: none;
+}
+.rm-time-picker-face:active { cursor: grabbing; }
+.rm-time-picker-face svg { width: 100%; height: 100%; display: block; }
+.rm-time-picker-hour,
+.rm-time-picker-minute {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  transition: transform var(--rm-time-picker-duration, 420ms) var(--rm-ease-out);
+}
+.rm-time-picker-minute { color: var(--rm-accent); stroke: currentColor; }
+
+/* ── durationField ──────────────────────────────────────────────────────── */
+
+.rm-duration-field {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 6px 14px;
+  align-items: end;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-duration-field label { display: block; font-size: 0.78rem; color: var(--rm-muted); }
+.rm-duration-field input[type="number"] {
+  width: 5.5ch;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 45%, transparent);
+  border-radius: var(--rm-radius, 8px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-family: var(--rm-mono);
+}
+.rm-duration-field-bar {
+  grid-column: 1 / -1;
+  position: relative;
+  display: block;
+  height: 4px;
+  border-radius: var(--rm-radius-pill, 999px);
+  background: color-mix(in srgb, var(--rm-muted) 25%, transparent);
+  overflow: hidden;
+}
+.rm-duration-field-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-duration-field-fill, 0));
+  transform-origin: left;
+  transition: transform 380ms var(--rm-ease-out), background-color 240ms var(--rm-ease-out);
+}
+.rm-duration-field.is-over .rm-duration-field-bar::after { background: var(--rm-terracotta); }
+
+/* ── timezonePill ───────────────────────────────────────────────────────── */
+
+.rm-timezone-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  padding: 3px 12px;
+  border: 1px solid currentColor;
+  border-radius: var(--rm-radius-pill, 999px);
+  color: var(--rm-muted);
+  font-family: var(--rm-body);
+  font-size: 0.8rem;
+}
+.rm-timezone-pill.is-ahead { color: var(--rm-terracotta); }
+.rm-timezone-pill.is-behind { color: var(--rm-accent); }
+.rm-timezone-pill.is-level { color: var(--rm-muted); }
+.rm-timezone-pill time { font-family: var(--rm-mono); }
+.rm-timezone-pill-detail { opacity: 0.92; }
+
+/* ── availabilityGrid ───────────────────────────────────────────────────── */
+
+.rm-availability-grid {
+  border-collapse: collapse;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  user-select: none;
+}
+.rm-availability-grid th {
+  padding: 6px 8px;
+  color: var(--rm-muted);
+  font-family: var(--rm-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.rm-availability-grid th[scope="row"] { text-align: right; }
+
+.rm-availability-grid-cell {
+  width: 46px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 28%, transparent);
+  background: transparent;
+  cursor: crosshair;
+  transition: background-color 180ms var(--rm-ease-out);
+}
+.rm-availability-grid-cell:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: -3px;
+}
+.rm-availability-grid-cell.is-picked { background: var(--rm-accent); }
+/* The chosen state is not carried by colour alone. */
+.rm-availability-grid-cell.is-picked::after {
+  content: "✓";
+  display: block;
+  color: var(--rm-cream);
+  font-size: 0.7rem;
+  line-height: 24px;
+  text-align: center;
+}
+
+/* ── bookingSlots ───────────────────────────────────────────────────────── */
+
+.rm-booking-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-booking-slots legend { padding: 0 0 8px; font-family: var(--rm-display); }
+.rm-booking-slots-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 45%, transparent);
+  border-radius: var(--rm-radius, 8px);
+  cursor: pointer;
+  transition: border-color 200ms var(--rm-ease-out), transform 200ms var(--rm-ease-out);
+}
+.rm-booking-slots-slot:hover,
+.rm-booking-slots-slot:focus-within { border-color: var(--rm-accent); }
+.rm-booking-slots-slot:has(input:checked) {
+  border-color: var(--rm-accent);
+  background: color-mix(in srgb, var(--rm-accent) 14%, transparent);
+}
+.rm-booking-slots-slot time { font-family: var(--rm-mono); }
+.rm-booking-slots-slot.is-full { opacity: 0.6; cursor: not-allowed; }
+.rm-booking-slots-full {
+  color: var(--rm-terracotta);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── recurrenceBuilder ──────────────────────────────────────────────────── */
+
+.rm-recurrence {
+  display: grid;
+  gap: 10px;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-recurrence-row { display: flex; align-items: center; gap: 8px; }
+.rm-recurrence-interval,
+.rm-recurrence-freq {
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 45%, transparent);
+  border-radius: var(--rm-radius, 8px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.rm-recurrence-interval { width: 5ch; font-family: var(--rm-mono); }
+
+/*
+ * The one box in this file that changes size. `1fr` is the resting state, so a
+ * page without JavaScript shows the weekday row rather than a sliver; the
+ * script collapses it to `0fr` when the rule is not weekly. `min-height: 0` on
+ * the inner box is what lets the track actually reach zero.
+ */
+.rm-recurrence-shell {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 320ms var(--rm-ease-in-out);
+}
+.rm-recurrence-shell:not(.is-open) { grid-template-rows: 0fr; }
+.rm-recurrence-inner { min-height: 0; overflow: hidden; }
+.rm-recurrence-days { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
+.rm-recurrence-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 42px;
+  padding: 7px 8px;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 45%, transparent);
+  border-radius: var(--rm-radius-pill, 999px);
+  cursor: pointer;
+  font-size: 0.76rem;
+  transition: border-color 200ms var(--rm-ease-out), background-color 200ms var(--rm-ease-out);
+}
+.rm-recurrence-day input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.rm-recurrence-day:has(input:checked) {
+  border-color: var(--rm-accent);
+  background: color-mix(in srgb, var(--rm-accent) 16%, transparent);
+}
+.rm-recurrence-day:has(input:focus-visible) { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-recurrence-sentence { margin: 0; color: var(--rm-muted); font-size: 0.86rem; }
+
+/* ── agendaList ─────────────────────────────────────────────────────────── */
+
+.rm-agenda-list {
+  display: grid;
+  gap: 18px;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-agenda-list-group { position: relative; }
+/* Zero height, no box: it exists only for the observer to lose sight of. */
+.rm-agenda-list-sentinel { display: block; height: 0; }
+.rm-agenda-list-heading {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 0 8px;
+  padding: 6px 0;
+  background: var(--rm-cream);
+  font-family: var(--rm-display);
+  font-size: 1rem;
+  transition: box-shadow 240ms var(--rm-ease-out), transform 240ms var(--rm-ease-out);
+}
+.rm-agenda-list-heading.is-stuck {
+  box-shadow: 0 8px 18px -14px currentColor;
+  transform: scale(0.97);
+  transform-origin: left center;
+}
+.rm-agenda-list-when {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px 9px;
+  border-radius: var(--rm-radius-pill, 999px);
+  background: var(--rm-yellow);
+  color: var(--rm-ink);
+  font-family: var(--rm-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
+.rm-agenda-list ol,
+.rm-agenda-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.rm-agenda-list li {
+  display: flex;
+  gap: 12px;
+  padding: 8px 10px;
+  border-left: 2px solid color-mix(in srgb, var(--rm-muted) 40%, transparent);
+}
+.rm-agenda-list li time { color: var(--rm-muted); font-family: var(--rm-mono); font-size: 0.78rem; }
+
+/* ── deadlinePill ───────────────────────────────────────────────────────── */
+
+.rm-deadline-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  padding: 3px 12px;
+  border: 1px solid currentColor;
+  border-radius: var(--rm-radius-pill, 999px);
+  font-family: var(--rm-body);
+  font-size: 0.8rem;
+  transition: color 300ms var(--rm-ease-out), background-color 300ms var(--rm-ease-out);
+}
+.rm-deadline-pill time { font-family: var(--rm-mono); }
+.rm-deadline-pill-words { opacity: 0.95; }
+.rm-deadline-pill.is-far { color: var(--rm-muted); }
+.rm-deadline-pill.is-soon { color: var(--rm-accent); }
+.rm-deadline-pill.is-urgent {
+  color: var(--rm-terracotta);
+  background: color-mix(in srgb, var(--rm-yellow) 30%, transparent);
+}
+.rm-deadline-pill.is-overdue {
+  color: var(--rm-cream);
+  background: var(--rm-terracotta);
+  border-color: var(--rm-terracotta);
+}
+
+/* ── eventChip ──────────────────────────────────────────────────────────── */
+
+.rm-event-chip-set {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-height: 420px;
+}
+/*
+ * Lane and width are arithmetic, set once. Nothing here transitions a box —
+ * the arrival is a transform played by the script, and a chip that gains a
+ * neighbour is repositioned, not resized over time.
+ */
+.rm-event-chip {
+  position: absolute;
+  top: var(--rm-event-chip-top, 0%);
+  height: var(--rm-event-chip-size, 8%);
+  left: calc(var(--rm-event-chip-lane, 0) / var(--rm-event-chip-lanes, 1) * 100%);
+  width: calc(100% / var(--rm-event-chip-lanes, 1));
+  overflow: hidden;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in srgb, var(--rm-ink) 18%, transparent);
+  border-left: 3px solid var(--rm-accent);
+  border-radius: var(--rm-radius, 8px);
+  background: color-mix(in srgb, var(--rm-accent) 14%, transparent);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+.rm-event-chip time { display: block; color: var(--rm-muted); font-family: var(--rm-mono); font-size: 0.7rem; }
+.rm-event-chip:nth-child(3n + 2) { border-left-color: var(--rm-terracotta); }
+.rm-event-chip:nth-child(3n) { border-left-color: var(--rm-yellow); }
+
+/* ── weekStrip ──────────────────────────────────────────────────────────── */
+
+.rm-week-strip {
+  position: relative;
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+}
+.rm-week-strip > ul,
+.rm-week-strip > ol,
+.rm-week-strip > div {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+/* Faded only at an edge there is actually more beyond. */
+.rm-week-strip.is-scrolled-start > ul,
+.rm-week-strip.is-scrolled-start > ol,
+.rm-week-strip.is-scrolled-start > div {
+  mask-image: linear-gradient(to right, transparent, #000 36px);
+}
+.rm-week-strip.is-scrolled-end > ul,
+.rm-week-strip.is-scrolled-end > ol,
+.rm-week-strip.is-scrolled-end > div {
+  mask-image: linear-gradient(to left, transparent, #000 36px);
+}
+.rm-week-strip.is-scrolled-start.is-scrolled-end > ul,
+.rm-week-strip.is-scrolled-start.is-scrolled-end > ol,
+.rm-week-strip.is-scrolled-start.is-scrolled-end > div {
+  mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent);
+}
+
+.rm-week-strip-day {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  min-width: 58px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--rm-muted) 40%, transparent);
+  border-radius: var(--rm-radius, 8px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  scroll-snap-align: center;
+  transition: border-color 220ms var(--rm-ease-out), transform 220ms var(--rm-ease-out);
+}
+.rm-week-strip-day time { font-family: var(--rm-mono); font-size: 0.72rem; color: var(--rm-muted); }
+.rm-week-strip-day:hover { border-color: var(--rm-accent); }
+.rm-week-strip-day:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-week-strip-day.is-today { border-color: var(--rm-terracotta); }
+.rm-week-strip-day.is-chosen {
+  border-color: var(--rm-accent);
+  background: var(--rm-accent);
+  color: var(--rm-cream);
+  transform: translateY(-2px);
+}
+.rm-week-strip-day.is-chosen time { color: inherit; }
+
+/*
+ * Reduced motion. Every duration a script sets arrives as a custom property it
+ * has already zeroed, so what is left here is the transitions declared above.
+ * They are switched off, and nothing is hidden or left part-drawn: the now
+ * line still sits at the right minute, the marker still sits on the chosen
+ * day, the weekday row is still open or closed — they simply arrive there
+ * without travelling.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-now-line,
+  .rm-week-grid-head,
+  .rm-week-grid td,
+  .rm-date-range-bar::after,
+  .rm-duration-field-bar::after,
+  .rm-time-picker-hour,
+  .rm-time-picker-minute,
+  .rm-recurrence-shell,
+  .rm-recurrence-day,
+  .rm-agenda-list-heading,
+  .rm-booking-slots-slot,
+  .rm-deadline-pill,
+  .rm-availability-grid-cell,
+  .rm-week-strip-day {
+    transition-duration: 1ms;
+  }
+  .rm-agenda-list-heading.is-stuck,
+  .rm-week-strip-day.is-chosen { transform: none; }
+}
+
+
+/* ══ Admin consoles and data tables ══════════════════════════════════════════════ */
+
+/* ── Console ────────────────────────────────────────────────────────────── */
+
+/*
+ * An operations console is furniture, not a poster. Everything in this file is
+ * therefore quiet, dense and predictable, and the few techniques that carry it
+ * are the same three used everywhere in the kit.
+ *
+ * Progress and quota fills are `scaleX` on a full-width track with
+ * `transform-origin: left`, driven by a unitless 0–1 custom property the script
+ * writes. A width transition reflows every sibling on every frame; a scale is
+ * one composited layer and costs nothing on the laptops these consoles actually
+ * run on.
+ *
+ * Panels — the column picker, the export menu, the role note, the environment
+ * dialog — are all taken out of the flow. A menu that opens by inserting itself
+ * into the document pushes the table it belongs to down the page, which is the
+ * single most common reason a dense interface feels unstable.
+ *
+ * Column widths are custom properties on the grid wrapper, read by a real
+ * `<colgroup>`. `table-layout: fixed` is only switched on once the script has
+ * frozen every column at its natural width, so an untouched table still sizes
+ * itself the way the browser wants to.
+ *
+ * Nothing in this file hides anything at rest. Every closed panel and every
+ * invisible starting state in this module is the `hidden` attribute, written by
+ * the script at mount — so a page whose JavaScript never loads shows a working
+ * table, a visible list of export formats and a legible set of filter controls
+ * rather than a blank rectangle.
+ *
+ * An author `display` beats the user-agent rule for `[hidden]`, so every class
+ * below that both gets a `display` and gets `hidden` from the script has its
+ * own explicit `[hidden] { display: none }`. Without it the panel is still laid
+ * out and still takes clicks, and the bug looks like a mis-positioned overlay
+ * rather than what it is.
+ */
+
+.rm-console-live,
+.rm-console-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.rm-column-picker-panel[hidden],
+.rm-bulk-bar[hidden],
+.rm-saved-views-marker[hidden],
+.rm-log-stream-jump[hidden],
+.rm-keyboard-map[hidden],
+.rm-env-switch-sheet[hidden],
+.rm-role-badge-panel[hidden],
+.rm-audit-row-note[hidden],
+.rm-job-queue-retry[hidden],
+.rm-export-menu-list[hidden] { display: none; }
+
+/* ── dataGrid ───────────────────────────────────────────────────────────── */
+
+.rm-data-grid {
+  position: relative;
+  max-height: 60vh;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: color-mix(in srgb, var(--rm-cream) 40%, transparent);
+  font-family: var(--rm-body);
+  font-size: 0.875rem;
+}
+
+.rm-data-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: inherit;
+}
+
+/* Only once the script has frozen every column. Before that the browser is a
+   better judge of the widths than we are. */
+.rm-data-grid-table.is-sized { table-layout: fixed; }
+
+.rm-data-grid-table th,
+.rm-data-grid-table td {
+  padding: 10px 14px;
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rm-data-grid-table td:not([data-rm-before]) { font-variant-numeric: tabular-nums; }
+
+/* Sticky, not a cloned second table. The clone is the bug factory. */
+.rm-data-grid-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--rm-cream);
+  font-family: var(--rm-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.rm-data-grid-head { position: relative; }
+
+.rm-data-grid-grip {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: -5px;
+  width: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: col-resize;
+  color: inherit;
+}
+
+.rm-data-grid-grip::after {
+  content: "";
+  position: absolute;
+  inset-block: 5px;
+  inset-inline-start: 4px;
+  width: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, currentColor 22%, transparent);
+  transition: background-color 140ms var(--rm-ease-out);
+}
+
+.rm-data-grid-grip:hover::after,
+.rm-data-grid-grip:focus-visible::after { background: var(--rm-accent); }
+.rm-data-grid-grip:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 1px; }
+
+.rm-data-grid.is-resizing { cursor: col-resize; user-select: none; }
+
+.rm-data-grid-row { cursor: default; }
+.rm-data-grid-row:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: -2px; }
+.rm-data-grid-row.is-selected > * {
+  background: color-mix(in srgb, var(--rm-accent) 12%, transparent);
+  box-shadow: inset 3px 0 0 var(--rm-accent);
+}
+
+/* ── columnPicker ───────────────────────────────────────────────────────── */
+
+.rm-column-picker { position: relative; display: inline-block; font-family: var(--rm-body); }
+
+.rm-column-picker-trigger {
+  padding: 8px 14px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rm-column-picker-panel {
+  position: absolute;
+  z-index: 40;
+  inset-inline-start: 0;
+  top: calc(100% + 8px);
+  display: grid;
+  gap: 10px;
+  min-width: 220px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  box-shadow: 0 18px 40px -22px rgb(0 0 0 / 0.55);
+}
+
+.rm-column-picker-panel fieldset { margin: 0; padding: 0; border: 0; display: grid; gap: 6px; }
+.rm-column-picker-panel legend {
+  padding: 0 0 6px;
+  font-family: var(--rm-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rm-muted);
+}
+
+.rm-column-picker-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+.rm-column-picker-reset {
+  justify-self: start;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--rm-accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* A hidden cell must actually leave the table, and the UA rule for [hidden] is
+   the only thing standing between "filtered" and "still there, still clickable". */
+.rm-column-picker-table th[hidden],
+.rm-column-picker-table td[hidden] { display: none; }
+
+/* ── bulkBar ────────────────────────────────────────────────────────────── */
+
+/* Fixed and centred by the box model, never by a transform — the transform
+   belongs to the entrance animation and the two would fight. */
+.rm-bulk-bar {
+  position: fixed;
+  z-index: 60;
+  inset-inline: 0;
+  bottom: 24px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-family: var(--rm-body);
+  font-size: 0.875rem;
+  box-shadow: 0 20px 48px -24px rgb(0 0 0 / 0.7);
+}
+
+.rm-bulk-bar-count {
+  margin: 0 6px 0 0;
+  font-family: var(--rm-display);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rm-bulk-bar button {
+  padding: 6px 14px;
+  border: 1px solid color-mix(in srgb, var(--rm-cream) 28%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 160ms var(--rm-ease-out);
+}
+
+.rm-bulk-bar button:hover { background: color-mix(in srgb, var(--rm-cream) 16%, transparent); }
+.rm-bulk-bar button:focus-visible { outline: 2px solid var(--rm-yellow); outline-offset: 2px; }
+.rm-bulk-bar-clear { border-color: transparent !important; color: var(--rm-yellow); }
+
+/* ── savedViews ─────────────────────────────────────────────────────────── */
+
+.rm-saved-views {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 6px;
+  font-family: var(--rm-body);
+}
+
+.rm-saved-views-chip {
+  padding: 7px 14px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 160ms var(--rm-ease-out), background-color 160ms var(--rm-ease-out);
+}
+
+.rm-saved-views-chip:hover { background: color-mix(in srgb, currentColor 8%, transparent); }
+.rm-saved-views-chip:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 2px; }
+.rm-saved-views-chip[aria-current="true"] { color: var(--rm-ink); font-weight: 600; }
+
+/* One element, 100px wide, moved and scaled into place. Scaling from a known
+   base width is what makes translateX + scaleX exact rather than approximate. */
+.rm-saved-views-marker {
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 100px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--rm-accent);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+
+/* ── queryBar ───────────────────────────────────────────────────────────── */
+
+.rm-query-bar {
+  display: grid;
+  gap: 12px;
+  font-family: var(--rm-body);
+  font-size: 0.875rem;
+}
+
+.rm-query-bar-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+
+.rm-query-bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: color-mix(in srgb, var(--rm-cream) 35%, transparent);
+}
+
+.rm-query-bar-row select,
+.rm-query-bar-row input {
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.rm-query-bar-row label { color: var(--rm-muted); }
+
+.rm-query-bar-remove {
+  margin-inline-start: auto;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-terracotta);
+  font: inherit;
+  cursor: pointer;
+}
+
+.rm-query-bar-add {
+  justify-self: start;
+  padding: 7px 16px;
+  border: 1px dashed color-mix(in srgb, currentColor 34%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rm-query-bar-summary {
+  margin: 0;
+  font-family: var(--rm-mono);
+  font-size: 0.8125rem;
+  color: var(--rm-muted);
+}
+
+/* ── keyboardMap ────────────────────────────────────────────────────────── */
+
+.rm-keyboard-map {
+  position: fixed;
+  z-index: 80;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  display: grid;
+  gap: 20px;
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(80vh, 720px);
+  overflow: auto;
+  padding: 28px;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  box-shadow: 0 40px 90px -40px rgb(0 0 0 / 0.7);
+}
+
+.rm-keyboard-map-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--rm-display);
+  font-size: 1.25rem;
+}
+
+.rm-keyboard-map-close {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  color: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rm-keyboard-map-group { display: grid; gap: 8px; }
+.rm-keyboard-map-group h3 {
+  margin: 0;
+  font-family: var(--rm-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rm-muted);
+}
+
+.rm-keyboard-map-group dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 16px;
+  margin: 0;
+}
+.rm-keyboard-map-group dt { margin: 0; }
+.rm-keyboard-map-group dd { margin: 0; text-align: end; color: var(--rm-muted); }
+
+.rm-keyboard-map kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  font-family: var(--rm-mono);
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--rm-ink);
+}
+
+.rm-keyboard-map-none { margin: 0; color: var(--rm-muted); }
+
+/* ── logStream ──────────────────────────────────────────────────────────── */
+
+.rm-log-stream {
+  position: relative;
+  max-height: 48vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-family: var(--rm-mono);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.rm-log-stream-list { list-style: none; margin: 0; padding: 0; }
+
+.rm-log-stream-line {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 10px;
+  padding: 1px 0;
+  word-break: break-word;
+}
+
+.rm-log-stream-line time { color: color-mix(in srgb, var(--rm-cream) 45%, transparent); }
+
+.rm-log-stream-level {
+  min-width: 4.5em;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  align-self: center;
+}
+
+.rm-log-stream-line.is-info .rm-log-stream-level { color: var(--rm-accent); }
+.rm-log-stream-line.is-warn .rm-log-stream-level { color: var(--rm-yellow); }
+.rm-log-stream-line.is-error .rm-log-stream-level { color: var(--rm-terracotta); }
+.rm-log-stream-line.is-error .rm-log-stream-text { color: var(--rm-terracotta); }
+
+/* Sticky inside the scroller: it stays at the bottom of what you are looking
+   at rather than at the bottom of a buffer that is thousands of lines long. */
+.rm-log-stream-jump {
+  position: sticky;
+  bottom: 4px;
+  display: block;
+  width: max-content;
+  margin-inline-start: auto;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-accent);
+  color: var(--rm-ink);
+  font-family: var(--rm-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.8);
+}
+
+/* ── metricTile ─────────────────────────────────────────────────────────── */
+
+.rm-metric-tile {
+  display: grid;
+  gap: 4px;
+  padding: 18px 20px;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: color-mix(in srgb, var(--rm-cream) 40%, transparent);
+  font-family: var(--rm-body);
+}
+
+.rm-metric-tile h3 {
+  margin: 0;
+  font-family: var(--rm-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rm-muted);
+}
+
+.rm-metric-tile strong {
+  font-family: var(--rm-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1;
+  /* The rolling figure changes width every frame otherwise, and the tile
+     beside it shuffles in sympathy. */
+  font-variant-numeric: tabular-nums;
+}
+
+.rm-metric-tile-delta { margin: 0; font-size: 0.8125rem; }
+.rm-metric-tile-delta.is-up { color: color-mix(in srgb, var(--rm-accent) 80%, var(--rm-ink)); }
+.rm-metric-tile-delta.is-down { color: var(--rm-terracotta); }
+.rm-metric-tile-delta.is-level { color: var(--rm-muted); }
+
+/* ── healthGrid ─────────────────────────────────────────────────────────── */
+
+.rm-health-grid-summary {
+  margin: 0 0 10px;
+  font-family: var(--rm-body);
+  font-size: 0.8125rem;
+  color: var(--rm-muted);
+}
+
+.rm-health-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  font-family: var(--rm-body);
+  font-size: 0.875rem;
+}
+
+.rm-health-grid-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: color-mix(in srgb, var(--rm-cream) 35%, transparent);
+}
+
+.rm-health-grid-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* The word is the message; the colour is the second copy of it. */
+.rm-health-grid-word {
+  grid-column: 2;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rm-muted);
+}
+
+.rm-health-grid-item.is-up .rm-health-grid-dot { color: color-mix(in srgb, var(--rm-accent) 70%, #2f8f4e); }
+.rm-health-grid-item.is-degraded .rm-health-grid-dot { color: var(--rm-yellow); }
+.rm-health-grid-item.is-down .rm-health-grid-dot { color: var(--rm-terracotta); }
+.rm-health-grid-item.is-unknown .rm-health-grid-dot { color: var(--rm-muted); }
+
+.rm-health-grid-item.is-down {
+  border-color: color-mix(in srgb, var(--rm-terracotta) 50%, transparent);
+  background: color-mix(in srgb, var(--rm-terracotta) 10%, transparent);
+}
+.rm-health-grid-item.is-degraded {
+  border-color: color-mix(in srgb, var(--rm-yellow) 55%, transparent);
+}
+
+/* ── auditRow ───────────────────────────────────────────────────────────── */
+
+.rm-audit-row {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  font-family: var(--rm-body);
+  font-size: 0.875rem;
+}
+
+.rm-audit-row-time {
+  margin-inline-start: auto;
+  font-family: var(--rm-mono);
+  font-size: 0.75rem;
+  color: var(--rm-muted);
+  cursor: help;
+}
+
+/*
+ * The `cursor: help` above used to be a lie: the absolute timestamp lived only
+ * in `title`, so the affordance it advertised existed for a pointer and for
+ * nothing else. The stamp is focusable now, and the note below is the same
+ * information reachable with a keyboard — so the cursor is telling the truth.
+ */
+.rm-audit-row-time:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/*
+ * Taken out of the flow so that reaching the stamp on a thousand-row audit
+ * page does not re-lay-out the row it belongs to, let alone the rows beneath.
+ */
+.rm-audit-row-note {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% - 8px);
+  inset-inline-end: 12px;
+  display: block;
+  width: max-content;
+  max-width: 260px;
+  padding: 6px 10px;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-family: var(--rm-mono);
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  letter-spacing: 0;
+  box-shadow: 0 16px 34px -20px rgb(0 0 0 / 0.7);
+}
+
+.rm-audit-row.is-warning { box-shadow: inset 3px 0 0 var(--rm-yellow); }
+.rm-audit-row.is-danger { box-shadow: inset 3px 0 0 var(--rm-terracotta); }
+.rm-audit-row.is-info { box-shadow: inset 3px 0 0 color-mix(in srgb, currentColor 18%, transparent); }
+
+/* ── envSwitch ──────────────────────────────────────────────────────────── */
+
+.rm-env-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--rm-body);
+}
+
+.rm-env-switch-select {
+  padding: 7px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+/* A guarded environment looks different before you open it, not after. */
+.rm-env-switch.is-guarded .rm-env-switch-select {
+  border-color: var(--rm-terracotta);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rm-terracotta) 18%, transparent);
+}
+
+.rm-env-switch-sheet {
+  position: fixed;
+  z-index: 80;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  display: grid;
+  gap: 12px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 24px;
+  border-radius: var(--rm-radius);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  box-shadow: 0 40px 90px -40px rgb(0 0 0 / 0.7);
+}
+
+.rm-env-switch-sheet h2 { margin: 0; font-family: var(--rm-display); font-size: 1.125rem; }
+.rm-env-switch-sheet p { margin: 0; color: var(--rm-muted); font-size: 0.875rem; }
+
+.rm-env-switch-field {
+  padding: 9px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: transparent;
+  color: inherit;
+  font-family: var(--rm-mono);
+}
+
+.rm-env-switch-row { display: flex; justify-content: flex-end; gap: 8px; }
+
+.rm-env-switch-row button {
+  padding: 8px 16px;
+  border-radius: var(--rm-radius-pill);
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rm-env-switch-no { color: var(--rm-muted); }
+
+.rm-env-switch-yes {
+  border-color: transparent !important;
+  background: var(--rm-terracotta) !important;
+  color: var(--rm-ink) !important;
+}
+.rm-env-switch-yes:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── roleBadge ──────────────────────────────────────────────────────────── */
+
+/* The pill lives on the badge itself, so a role with nothing to explain is
+   still a badge rather than an unstyled word — and the button inside, when
+   there is one, inherits every bit of it instead of duplicating it. `:has()`
+   would have done this in one selector and taken the whole rule down with it
+   on any browser that does not support it. */
+.rm-role-badge {
+  position: relative;
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid currentColor;
+  border-radius: var(--rm-radius-pill);
+  font-family: var(--rm-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.rm-role-badge-trigger {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.rm-role-badge-trigger:focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
+
+.rm-role-badge.is-owner { color: var(--rm-terracotta); }
+.rm-role-badge.is-admin { color: var(--rm-accent); }
+.rm-role-badge.is-editor { color: color-mix(in srgb, var(--rm-accent) 60%, var(--rm-ink)); }
+.rm-role-badge.is-viewer { color: var(--rm-muted); }
+.rm-role-badge.is-billing { color: color-mix(in srgb, var(--rm-yellow) 70%, var(--rm-ink)); }
+.rm-role-badge.is-neutral { color: var(--rm-muted); }
+
+.rm-role-badge-panel {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 6px);
+  inset-inline-start: 0;
+  display: block;
+  width: max-content;
+  max-width: 220px;
+  padding: 8px 12px;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  text-transform: none;
+  letter-spacing: 0;
+  box-shadow: 0 16px 34px -20px rgb(0 0 0 / 0.7);
+}
+
+/* ── quotaMeter ─────────────────────────────────────────────────────────── */
+
+.rm-quota-meter { display: grid; gap: 6px; font-family: var(--rm-body); font-size: 0.8125rem; }
+
+.rm-quota-meter-track {
+  position: relative;
+  height: 8px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  overflow: hidden;
+}
+
+/* scaleX on a full-width bar. A width transition would re-lay-out the row on
+   every frame for exactly the same picture. */
+.rm-quota-meter-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-quota-fill, 0));
+  transform-origin: 0 50%;
+  transition: transform var(--rm-quota-duration, 520ms) var(--rm-ease-out),
+    background-color 240ms var(--rm-ease-out);
+}
+
+.rm-quota-meter.is-warning .rm-quota-meter-fill { background: var(--rm-yellow); }
+.rm-quota-meter.is-critical .rm-quota-meter-fill { background: var(--rm-terracotta); }
+
+.rm-quota-meter-words { margin: 0; color: var(--rm-muted); }
+.rm-quota-meter.is-critical .rm-quota-meter-words { color: var(--rm-terracotta); font-weight: 600; }
+
+/* ── jobQueue ───────────────────────────────────────────────────────────── */
+
+.rm-job-queue-summary {
+  margin: 0 0 10px;
+  font-family: var(--rm-body);
+  font-size: 0.8125rem;
+  color: var(--rm-muted);
+}
+
+.rm-job-queue { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+
+.rm-job-queue-job {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  font-family: var(--rm-body);
+  font-size: 0.875rem;
+}
+
+.rm-job-queue-word {
+  order: 3;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rm-muted);
+}
+
+.rm-job-queue-track {
+  order: 2;
+  position: relative;
+  display: block;
+  width: 120px;
+  height: 6px;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  overflow: hidden;
+}
+
+.rm-job-queue-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-job-fill, 0));
+  transform-origin: 0 50%;
+  transition: transform 420ms var(--rm-ease-out);
+}
+
+/* No number to show, so the bar sweeps instead of claiming a percentage. */
+.rm-job-queue-track.is-indeterminate .rm-job-queue-fill {
+  animation: rm-job-sweep 1500ms var(--rm-ease-in-out) infinite;
+}
+
+@keyframes rm-job-sweep {
+  0% { transform: translateX(-100%) scaleX(0.35); }
+  100% { transform: translateX(285%) scaleX(0.35); }
+}
+
+/* Reduced motion: the sweep stops and the word carries the meaning, which it
+   always did. Nothing disappears. */
+@media (prefers-reduced-motion: reduce) {
+  .rm-job-queue-track.is-indeterminate .rm-job-queue-fill { animation: none; }
+  .rm-quota-meter-fill,
+  .rm-job-queue-fill,
+  .rm-saved-views-marker { transition: none; }
+}
+
+.rm-job-queue-job.is-failed { border-color: color-mix(in srgb, var(--rm-terracotta) 55%, transparent); }
+.rm-job-queue-job.is-failed .rm-job-queue-word { color: var(--rm-terracotta); }
+.rm-job-queue-job.is-failed .rm-job-queue-fill { background: var(--rm-terracotta); }
+.rm-job-queue-job.is-done .rm-job-queue-fill { background: color-mix(in srgb, var(--rm-accent) 55%, var(--rm-muted)); }
+
+.rm-job-queue-retry {
+  order: 4;
+  display: inline-flex;
+  padding: 4px 12px;
+  border: 1px solid var(--rm-terracotta);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: var(--rm-terracotta);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* ── diffTable ──────────────────────────────────────────────────────────── */
+
+.rm-diff-table-summary {
+  margin: 0 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--rm-body);
+  font-size: 0.8125rem;
+  color: var(--rm-muted);
+}
+
+.rm-diff-table-toggle {
+  padding: 4px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 26%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.rm-diff-table-toggle[aria-pressed="true"] { background: color-mix(in srgb, currentColor 10%, transparent); }
+
+.rm-diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--rm-body);
+  font-size: 0.875rem;
+  color: inherit;
+}
+
+.rm-diff-table th,
+.rm-diff-table td {
+  padding: 8px 12px;
+  text-align: start;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.rm-diff-table tr[hidden] { display: none; }
+
+.rm-diff-table-mark {
+  width: 1%;
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rm-muted);
+}
+
+.rm-diff-table-row.is-added .rm-diff-table-mark { color: color-mix(in srgb, var(--rm-accent) 70%, #2f8f4e); }
+.rm-diff-table-row.is-removed .rm-diff-table-mark { color: var(--rm-terracotta); }
+.rm-diff-table-row.is-changed .rm-diff-table-mark { color: color-mix(in srgb, var(--rm-yellow) 70%, var(--rm-ink)); }
+
+.rm-diff-table-row.is-added > td { background: color-mix(in srgb, var(--rm-accent) 8%, transparent); }
+.rm-diff-table-row.is-removed > td { background: color-mix(in srgb, var(--rm-terracotta) 9%, transparent); }
+.rm-diff-table-row.is-changed > td { background: color-mix(in srgb, var(--rm-yellow) 10%, transparent); }
+
+.rm-diff-table-before {
+  color: var(--rm-muted);
+  text-decoration: line-through;
+  font-family: var(--rm-mono);
+  font-size: 0.8125rem;
+}
+
+/* ── exportMenu ─────────────────────────────────────────────────────────── */
+
+.rm-export-menu { position: relative; display: inline-block; font-family: var(--rm-body); }
+
+.rm-export-menu-trigger {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font: inherit;
+  cursor: pointer;
+}
+
+.rm-export-menu.is-working .rm-export-menu-trigger { opacity: 0.7; cursor: progress; }
+
+.rm-export-menu-list {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  box-shadow: 0 18px 40px -22px rgb(0 0 0 / 0.55);
+}
+
+.rm-export-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.rm-export-menu-item:hover,
+.rm-export-menu-item:focus-visible {
+  background: color-mix(in srgb, var(--rm-accent) 16%, transparent);
+  outline: none;
+}
+
+
+/* ══ Media playback ══════════════════════════════════════════════ */
+
+/*
+ * player — media playback: control bars, scrubbers, transcripts and docks.
+ *
+ * Nothing in this file hides anything that a script has to come back and
+ * reveal. There is no `opacity: 0` at rest and no `display: none` waiting on
+ * JavaScript: without the script a chapter list is a readable ordered list, a
+ * transcript is a readable article, a thumbnail strip is a row of captioned
+ * photographs, and the video still has whatever `controls` attribute the markup
+ * gave it. The enhanced page is better; the unenhanced one still works.
+ *
+ * Where an element genuinely is hidden — a closed menu, a spinner that is not
+ * spinning, a dock that has not docked — the script sets `hidden` and this file
+ * carries the matching `.class[hidden] { display: none }`. An author rule with
+ * a `display` beats the user agent's rule for `[hidden]`, and the result is a
+ * panel that is invisible, still laid out and still taking clicks. Every one of
+ * those rules is gathered at the foot of the file so none can go missing.
+ *
+ * Four techniques are worth explaining.
+ *
+ * The control bar retreats by translating out of the frame, not by being
+ * hidden. `display: none` and `visibility: hidden` both remove it from the
+ * accessibility tree and from the tab order, so a keyboard user would lose the
+ * controls the moment the pointer went still. Translated away it is still
+ * focusable, and the rescue rule is written *inside* the idle selector so that
+ * it can actually win: a bare `.rm-player-bar-controls:focus-within` is two
+ * classes against the idle rule's three and loses the cascade in precisely the
+ * state it was written for, which is easy to write and impossible to notice,
+ * because the component's own `focusin` handler removes the class a moment
+ * later and hides the mistake.
+ *
+ * Every bar, arc and fill is driven by a 0–1 custom property through a
+ * `transform` or a `clip-path`. The waveform is two rows of full-height bars,
+ * each scaled with `scaleY`, with the played copy clipped — so a hundred bars
+ * cost a hundred composited transforms and not one layout. The seek rail's
+ * played and buffered stretches are `scaleX` on elements already at full width.
+ *
+ * The chapter marker is a single one-pixel box scaled to the height of the
+ * current row. Animating `height` between rows relayouts the list on every
+ * frame; a `translateY` and a `scaleY` move nothing at all.
+ *
+ * Every drawing surface here takes `color: inherit` rather than a fixed ink,
+ * because a waveform or a buffering ring drawn with `currentColor` inside a
+ * dark player must not resolve to black.
+ *
+ * There is no `will-change` anywhere. It holds a compositor layer for the life
+ * of the page rather than the life of the animation, and a queue of thirty rows
+ * would hold thirty of them for a FLIP that lasts a quarter of a second.
+ */
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/* Announced, never seen. Every component in this file that speaks has one. */
+.rm-player-live,
+.rm-player-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.rm-player-bar,
+.rm-scrubber,
+.rm-waveform,
+.rm-chapter-list,
+.rm-rate-menu,
+.rm-volume-dial,
+.rm-queue-list,
+.rm-now-playing,
+.rm-transcript-sync,
+.rm-thumb-strip,
+.rm-live-badge,
+.rm-mini-player,
+.rm-keyboard-hints {
+  font-family: var(--rm-body);
+}
+
+.rm-player-bar-button:focus-visible,
+.rm-scrubber-range:focus-visible,
+.rm-chapter-list-seek:focus-visible,
+.rm-caption-toggle:focus-visible,
+.rm-rate-menu-button:focus-visible,
+.rm-rate-menu-item:focus-visible,
+.rm-volume-dial-range:focus-visible,
+.rm-volume-dial-mute:focus-visible,
+.rm-pip-toggle:focus-visible,
+.rm-queue-list-handle:focus-visible,
+.rm-transcript-sync-seek:focus-visible,
+.rm-transcript-sync-follow:focus-visible,
+.rm-thumb-strip-seek:focus-visible,
+.rm-live-badge-jump:focus-visible,
+.rm-mini-player-toggle:focus-visible,
+.rm-mini-player-close:focus-visible,
+.rm-keyboard-hints-button:focus-visible {
+  outline: 2px solid var(--rm-accent);
+  outline-offset: 2px;
+  border-radius: var(--rm-radius-sm, 4px);
+}
+
+/* ── playerBar ──────────────────────────────────────────────────────────── */
+
+.rm-player-bar {
+  position: relative;
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--rm-radius);
+  background: color-mix(in srgb, var(--rm-ink) 92%, black);
+  color: var(--rm-cream);
+}
+
+.rm-player-bar > video,
+.rm-player-bar > audio {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.rm-player-bar-controls {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.72), rgb(0 0 0 / 0));
+  color: var(--rm-cream);
+  transition: transform 260ms var(--rm-ease-out), opacity 260ms var(--rm-ease-out);
+}
+
+/*
+ * Retreat, not hide. The bar leaves the frame and fades, and because the frame
+ * clips, the clicks it would have swallowed land on the video instead. It is
+ * still in the tab order the whole time, which is the point.
+ */
+.rm-player-bar.is-idle .rm-player-bar-controls {
+  transform: translateY(115%);
+  opacity: 0;
+}
+
+/*
+ * Specific enough to beat the idle rule above, which is what makes this the
+ * thing that brings the bar back rather than a rule that never applies. It
+ * earns its keep in one real sequence: Tab from one button in the bar to the
+ * next fires `focusout` with `document.activeElement` still on the body, the
+ * component sees focus as having left the bar and adds `is-idle`, and until the
+ * following `focusin` lands this rule is all that is holding the bar in frame.
+ */
+.rm-player-bar.is-idle .rm-player-bar-controls:focus-within,
+.rm-player-bar-controls:focus-within {
+  transform: none;
+  opacity: 1;
+}
+
+.rm-player-bar-button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: rgb(255 255 255 / 0.1);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 180ms var(--rm-ease-out), transform 180ms var(--rm-ease-out);
+}
+
+.rm-player-bar-button:hover {
+  background: rgb(255 255 255 / 0.22);
+  transform: scale(1.06);
+}
+
+.rm-player-bar-button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.rm-player-bar-button.is-toggle {
+  width: 3rem;
+  height: 3rem;
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+}
+
+.rm-player-bar-time {
+  margin: 0 0 0 auto;
+  font-family: var(--rm-mono);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--rm-cream) 82%, transparent);
+}
+
+.rm-player-bar.is-standby .rm-player-bar-controls {
+  /* The browser's own bar is showing; ours steps out of its way. */
+  bottom: 3.25rem;
+}
+
+/* ── scrubber ───────────────────────────────────────────────────────────── */
+
+.rm-scrubber {
+  --rm-scrubber-at: 0;
+  --rm-scrubber-buffered: 0;
+  --rm-scrubber-peek: 0;
+
+  position: relative;
+  display: block;
+  padding: 0.75rem 0;
+  color: inherit;
+}
+
+.rm-scrubber-rail {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 5px;
+  margin-top: -2.5px;
+  overflow: hidden;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, currentColor 18%, transparent);
+  pointer-events: none;
+}
+
+.rm-scrubber-rail i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform-origin: left center;
+  border-radius: inherit;
+}
+
+.rm-scrubber-buffered {
+  background: color-mix(in srgb, currentColor 32%, transparent);
+  transform: scaleX(var(--rm-scrubber-buffered));
+}
+
+.rm-scrubber-played {
+  background: var(--rm-accent);
+  transform: scaleX(var(--rm-scrubber-at));
+}
+
+/*
+ * The real control. It is transparent and sits over the rail so the drawing
+ * and the input are the same object as far as the pointer is concerned —
+ * no invisible overlay, no duplicated hit area, no synthetic thumb.
+ */
+.rm-scrubber-range {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  background: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.rm-scrubber-range::-webkit-slider-runnable-track {
+  height: 5px;
+  background: none;
+}
+
+.rm-scrubber-range::-moz-range-track {
+  height: 5px;
+  background: none;
+}
+
+.rm-scrubber-range::-webkit-slider-thumb {
+  width: 15px;
+  height: 15px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rm-cream);
+  box-shadow: 0 0 0 2px var(--rm-accent);
+  appearance: none;
+  transition: transform 160ms var(--rm-ease-out);
+}
+
+.rm-scrubber-range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rm-cream);
+  box-shadow: 0 0 0 2px var(--rm-accent);
+  transition: transform 160ms var(--rm-ease-out);
+}
+
+.rm-scrubber-range:hover::-webkit-slider-thumb,
+.rm-scrubber-range:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+
+.rm-scrubber-range:hover::-moz-range-thumb,
+.rm-scrubber-range:focus-visible::-moz-range-thumb {
+  transform: scale(1.25);
+}
+
+.rm-scrubber-range:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.rm-scrubber-peek {
+  position: absolute;
+  bottom: 100%;
+  left: calc(var(--rm-scrubber-peek) * 100%);
+  display: block;
+  padding: 0.2rem 0.5rem;
+  transform: translateX(-50%);
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  font-family: var(--rm-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* ── waveform ───────────────────────────────────────────────────────────── */
+
+.rm-waveform {
+  --rm-waveform-at: 0;
+
+  position: relative;
+  display: block;
+  height: 3.5rem;
+  /* Never a fixed ink: the bars are currentColor, and this sits on any page. */
+  color: inherit;
+}
+
+.rm-waveform-row {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rm-waveform-row i {
+  display: block;
+  flex: 1 1 0;
+  height: 100%;
+  min-width: 2px;
+  /* Full height, scaled down — never an animated or authored height. */
+  transform: scaleY(var(--rm-waveform-peak, 0.2));
+  border-radius: var(--rm-radius-pill);
+  background: currentColor;
+}
+
+.rm-waveform-row.is-base i {
+  opacity: 0.24;
+}
+
+.rm-waveform-row.is-played {
+  color: var(--rm-accent);
+  clip-path: inset(0 calc(100% - var(--rm-waveform-at) * 100%) 0 0);
+}
+
+/* ── chapterList ────────────────────────────────────────────────────────── */
+
+.rm-chapter-list {
+  position: relative;
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0 0 0 0.75rem;
+  list-style: none;
+  color: inherit;
+}
+
+.rm-chapter-list-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 3px;
+  height: 1px;
+  transform-origin: 0 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-accent);
+  transition: transform 320ms var(--rm-ease-out);
+}
+
+.rm-chapter-list-row {
+  margin: 0;
+}
+
+.rm-chapter-list-seek {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 180ms var(--rm-ease-out), color 180ms var(--rm-ease-out);
+}
+
+.rm-chapter-list-seek:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+/*
+ * Colour and the marker carry the current chapter, and nothing else does. A
+ * `font-weight` swap here would reflow the row's text, and in a narrow column
+ * it can change the number of lines the title wraps to — which moves every row
+ * below it and leaves the marker sitting where a rect measured before the
+ * reflow said the row was. The whole reason there is one marker instead of a
+ * decoration per row is that the rows must never change size.
+ */
+.rm-chapter-list-row.is-current .rm-chapter-list-seek {
+  color: var(--rm-accent);
+}
+
+.rm-chapter-list-time {
+  margin-left: auto;
+  font-family: var(--rm-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.68;
+}
+
+/* ── captionToggle, pipToggle ───────────────────────────────────────────── */
+
+.rm-caption-toggle,
+.rm-pip-toggle {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background-color 180ms var(--rm-ease-out), color 180ms var(--rm-ease-out);
+}
+
+.rm-caption-toggle.is-on,
+.rm-pip-toggle.is-on {
+  border-color: var(--rm-accent);
+  background: var(--rm-accent);
+  color: var(--rm-ink);
+}
+
+/* ── rateMenu ───────────────────────────────────────────────────────────── */
+
+.rm-rate-menu {
+  position: relative;
+  display: inline-block;
+  color: inherit;
+}
+
+.rm-rate-menu-button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: none;
+  color: inherit;
+  font-family: var(--rm-mono);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.rm-rate-menu-list {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 6rem;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  box-shadow: 0 12px 34px rgb(0 0 0 / 0.3);
+}
+
+.rm-rate-menu-item {
+  width: 100%;
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: none;
+  color: inherit;
+  font-family: var(--rm-mono);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rm-rate-menu-item:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.rm-rate-menu-item.is-on {
+  color: var(--rm-yellow);
+}
+
+/*
+ * The tick is on every item from the start and only its colour changes, so the
+ * chosen speed costs no layout. Adding the glyph on `.is-on` alone would widen
+ * that one row and, because the menu sizes itself to its widest child, could
+ * resize the whole panel the moment a speed is picked. Same reasoning as the
+ * chapter rows: a marker of state must not change anything's metrics.
+ */
+.rm-rate-menu-item::after {
+  content: " ✓";
+  color: transparent;
+}
+
+.rm-rate-menu-item.is-on::after {
+  color: inherit;
+}
+
+/* ── volumeDial ─────────────────────────────────────────────────────────── */
+
+.rm-volume-dial {
+  --rm-volume-dial-at: 1;
+
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  color: inherit;
+}
+
+.rm-volume-dial-ring {
+  display: block;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  /* The reading. The control is the slider beside it. */
+  background:
+    conic-gradient(
+      var(--rm-accent) calc(var(--rm-volume-dial-at) * 360deg),
+      color-mix(in srgb, currentColor 18%, transparent) 0
+    );
+  mask: radial-gradient(circle, transparent 54%, black 56%);
+  transition: opacity 200ms var(--rm-ease-out);
+}
+
+.rm-volume-dial.is-muted .rm-volume-dial-ring {
+  opacity: 0.4;
+}
+
+.rm-volume-dial-mute {
+  padding: 0.25rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: none;
+  color: inherit;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rm-volume-dial-range {
+  width: 6rem;
+  accent-color: var(--rm-accent);
+  cursor: pointer;
+}
+
+/* ── queueList ──────────────────────────────────────────────────────────── */
+
+.rm-queue-list {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: inherit;
+}
+
+.rm-queue-list-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: color-mix(in srgb, currentColor 5%, transparent);
+}
+
+.rm-queue-list-row.is-dragging {
+  position: relative;
+  z-index: 5;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  box-shadow: 0 10px 26px rgb(0 0 0 / 0.18);
+}
+
+.rm-queue-list-handle {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: none;
+  color: inherit;
+  cursor: grab;
+  touch-action: none;
+}
+
+.rm-queue-list-handle:active {
+  cursor: grabbing;
+}
+
+.rm-queue-list-handle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  opacity: 0.55;
+}
+
+/* ── nowPlaying ─────────────────────────────────────────────────────────── */
+
+.rm-now-playing {
+  --rm-now-playing-shift: 0px;
+  --rm-now-playing-span: 8s;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0 0.9rem;
+  align-items: center;
+  color: inherit;
+}
+
+.rm-now-playing-art {
+  grid-row: span 2;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: var(--rm-radius-sm, 4px);
+  object-fit: cover;
+}
+
+.rm-now-playing-title {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--rm-display);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.rm-now-playing-scroll {
+  display: inline-block;
+}
+
+/* Only ever added when the text genuinely does not fit. */
+.rm-now-playing-title.is-scrolling .rm-now-playing-scroll {
+  animation: rm-now-playing-drift var(--rm-now-playing-span) var(--rm-ease-in-out) infinite alternate;
+}
+
+.rm-now-playing:hover .rm-now-playing-scroll,
+.rm-now-playing:focus-within .rm-now-playing-scroll {
+  animation-play-state: paused;
+}
+
+/*
+ * The real stop. Hover and focus-within are conveniences; neither is reachable
+ * for somebody reading with a keyboard on a card that holds no other control,
+ * and a movement that repeats for longer than five seconds has to have an off
+ * switch that does not depend on a pointer. The button is only in the DOM's
+ * flow when the title actually overflows, which is why it needs the `[hidden]`
+ * rule at the foot of this file: it sets a `display`, and an author `display`
+ * beats the user agent's rule for `[hidden]`.
+ */
+.rm-now-playing-pause {
+  display: inline-grid;
+  grid-row: span 2;
+  grid-column: 3;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: inherit;
+  font-size: 0.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms var(--rm-ease-out), transform 160ms var(--rm-ease-out);
+}
+
+.rm-now-playing-pause:hover {
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+/* The pressed state is carried by colour, so nothing about the card moves. */
+.rm-now-playing-pause[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--rm-accent) 30%, transparent);
+}
+
+.rm-now-playing-pause:active {
+  transform: scale(0.94);
+}
+
+@keyframes rm-now-playing-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(var(--rm-now-playing-shift)); }
+}
+
+.rm-now-playing-artist {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--rm-muted);
+}
+
+/* ── transcriptSync ─────────────────────────────────────────────────────── */
+
+.rm-transcript-sync {
+  display: grid;
+  gap: 0.2rem;
+  max-height: 22rem;
+  overflow-y: auto;
+  padding: 0.5rem;
+  color: inherit;
+}
+
+.rm-transcript-sync-follow {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  justify-self: start;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid color-mix(in srgb, currentColor 26%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-cream);
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.rm-transcript-sync-follow[aria-pressed="true"] {
+  border-color: var(--rm-accent);
+  background: var(--rm-accent);
+  color: var(--rm-ink);
+}
+
+.rm-transcript-sync-line {
+  margin: 0;
+}
+
+.rm-transcript-sync-seek {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--rm-radius-sm, 4px) var(--rm-radius-sm, 4px) 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: 1.55;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 220ms var(--rm-ease-out), border-color 220ms var(--rm-ease-out),
+    color 220ms var(--rm-ease-out);
+}
+
+.rm-transcript-sync-seek:hover {
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+
+.rm-transcript-sync-line.is-current .rm-transcript-sync-seek {
+  border-left-color: var(--rm-accent);
+  background: color-mix(in srgb, var(--rm-accent) 12%, transparent);
+  color: color-mix(in srgb, currentColor 88%, var(--rm-accent));
+}
+
+/* ── thumbStrip ─────────────────────────────────────────────────────────── */
+
+.rm-thumb-strip {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.25rem;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: thin;
+  color: inherit;
+}
+
+.rm-thumb-strip-frame {
+  flex: 0 0 auto;
+}
+
+.rm-thumb-strip-seek {
+  position: relative;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 200ms var(--rm-ease-out), border-color 200ms var(--rm-ease-out);
+}
+
+.rm-thumb-strip-seek:hover,
+.rm-thumb-strip-seek:focus-visible {
+  transform: scale(1.06);
+}
+
+.rm-thumb-strip-frame.is-current .rm-thumb-strip-seek {
+  border-color: var(--rm-accent);
+}
+
+.rm-thumb-strip-seek img {
+  display: block;
+  width: 7.5rem;
+  height: 4.2rem;
+  object-fit: cover;
+}
+
+.rm-thumb-strip-time {
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 0.68);
+  color: #fff;
+  font-family: var(--rm-mono);
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── liveBadge ──────────────────────────────────────────────────────────── */
+
+.rm-live-badge {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--rm-radius-pill);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.rm-live-badge-dot {
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--rm-muted);
+}
+
+.rm-live-badge.is-live .rm-live-badge-dot {
+  background: var(--rm-terracotta);
+  animation: rm-live-badge-beat 1.8s var(--rm-ease-in-out) infinite;
+}
+
+.rm-live-badge-dot.is-still {
+  animation: none;
+}
+
+@keyframes rm-live-badge-beat {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.6; }
+}
+
+.rm-live-badge-jump {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border: 0;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-terracotta);
+  color: var(--rm-ink);
+  font: inherit;
+  font-size: 0.72rem;
+  text-transform: none;
+  cursor: pointer;
+}
+
+/* ── bufferRing ─────────────────────────────────────────────────────────── */
+
+.rm-buffer-ring {
+  --rm-buffer-ring-ahead: 0;
+
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  /* currentColor all the way down: it must work on a dark player. */
+  color: inherit;
+}
+
+/*
+ * Centred over the frame, out of the flow. Left in normal flow inside the
+ * player the ring is a 3rem block *under* the video rather than over it, and
+ * every `hidden` toggle on a stall grows and shrinks the figure by 3rem,
+ * reflowing the player and everything below it. A buffering indicator that
+ * resizes the page on each stall is the layout churn the whole kit exists to
+ * avoid; absolute, `inset: 0` and `margin: auto` cost nothing to show or hide.
+ */
+.rm-player-bar > .rm-buffer-ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+.rm-buffer-ring-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: rm-buffer-ring-turn 1.1s linear infinite;
+}
+
+.rm-buffer-ring.is-still .rm-buffer-ring-art {
+  animation: none;
+}
+
+.rm-buffer-ring-art svg {
+  width: 100%;
+  height: 100%;
+}
+
+.rm-buffer-ring-track {
+  opacity: 0.2;
+}
+
+.rm-buffer-ring-arc {
+  /* pathLength is 100, so the dash values are read as percentages. */
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - 18 - var(--rm-buffer-ring-ahead) * 46);
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  color: var(--rm-accent);
+  stroke: currentColor;
+  transition: stroke-dashoffset 260ms var(--rm-ease-out);
+}
+
+@keyframes rm-buffer-ring-turn {
+  to { transform: rotate(360deg); }
+}
+
+/* ── miniPlayer ─────────────────────────────────────────────────────────── */
+
+.rm-mini-player {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--rm-radius-pill);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.32);
+}
+
+.rm-mini-player.is-bottom-right { right: 1rem; bottom: 1rem; }
+.rm-mini-player.is-bottom-left { bottom: 1rem; left: 1rem; }
+.rm-mini-player.is-top-right { top: 1rem; right: 1rem; }
+.rm-mini-player.is-top-left { top: 1rem; left: 1rem; }
+
+.rm-mini-player p {
+  margin: 0;
+  overflow: hidden;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rm-mini-player-toggle,
+.rm-mini-player-close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.12);
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 180ms var(--rm-ease-out);
+}
+
+.rm-mini-player-close {
+  order: 9;
+  font-size: 1.05rem;
+}
+
+.rm-mini-player-toggle:hover,
+.rm-mini-player-close:hover {
+  background: rgb(255 255 255 / 0.24);
+}
+
+/* ── keyboardHints ──────────────────────────────────────────────────────── */
+
+.rm-keyboard-hints {
+  position: relative;
+  display: inline-block;
+  color: inherit;
+}
+
+.rm-keyboard-hints-button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: var(--rm-radius-pill);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.rm-keyboard-hints-panel {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 0;
+  z-index: 40;
+  display: block;
+  width: max-content;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--rm-radius-sm, 4px);
+  background: var(--rm-ink);
+  color: var(--rm-cream);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.34);
+}
+
+.rm-keyboard-hints-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.9rem;
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.rm-keyboard-hints-list dt,
+.rm-keyboard-hints-list dd {
+  margin: 0;
+}
+
+.rm-keyboard-hints-list kbd {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 4px;
+  font-family: var(--rm-mono);
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+/*
+ * ── Hidden means hidden ────────────────────────────────────────────────────
+ *
+ * Every class above that both sets a `display` and is given `hidden` by the
+ * script needs its own rule, because an author `display` outranks the user
+ * agent's `[hidden] { display: none }`. Miss one and the element is invisible,
+ * still occupying its box and still swallowing clicks — which is exactly what
+ * a closed menu sitting over a play button looks like.
+ */
+.rm-scrubber-peek[hidden],
+.rm-rate-menu-list[hidden],
+.rm-caption-toggle[hidden],
+.rm-pip-toggle[hidden],
+.rm-chapter-list-marker[hidden],
+.rm-live-badge-jump[hidden],
+.rm-now-playing-pause[hidden],
+.rm-buffer-ring[hidden],
+.rm-mini-player[hidden],
+.rm-keyboard-hints-panel[hidden] {
+  display: none;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+/*
+ * Everything settles at its finished state. Nothing is hidden here, nothing is
+ * left mid-transition, and the control bar in particular stops retreating —
+ * a control that disappears on a timer is precisely the movement this
+ * preference is asking to be rid of.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-player-bar-controls,
+  .rm-chapter-list-marker,
+  .rm-transcript-sync-seek,
+  .rm-thumb-strip-seek,
+  .rm-buffer-ring-arc,
+  .rm-player-bar-button,
+  .rm-volume-dial-ring,
+  .rm-mini-player-toggle,
+  .rm-mini-player-close,
+  .rm-caption-toggle,
+  .rm-pip-toggle,
+  .rm-now-playing-pause,
+  .rm-chapter-list-seek {
+    transition-duration: 1ms;
+  }
+
+  .rm-player-bar.is-idle .rm-player-bar-controls {
+    transform: none;
+    opacity: 1;
+  }
+
+  .rm-now-playing-title.is-scrolling .rm-now-playing-scroll,
+  .rm-live-badge.is-live .rm-live-badge-dot,
+  .rm-buffer-ring-art {
+    animation: none;
+  }
+
+  .rm-thumb-strip-seek:hover,
+  .rm-thumb-strip-seek:focus-visible,
+  .rm-player-bar-button:hover {
+    transform: none;
+  }
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
 /*

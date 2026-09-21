@@ -92,3 +92,30 @@ test("nobody reads an attribute another module mounts on", () => {
 
   assert.deepEqual(clashes, [], `attributes fought over:\n  ${clashes.join("\n  ")}`);
 });
+
+test("no two modules export the same name", () => {
+  /*
+   * The attribute guard above catches two components fighting over an element.
+   * This catches the other half of the same mistake: two modules declaring the
+   * same function name. The barrel re-exports both, and the failure is a
+   * SyntaxError at import time — "Identifier 'codeBlock' has already been
+   * declared" — which takes the whole library down rather than one component.
+   *
+   * It happened once, between a fenced code block in the editor module and the
+   * documentation code block in extras.
+   */
+  const owners = new Map();
+  for (const name of readdirSync(componentDir).filter((n) => n.endsWith(".js") && !n.endsWith(".test.js"))) {
+    const source = readFileSync(resolve(componentDir, name), "utf8");
+    for (const [, exported] of source.matchAll(/^export (?:function|const) (\w+)/gm)) {
+      if (!owners.has(exported)) owners.set(exported, []);
+      owners.get(exported).push(name);
+    }
+  }
+
+  const clashes = [...owners]
+    .filter(([, files]) => files.length > 1)
+    .map(([name, files]) => `${name} — ${files.join(" and ")}`);
+
+  assert.deepEqual(clashes, [], `exported twice:\n  ${clashes.join("\n  ")}`);
+});

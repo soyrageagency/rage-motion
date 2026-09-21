@@ -1292,7 +1292,22 @@ export function compareTray(target = "[data-rm-compare-tray]", options = {}) {
       if (!items.size) shut();
     };
 
-    tray.rmAdd = (id, { label: name = String(id), image = "" } = {}) => {
+    /*
+     * Called with an object where an id was wanted, `String(id)` produces the
+     * literal text "[object Object]" and the tray shows it to a customer. A
+     * component handed the wrong shape should read what it can out of it and
+     * say what it cannot — never stringify it and carry on.
+     */
+    tray.rmAdd = (id, options = {}) => {
+      const key = typeof id === "object" && id !== null ? (id.id ?? id.label ?? id.name) : id;
+      const fallback = typeof id === "object" && id !== null
+        ? (id.label ?? id.name ?? "Untitled item")
+        : String(id);
+      const { label: name = fallback, image = typeof id === "object" ? (id.image ?? "") : "" } = options;
+      return addRow(key, name, image);
+    };
+
+    const addRow = (id, name, image) => {
       if (items.has(id) || items.size >= limit) return null;
       const row = document.createElement("li");
       row.className = "rm-compare-tray-item";

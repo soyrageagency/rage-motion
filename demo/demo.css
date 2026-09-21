@@ -2033,3 +2033,6 @@ code { font-size: 0.9em; }
   .brand-point { transform: scale(1); animation: none; }
   .brand-handle, .brand-frame { opacity: 1; animation: none; }
 }
+
+/* A trigger inside a cell should not dominate the thing it demonstrates. */
+.ghost.is-small { padding: 6px 13px; font-size: 12.5px; justify-self: center; }

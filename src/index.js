@@ -122,6 +122,26 @@ export {
   refundStatus, accountNav,
 } from "./components/account.js";
 export {
+  editorToolbar, bubbleMenu, slashMenu, mentionPicker, blockHandle, fencedCode,
+  markdownPreview, findReplace, commentThread, suggestion, versionChip, outlinePane,
+  wordCount, autosaveBadge, selectionToolbar, typewriterMode,
+} from "./components/editor.js";
+export {
+  monthGrid, weekGrid, dayTimeline, nowLine, miniCalendar, dateRange,
+  timePicker, durationField, timezonePill, availabilityGrid, bookingSlots, recurrenceBuilder,
+  agendaList, deadlinePill, eventChip, weekStrip,
+} from "./components/schedule.js";
+export {
+  dataGrid, columnPicker, bulkBar, savedViews, queryBar, keyboardMap,
+  logStream, metricTile, healthGrid, auditRow, envSwitch, roleBadge,
+  quotaMeter, jobQueue, diffTable, exportMenu,
+} from "./components/console.js";
+export {
+  playerBar, scrubber, waveform, chapterList, captionToggle, rateMenu,
+  volumeDial, pipToggle, queueList, nowPlaying, transcriptSync, thumbStrip,
+  liveBadge, bufferRing, miniPlayer, keyboardHints,
+} from "./components/player.js";
+export {
   masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
   crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
   imageWall, flipGrid, peelStack, focusGrid, ribbon, contactSheet,
@@ -240,6 +260,26 @@ import {
   wishlistGrid, reviewForm, reviewCard, questionAnswer, supportTicket, chatBubble,
   refundStatus, accountNav,
 } from "./components/account.js";
+import {
+  editorToolbar, bubbleMenu, slashMenu, mentionPicker, blockHandle, fencedCode,
+  markdownPreview, findReplace, commentThread, suggestion, versionChip, outlinePane,
+  wordCount, autosaveBadge, selectionToolbar, typewriterMode,
+} from "./components/editor.js";
+import {
+  monthGrid, weekGrid, dayTimeline, nowLine, miniCalendar, dateRange,
+  timePicker, durationField, timezonePill, availabilityGrid, bookingSlots, recurrenceBuilder,
+  agendaList, deadlinePill, eventChip, weekStrip,
+} from "./components/schedule.js";
+import {
+  dataGrid, columnPicker, bulkBar, savedViews, queryBar, keyboardMap,
+  logStream, metricTile, healthGrid, auditRow, envSwitch, roleBadge,
+  quotaMeter, jobQueue, diffTable, exportMenu,
+} from "./components/console.js";
+import {
+  playerBar, scrubber, waveform, chapterList, captionToggle, rateMenu,
+  volumeDial, pipToggle, queueList, nowPlaying, transcriptSync, thumbStrip,
+  liveBadge, bufferRing, miniPlayer, keyboardHints,
+} from "./components/player.js";
 import {
   masonry, swipeStack, filmstrip, hoverPeek, polaroids, foldGallery, gridZoom,
   crossfade, parallaxGrid, tiltGrid, maskReveal, slats, zoomStrip, spiralGallery,
@@ -609,6 +649,74 @@ export function init(options = {}) {
     chatBubble("[data-rm-chat-bubble]", options.chatBubble),
     refundStatus("[data-rm-refund-status]", options.refundStatus),
     accountNav("[data-rm-account-nav]", options.accountNav),
+
+    editorToolbar("[data-rm-editor-toolbar]", options.editorToolbar),
+    bubbleMenu("[data-rm-bubble-menu]", options.bubbleMenu),
+    slashMenu("[data-rm-slash-menu]", options.slashMenu),
+    mentionPicker("[data-rm-mention-picker]", options.mentionPicker),
+    blockHandle("[data-rm-block-handle]", options.blockHandle),
+    fencedCode("[data-rm-code-block]", options.fencedCode),
+    markdownPreview("[data-rm-markdown-preview]", options.markdownPreview),
+    findReplace("[data-rm-find-replace]", options.findReplace),
+    commentThread("[data-rm-comment-thread]", options.commentThread),
+    suggestion("[data-rm-suggestion]", options.suggestion),
+    versionChip("[data-rm-version-chip]", options.versionChip),
+    outlinePane("[data-rm-outline-pane]", options.outlinePane),
+    wordCount("[data-rm-word-count]", options.wordCount),
+    autosaveBadge("[data-rm-autosave-badge]", options.autosaveBadge),
+    selectionToolbar("[data-rm-selection-toolbar]", options.selectionToolbar),
+    typewriterMode("[data-rm-typewriter]", options.typewriterMode),
+
+    monthGrid("[data-rm-month-grid]", options.monthGrid),
+    weekGrid("[data-rm-week-grid]", options.weekGrid),
+    dayTimeline("[data-rm-day-timeline]", options.dayTimeline),
+    nowLine("[data-rm-now-line]", options.nowLine),
+    miniCalendar("[data-rm-mini-calendar]", options.miniCalendar),
+    dateRange("[data-rm-date-range]", options.dateRange),
+    timePicker("[data-rm-time-picker]", options.timePicker),
+    durationField("[data-rm-duration-field]", options.durationField),
+    timezonePill("[data-rm-timezone-pill]", options.timezonePill),
+    availabilityGrid("[data-rm-availability-grid]", options.availabilityGrid),
+    bookingSlots("[data-rm-booking-slots]", options.bookingSlots),
+    recurrenceBuilder("[data-rm-recurrence]", options.recurrenceBuilder),
+    agendaList("[data-rm-agenda-list]", options.agendaList),
+    deadlinePill("[data-rm-deadline-pill]", options.deadlinePill),
+    eventChip("[data-rm-event-chip]", options.eventChip),
+    weekStrip("[data-rm-week-strip]", options.weekStrip),
+
+    dataGrid("[data-rm-data-grid]", options.dataGrid),
+    columnPicker("[data-rm-column-picker]", options.columnPicker),
+    bulkBar("[data-rm-bulk-bar]", options.bulkBar),
+    savedViews("[data-rm-saved-views]", options.savedViews),
+    queryBar("[data-rm-query-bar]", options.queryBar),
+    keyboardMap("[data-rm-keyboard-map]", options.keyboardMap),
+    logStream("[data-rm-log-stream]", options.logStream),
+    metricTile("[data-rm-metric-tile]", options.metricTile),
+    healthGrid("[data-rm-health-grid]", options.healthGrid),
+    auditRow("[data-rm-audit-row]", options.auditRow),
+    envSwitch("[data-rm-env-switch]", options.envSwitch),
+    roleBadge("[data-rm-role-badge]", options.roleBadge),
+    quotaMeter("[data-rm-quota-meter]", options.quotaMeter),
+    jobQueue("[data-rm-job-queue]", options.jobQueue),
+    diffTable("[data-rm-diff-table]", options.diffTable),
+    exportMenu("[data-rm-export-menu]", options.exportMenu),
+
+    playerBar("[data-rm-player-bar]", options.playerBar),
+    scrubber("[data-rm-scrubber]", options.scrubber),
+    waveform("[data-rm-waveform]", options.waveform),
+    chapterList("[data-rm-chapter-list]", options.chapterList),
+    captionToggle("[data-rm-caption-toggle]", options.captionToggle),
+    rateMenu("[data-rm-rate-menu]", options.rateMenu),
+    volumeDial("[data-rm-volume-dial]", options.volumeDial),
+    pipToggle("[data-rm-pip-toggle]", options.pipToggle),
+    queueList("[data-rm-queue-list]", options.queueList),
+    nowPlaying("[data-rm-now-playing]", options.nowPlaying),
+    transcriptSync("[data-rm-transcript-sync]", options.transcriptSync),
+    thumbStrip("[data-rm-thumb-strip]", options.thumbStrip),
+    liveBadge("[data-rm-live-badge]", options.liveBadge),
+    bufferRing("[data-rm-buffer-ring]", options.bufferRing),
+    miniPlayer("[data-rm-mini-player]", options.miniPlayer),
+    keyboardHints("[data-rm-keyboard-hints]", options.keyboardHints),
 
     masonry("[data-rm-masonry]", options.masonry),
     swipeStack("[data-rm-swipe-stack]", options.swipeStack),

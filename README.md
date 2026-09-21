@@ -19,7 +19,7 @@
   </picture>
 </a>
 
-**Award-grade motion for the web, with zero dependencies.** 416 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
+**Award-grade motion for the web, with zero dependencies.** 480 animation components with actual technique behind them — variable-font pressure, word morphing with a real FLIP, draggable carousels built on native scrolling, liquid navigation, generative fields, page transitions. Take one file, or install the lot.
 
 *"A headline that reacts to the cursor." · "A carousel that works with a keyboard." · "A menu that traps focus properly." · "A counter that rolls like an odometer."*
 
@@ -136,7 +136,7 @@ stop();   // puts everything back exactly as it was
 
 ---
 
-## The 416 components
+## The 480 components
 
 **Entrances** — `reveal`, with **50 named start states**: up · down · left · right and their `-far` variants · glide · fade · scale · zoom · shrink · pop · rise · drop · spring-up · spring-left · blur · blur-only · blur-up · blur-scale · drift-left · drift-right · tilt-left · tilt-right · roll-left · roll-right · swing · twist · spin · skew-x · skew-y · flip-x · flip-y · unfold · fold-up · door · door-right · corner · lift-3d · curtain-up · curtain-down · curtain-left · curtain-right · iris · wipe-diagonal · mask · slat · none
 
@@ -222,6 +222,18 @@ stop();   // puts everything back exactly as it was
 
 **Ecommerce — account and support** — Orders, subscriptions, reviews and help. No payment data, ever.
 `orderList` · `orderCard` · `orderStatusPill` · `trackingMap` · `deliverySlot` · `addressBook` · `addressCard` · `paymentCards` · `subscriptionCard` · `pauseSubscription` · `invoiceList` · `downloadRow` · `wishlistGrid` · `reviewForm` · `reviewCard` · `questionAnswer` · `supportTicket` · `chatBubble` · `refundStatus` · `accountNav`
+
+**Writing and editing** — The chrome around a writing surface: toolbars, slash menus, suggestions.
+`editorToolbar` · `bubbleMenu` · `slashMenu` · `mentionPicker` · `blockHandle` · `fencedCode` · `markdownPreview` · `findReplace` · `commentThread` · `suggestion` · `versionChip` · `outlinePane` · `wordCount` · `autosaveBadge` · `selectionToolbar` · `typewriterMode`
+
+**Calendars and time** — Month, week and day grids, ranges, availability, recurrence.
+`monthGrid` · `weekGrid` · `dayTimeline` · `nowLine` · `miniCalendar` · `dateRange` · `timePicker` · `durationField` · `timezonePill` · `availabilityGrid` · `bookingSlots` · `recurrenceBuilder` · `agendaList` · `deadlinePill` · `eventChip` · `weekStrip`
+
+**Admin and data tables** — Grids, bulk actions, queries, logs, quotas, job queues.
+`dataGrid` · `columnPicker` · `bulkBar` · `savedViews` · `queryBar` · `keyboardMap` · `logStream` · `metricTile` · `healthGrid` · `auditRow` · `envSwitch` · `roleBadge` · `quotaMeter` · `jobQueue` · `diffTable` · `exportMenu`
+
+**Media playback** — Wrapping the real video and audio elements, keyboard-complete.
+`playerBar` · `scrubber` · `waveform` · `chapterList` · `captionToggle` · `rateMenu` · `volumeDial` · `pipToggle` · `queueList` · `nowPlaying` · `transcriptSync` · `thumbStrip` · `liveBadge` · `bufferRing` · `miniPlayer` · `keyboardHints`
 
 **Pages** — `pageTransition` · `transitionTo`
 

@@ -218,3 +218,53 @@ document.addEventListener("click", async (event) => {
   trigger.classList.add("is-done");
   setTimeout(() => trigger.classList.remove("is-done"), 1200);
 });
+
+/* ── The cells that need something pushed into them ──────────────────── */
+
+/*
+ * A toast pile, a snackbar, a ticker, a corner toast and a compare tray are
+ * all empty until a page pushes something in. That is correct behaviour and a
+ * useless demonstration, so each cell has a button and this wires it up.
+ *
+ * The messages cycle rather than repeating, because pressing a button four
+ * times and seeing the same word four times tells you nothing about a stack.
+ */
+const demoLines = [
+  "Saved to your drafts",
+  "Two files uploaded",
+  "Invite sent to the team",
+  "Build 2481 passed",
+  "Export ready to download",
+];
+let demoAt = 0;
+const nextLine = () => demoLines[demoAt++ % demoLines.length];
+
+function wire(id, run) {
+  const button = document.getElementById(id);
+  if (!button) return;
+  button.addEventListener("click", run);
+}
+
+wire("rm-demo-toast", () => {
+  const stack = document.querySelector("[data-rm-toast-stack]");
+  stack?.rmPush?.(nextLine(), { action: "Undo", onAction: () => say("Undone") });
+});
+
+wire("rm-demo-snack", () => {
+  const bar = document.querySelector("[data-rm-snackbar]");
+  bar?.rmShow?.(nextLine(), { action: "View", onAction: () => say("Opened") });
+});
+
+wire("rm-demo-ticker", () => {
+  document.querySelector("[data-rm-live-ticker]")?.rmAdd?.(nextLine());
+});
+
+wire("rm-demo-corner", () => {
+  document.querySelector("[data-rm-corner-toast]")?.rmShow?.(nextLine());
+});
+
+wire("rm-demo-compare", () => {
+  const tray = document.querySelector("[data-rm-compare-tray]");
+  // The signature is rmAdd(id, { label, image }) — an id, then how to draw it.
+  tray?.rmAdd?.(`item-${demoAt}`, { label: nextLine(), image: "./assets/tiles/03.svg" });
+});
