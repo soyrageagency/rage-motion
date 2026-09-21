@@ -69,7 +69,13 @@
   <div class="hero-field" id="hero-field" aria-hidden="true"></div>
 
   <div class="shell hero-inner">
-    <p class="hero-readout"><span data-rm-decrypt data-rm-loop="6000">480 components · 0 dependencies · MIT</span></p>
+    <!--
+      No loop on this one. The decrypt resolves left to right over about four
+      seconds, which is a nice arrival and a hostile permanent state: with a
+      six-second loop the first line of the page spends most of its life as
+      garbage. It settles once and stays settled.
+    -->
+    <p class="hero-readout"><span data-rm-decrypt>480 components · 0 dependencies · MIT</span></p>
 
     <h1 class="hero-title" data-rm-pressure data-rm-radius="320">Motion with technique in it</h1>
 
@@ -5657,17 +5663,28 @@ init();</code></pre>
   </div>
 </aside>
 
+<!--
+  The section rail.
+
+  Forty-one sections down seventy thousand pixels is a wall, and four links in
+  the header is not navigation. This is built at runtime from the rails on the
+  page and driven by the kit's own scrollSpy, so it marks where you are and
+  cannot drift from the page it describes. It is a real <nav> with a real list.
+-->
+<aside class="deck" aria-label="Sections">
+  <p class="deck-title">Sections</p>
+  <nav class="deck-nav" data-rm-deck-nav></nav>
+</aside>
+
 <div class="palette" data-rm-command hidden>
   <div class="palette-box">
     <input class="palette-input" data-rm-command-input type="text" placeholder="Search components…" aria-label="Search components">
-    <div class="palette-list" data-rm-command-list>
-      <a href="#index">Index</a>
-      <a href="#gallery">Gallery</a>
-      <a href="#scroll">Scroll animations</a>
-      <a href="#compare">Before and after</a>
-      <a href="#mcp">MCP server</a>
-      <a href="#start">Start</a>
-    </div>
+    <!--
+      Filled at runtime from the cells that are actually on the page, so it
+      cannot list a component the page does not have or miss one it does. Six
+      hand-typed links for four hundred components is a search box that lies.
+    -->
+    <div class="palette-list" data-rm-command-list></div>
   </div>
 </div>
 

@@ -64,8 +64,24 @@ export function command(target = "[data-rm-command]", options = {}) {
     const board = panel.querySelector(list);
     if (!field || !board) continue;
 
-    const items = [...board.querySelectorAll(item)];
-    if (!items.length) continue;
+    /*
+     * The list is read live, not captured once.
+     *
+     * A palette is almost always filled from data — a catalogue, a route table,
+     * a search index — and that filling happens on its own schedule, which is
+     * frequently after the component mounted. Snapshotting the rows at mount
+     * means a palette with four hundred entries in the DOM and none in the
+     * component: you type, nothing matches, and there is nothing to see in the
+     * markup that explains why. A MutationObserver on the list costs one
+     * observer and removes a whole class of "why is my palette empty".
+     */
+    let items = [...board.querySelectorAll(item)];
+    const reread = new MutationObserver(() => {
+      items = [...board.querySelectorAll(item)];
+      at = 0;
+      mark();
+    });
+    reread.observe(board, { childList: true, subtree: true });
 
     panel.classList.add("rm-command");
     panel.hidden = true;
@@ -102,7 +118,7 @@ export function command(target = "[data-rm-command]", options = {}) {
       current.setAttribute("aria-selected", "true");
       field.setAttribute("aria-activedescendant", current.id || "");
       // The list scrolls; the page behind the palette stays where it was.
-      keepInView(list, current);
+      keepInView(board, current);
     };
 
     const filter = () => {
@@ -174,6 +190,7 @@ export function command(target = "[data-rm-command]", options = {}) {
     panel.addEventListener("click", (event) => { if (event.target === panel) close(); });
 
     cleanups.push(() => {
+      reread.disconnect();
       close();
       openers.forEach((one) => one.removeEventListener("click", show));
       field.removeEventListener("input", filter);

@@ -16,6 +16,7 @@ import {
   init, cursor, target, crosshair, splash, waves, retroGrid, dotGrid, confetti,
   cartoonCursor, blobCursor, trailCursor, sayCursor, spotlightCursor, arrowCursor, lensCursor,
   REVEAL_EFFECTS, BUTTON_STYLES, CARD_LOOKS, INPUT_LOOKS, toast,
+  scrollSpy,
 } from "../src/index.js";
 
 /* ── The two big grids ─────────────────────────────────────────────────── */
@@ -79,6 +80,87 @@ fillGrid("#input-grid", INPUT_LOOKS, (name) => {
   holder.append(caption, field);
   return holder;
 });
+
+/* ── Making four hundred cells findable ──────────────────────────────── */
+
+/*
+ * Every cell gets an id derived from its own name, and the palette and the
+ * section rail are both built from what is on the page rather than from a
+ * list typed beside it. A hand-maintained index of four hundred components
+ * is an index that is wrong by the next commit.
+ */
+const slug = (text) =>
+  text.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function cellAnchors() {
+  const found = [];
+  for (const cell of document.querySelectorAll(".cell")) {
+    const label = cell.querySelector(".cell-name");
+    if (!label) continue;
+    // The name can read 'fill · shimmer · spark'; each one is findable.
+    const names = label.textContent.split("·").map((n) => n.trim()).filter(Boolean);
+    const first = names[0]?.split(" ")[0] ?? "";
+    if (!first) continue;
+    if (!cell.id) cell.id = `c-${slug(first)}`;
+    for (const name of names) {
+      const clean = name.split(" ")[0];
+      if (clean) found.push({ name: clean, id: cell.id });
+    }
+  }
+  return found;
+}
+
+function fillPalette(entries) {
+  const list = document.querySelector("[data-rm-command-list]");
+  if (!list) return;
+  const seen = new Set();
+  const rows = [];
+  for (const section of document.querySelectorAll(".rail")) {
+    const name = section.querySelector(".rail-name")?.textContent.trim();
+    if (!name) continue;
+    if (!section.id) section.id = `s-${slug(name)}`;
+    const row = document.createElement("a");
+    row.href = `#${section.id}`;
+    row.textContent = name;
+    row.dataset.kind = "section";
+    rows.push(row);
+  }
+  for (const { name, id } of entries) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    const row = document.createElement("a");
+    row.href = `#${id}`;
+    row.textContent = name;
+    rows.push(row);
+  }
+  list.replaceChildren(...rows);
+}
+
+function fillDeck() {
+  const nav = document.querySelector("[data-rm-deck-nav]");
+  if (!nav) return;
+  const list = document.createElement("ul");
+  for (const section of document.querySelectorAll(".rail")) {
+    const name = section.querySelector(".rail-name")?.textContent.trim();
+    if (!name) continue;
+    if (!section.id) section.id = `s-${slug(name)}`;
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = `#${section.id}`;
+    link.textContent = name;
+    item.appendChild(link);
+    list.appendChild(item);
+  }
+  nav.replaceChildren(list);
+  // The kit's own spy marks the section you are in, on one scroll read.
+  // scrollSpy takes a selector for its links and finds each section from the
+  // href, so it needs nothing else: the rail already points at real ids.
+  scrollSpy(nav);
+}
+
+const anchors = cellAnchors();
+fillPalette(anchors);
+fillDeck();
 
 init();
 
@@ -268,3 +350,4 @@ wire("rm-demo-compare", () => {
   // The signature is rmAdd(id, { label, image }) — an id, then how to draw it.
   tray?.rmAdd?.(`item-${demoAt}`, { label: nextLine(), image: "./assets/tiles/03.svg" });
 });
+

@@ -129,12 +129,29 @@ function surface(element, className) {
 }
 
 /**
- * A comma-separated colour list, falling back to the default when it is empty
- * or nonsense rather than drawing nothing.
+ * A comma-separated colour list.
+ *
+ * Split on every comma and `rgba(42,167,228,0.85)` becomes four colours, none
+ * of them valid — the field then paints nothing at all and the cause is three
+ * files away from the symptom. So the split only counts commas at depth zero,
+ * which leaves the ones inside a function alone.
+ *
+ * An empty or unusable list falls back to the default rather than drawing
+ * nothing.
  */
 function palette(raw, fallback) {
-  const parts = String(raw).split(",").map((one) => one.trim()).filter(Boolean);
-  return parts.length ? parts : fallback;
+  const parts = [];
+  let depth = 0;
+  let current = "";
+  for (const letter of String(raw)) {
+    if (letter === "(") depth += 1;
+    else if (letter === ")") depth = Math.max(0, depth - 1);
+    else if (letter === "," && depth === 0) { parts.push(current); current = ""; continue; }
+    current += letter;
+  }
+  parts.push(current);
+  const colours = parts.map((one) => one.trim()).filter(Boolean);
+  return colours.length ? colours : fallback;
 }
 
 /**
@@ -966,7 +983,10 @@ export function noiseWave(target = "[data-rm-noise-wave]", options = {}) {
         const y = base + (ridge(x / 180 + phase) - 0.5) * 2 * height;
         d += `${x === 0 ? "M" : "L"}${x} ${y.toFixed(1)}`;
       }
-      if (solid) d += `L${width + step} ${tall}L0 ${tall}Z`;
+      // Shaded, the path closes *outside* the viewBox: the same single path
+      // then carries both the fill and the stroke, and the three segments that
+      // close it are clipped away instead of drawing a box round the panel.
+      if (solid) d += `L${width + step} ${tall + 8}L-8 ${tall + 8}L-8 ${base.toFixed(1)}Z`;
       path.setAttribute("d", d);
     };
     paint(0);
@@ -1261,10 +1281,16 @@ export function glowOrbs(target = "[data-rm-glow-orbs]", options = {}) {
     for (let i = 0; i < many; i++) {
       const orb = document.createElement("i");
       const scale = 0.75 + random() * 0.6;
-      orb.style.width = orb.style.height = `${(span * scale).toFixed(1)}%`;
+      // Width plus `aspect-ratio`, never a percentage height: a percentage
+      // height resolves against the panel, so on a wide short section the orb
+      // becomes an ellipse and the round falloff is cut off flat top and
+      // bottom. `closest-side` then finishes the gradient inside the box.
+      orb.style.width = `${(span * scale).toFixed(1)}%`;
+      orb.style.aspectRatio = "1";
       orb.style.left = `${(8 + random() * 74).toFixed(1)}%`;
       orb.style.top = `${(8 + random() * 68).toFixed(1)}%`;
-      orb.style.background = `radial-gradient(circle, ${colours[i % colours.length]} 0%, transparent 70%)`;
+      orb.style.background =
+        `radial-gradient(circle closest-side, ${colours[i % colours.length]} 0%, transparent 100%)`;
       orb.style.setProperty("--rm-orb-ax", `${(random() * 30 - 15).toFixed(1)}%`);
       orb.style.setProperty("--rm-orb-ay", `${(random() * 26 - 13).toFixed(1)}%`);
       orb.style.setProperty("--rm-orb-bx", `${(random() * 30 - 15).toFixed(1)}%`);

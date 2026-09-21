@@ -2036,3 +2036,95 @@ code { font-size: 0.9em; }
 
 /* A trigger inside a cell should not dominate the thing it demonstrates. */
 .ghost.is-small { padding: 6px 13px; font-size: 12.5px; justify-self: center; }
+
+/* ── The section rail ────────────────────────────────────────────────────── */
+
+/*
+ * Forty-one sections down seventy thousand pixels needs somewhere to stand.
+ *
+ * The rail is fixed to the left, scrolls inside itself, and marks where you
+ * are — which is the difference between a catalogue and a wall. It is hidden
+ * below the width where it would take space the cells need, because a
+ * navigation aid that squeezes the content is not an aid.
+ */
+.deck {
+  position: fixed;
+  top: 84px;
+  left: 14px;
+  bottom: 18px;
+  width: 188px;
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 10px 14px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.deck-title {
+  margin: 0;
+  font-family: var(--rm-display);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5f5b54;
+}
+.deck-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.deck-nav ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; }
+.deck-nav a {
+  display: block;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-family: var(--rm-display);
+  font-size: 12.5px;
+  letter-spacing: -0.005em;
+  color: var(--dim);
+  text-decoration: none;
+  transition: color 0.16s var(--rm-ease-out), background 0.16s var(--rm-ease-out);
+}
+.deck-nav a:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
+/* scrollSpy marks the section you are in; it is a state, so it says so. */
+.deck-nav a[aria-current] {
+  color: var(--ink);
+  background: var(--accent);
+  font-weight: 600;
+}
+
+/*
+ * The rail shows only where there is room for it.
+ *
+ * The shell is 1240px and centred, so it already leaves a margin each side.
+ * Padding `main` for the rail and leaving the shell centred inside that
+ * padding produces two gaps instead of one: the rail sits in the first and the
+ * content is pushed off the optical centre. So the rail appears at the width
+ * where the natural margin is wide enough to hold it — 1240 plus two rails
+ * plus air — and the shell keeps centring on the viewport, untouched.
+ */
+@media (min-width: 1660px) {
+  .deck { display: flex; }
+}
+
+/* ── The palette, now that it holds four hundred things ──────────────────── */
+
+.palette-list { max-height: min(56vh, 460px); overflow-y: auto; overscroll-behavior: contain; }
+.palette-list a { display: block; }
+/* A section reads differently from a component, because it goes somewhere else. */
+.palette-list a[data-kind="section"] {
+  color: var(--accent);
+  font-family: var(--rm-display);
+}
+.palette-list a[data-kind="section"]::after {
+  content: " section";
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}

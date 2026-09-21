@@ -305,7 +305,11 @@ export function dataString(element, name, fallback) {
  * This does the arithmetic on the one box that should move.
  */
 export function keepInView(container, child, behavior = "auto") {
-  if (!container || !child) return;
+  // A public helper handed a selector rather than an element should say so
+  // here, not throw four frames deep inside a scroll calculation.
+  if (typeof container === "string") container = document.querySelector(container);
+  if (typeof child === "string") child = document.querySelector(child);
+  if (!container?.getBoundingClientRect || !child?.getBoundingClientRect) return;
   const box = container.getBoundingClientRect();
   const item = child.getBoundingClientRect();
 
