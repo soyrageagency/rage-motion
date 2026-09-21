@@ -279,7 +279,21 @@ code { font-size: 0.9em; }
  * beside it. Multi-column flows them and balances the height.
  */
 .index-grid { columns: 5 200px; column-gap: 30px; }
-.index-family { break-inside: avoid; margin-bottom: 28px; }
+/*
+ * The break rule belongs to each heading-and-list pair, not to the family.
+ *
+ * `break-inside: avoid` on the family was right when a family was one short
+ * list. Groups were added inside the existing families until one of them was
+ * 3,245px tall — the entire height of the flow — and an unbreakable block that
+ * tall sets the column height for everything else, which is why four of five
+ * columns sat nearly empty beside it.
+ *
+ * So the family flows, each list stays whole, and no heading is left stranded
+ * at the foot of a column without its list.
+ */
+.index-family { margin-bottom: 28px; }
+.index-family ul { break-inside: avoid; }
+.index-family h3 { break-after: avoid; }
 .index-family h3 {
   margin: 0 0 12px;
   font-family: var(--rm-display);
@@ -2128,3 +2142,26 @@ code { font-size: 0.9em; }
   text-transform: uppercase;
   opacity: 0.5;
 }
+
+/*
+ * A long attribute name must not push its column wider than its track.
+ *
+ * `data-rm-breadcrumb-trail` is wider than 200px on its own, and a column-width
+ * layout will let a child overflow rather than break it — which clipped the
+ * last column against the edge of the page.
+ */
+.index-family li { min-width: 0; }
+.index-family code { overflow-wrap: anywhere; text-align: right; }
+
+/* The drawer holds the same forty-one sections the rail does. */
+.drawer-nav { display: grid; gap: 1px; max-height: 68vh; overflow-y: auto; overscroll-behavior: contain; }
+.drawer-nav a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-family: var(--rm-display);
+  font-size: 13.5px;
+  color: var(--dim);
+  text-decoration: none;
+}
+.drawer-nav a:hover, .drawer-nav a:focus-visible { color: var(--text); background: rgba(255, 255, 255, 0.05); }

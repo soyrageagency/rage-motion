@@ -158,9 +158,26 @@ function fillDeck() {
   scrollSpy(nav);
 }
 
+function fillDrawer() {
+  const nav = document.querySelector("[data-rm-drawer-nav]");
+  if (!nav) return;
+  const rows = [];
+  for (const section of document.querySelectorAll(".rail")) {
+    const name = section.querySelector(".rail-name")?.textContent.trim();
+    if (!name) continue;
+    if (!section.id) section.id = `s-${slug(name)}`;
+    const link = document.createElement("a");
+    link.href = `#${section.id}`;
+    link.textContent = name;
+    rows.push(link);
+  }
+  nav.replaceChildren(...rows);
+}
+
 const anchors = cellAnchors();
 fillPalette(anchors);
 fillDeck();
+fillDrawer();
 
 init();
 
